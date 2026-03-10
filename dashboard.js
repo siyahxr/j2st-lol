@@ -138,12 +138,12 @@ window.addPlatformLink = (platId) => {
 
     if (!userDataState.links) userDataState.links = [];
     if (typeof userDataState.links === 'string') userDataState.links = JSON.parse(userDataState.links);
-    
+
     // Check if already exists to prevent duplicates (optional, but good)
     const exists = userDataState.links.some(l => l.type === platId);
     if (exists && platId !== 'custom') return showToast("Already added", "error");
 
-    const newL = { 
+    const newL = {
         id: Date.now(),
         type: plat.id,
         title: plat.name,
@@ -170,9 +170,9 @@ window.updateLinkUrl = (id, val) => {
 function syncActiveLinks() {
     const container = document.getElementById('dashboard-links-list');
     if (!container) return;
-    
+
     let lList = userDataState.links || [];
-    if (typeof lList === 'string') try { lList = JSON.parse(lList); } catch(e) { lList = []; }
+    if (typeof lList === 'string') try { lList = JSON.parse(lList); } catch (e) { lList = []; }
 
     container.innerHTML = lList.map(l => `
         <div class="glass-card" style="display:flex; align-items:center; gap:15px; background: rgba(255,255,255,0.02); margin-bottom:10px; padding: 15px;">
@@ -200,7 +200,7 @@ function syncBadgesCollection() {
     container.innerHTML = all.map(b => {
         const isOwned = userBadgeIds.includes(b.id);
         const desc = b.description || "Kurucu tarafından verilir.";
-        
+
         return `
             <div class="glass-card badge-collect-item ${isOwned ? 'owned' : 'locked'}" style="text-align:center; padding: 20px; transition: 0.3s;">
                 <div class="badge-status-icon">
@@ -230,17 +230,17 @@ function syncUI() {
     // Profile Fields
     document.getElementById('profile-display-name').value = userDataState.display_name || "";
     document.getElementById('profile-bio').value = userDataState.bio || "";
-    
+
     // Colors
     syncColor('accent', userDataState.accent_color || '#FFFFFF');
     syncColor('icon', userDataState.icon_color || '#A1A1AA');
-    
+
     const frameData = parseRgba(userDataState.avatar_frame_color || '#000000');
     syncColor('avatar-frame', frameData.hex);
     document.getElementById('avatar-frame-opacity').value = frameData.opacity;
-    
+
     document.getElementById('badge-bg-color').value = userDataState.badge_bg_color || "rgba(255,255,255,0.05)";
-    
+
     // Fonts
     document.getElementById('name-font').value = userDataState.name_font || "Outfit";
     document.getElementById('name-font-color').value = userDataState.name_font_color || "#FFFFFF";
@@ -303,7 +303,7 @@ function setupControls() {
 
 function setupLivePreview() {
     const ids = [
-        'profile-display-name', 'profile-bio', 'name-font', 'bio-font', 
+        'profile-display-name', 'profile-bio', 'name-font', 'bio-font',
         'bio-font-color', 'banner-url-direct', 'glitch-avatar', 'card-style',
         'avatar-frame-opacity'
     ];
@@ -315,11 +315,11 @@ function setupLivePreview() {
 
 function updatePreview() {
     if (!userDataState) return;
-    
+
     const name = document.getElementById('preview-name');
     const bio = document.getElementById('preview-bio');
     const banner = document.getElementById('preview-banner');
-    
+
     if (name) {
         name.textContent = document.getElementById('profile-display-name').value || userDataState.username;
         name.style.fontFamily = document.getElementById('name-font').value;
@@ -353,7 +353,7 @@ function updatePreview() {
     const linksPreview = document.getElementById('preview-links');
     if (linksPreview) {
         let lList = userDataState.links || [];
-        if (typeof lList === 'string') try { lList = JSON.parse(lList); } catch(e) { lList = []; }
+        if (typeof lList === 'string') try { lList = JSON.parse(lList); } catch (e) { lList = []; }
         linksPreview.innerHTML = lList.map(l => `
             <div class="badge-item" data-label="${l.title}" style="width:24px; height:24px;">
                 <i class="${l.icon}" style="font-size:14px;"></i>
@@ -425,7 +425,7 @@ function setupUploaders() {
 window.saveProfileChanges = async () => {
     const btn = document.getElementById('main-save-btn');
     const msg = document.getElementById('save-msg');
-    
+
     if (!btn) return;
     const lang = localStorage.getItem('j2st_lang') || 'en';
     btn.textContent = i18n_dict[lang]?.dash_btn_saving || "SAVING...";
@@ -455,7 +455,8 @@ window.saveProfileChanges = async () => {
         card_style: document.getElementById('card-style')?.value || "glass",
         hover_text: userDataState?.hover_text || "Void Entity",
         link_hover_anim: userDataState?.link_hover_anim || "float",
-        tilt_3d: userDataState?.tilt_3d ?? 1
+        tilt_3d: userDataState?.tilt_3d ?? 1,
+        links: JSON.stringify(userDataState.links || [])
     };
 
     try {
@@ -464,7 +465,7 @@ window.saveProfileChanges = async () => {
             headers: { "Content-Type": "application/json", "x-user-id": session.id },
             body: JSON.stringify(payload)
         });
-        
+
         const result = await r.json();
 
         if (r.ok && result.success) {
