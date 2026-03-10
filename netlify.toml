@@ -2,6 +2,32 @@
   publish = "./"
   functions = "netlify/functions"
 
+# --- CORE REDIRECTS ---
+[[redirects]]
+  from = "/admin"
+  to = "/admin.html"
+  status = 200
+
+[[redirects]]
+  from = "/login"
+  to = "/login.html"
+  status = 200
+
+[[redirects]]
+  from = "/register"
+  to = "/register.html"
+  status = 200
+
+[[redirects]]
+  from = "/dashboard"
+  to = "/dashboard.html"
+  status = 200
+
+[[redirects]]
+  from = "/edit"
+  to = "/dashboard.html"
+  status = 200
+
 # --- API REDIRECTS (EXPLICIT) ---
 [[redirects]]
   from = "/api/auth/login"

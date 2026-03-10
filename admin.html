@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel | j2st.lol</title>
     <script>
-        if (window.location.hostname.includes('j2st.lol')) {
+        if (!window.location.hostname.includes('j2st.lol') && !window.location.hostname.includes('localhost')) {
             window.location.replace('https://j2st.lol' + window.location.pathname + window.location.search);
         }
     </script>

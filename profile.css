@@ -292,7 +292,10 @@ body {
 
 /* THE AURA SYSTEM — Creates a glow behind the card based on accent color */
 .dynamic-aura {
-    position: fixed;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     width: var(--aura-strength);
     height: var(--aura-strength);
     background: var(--accent);
@@ -330,7 +333,6 @@ body {
     text-align: center;
     z-index: 10;
     transition: var(--transition-smooth);
-    overflow: hidden;
     /* For aura containment in phone */
 }
 
@@ -341,6 +343,7 @@ body {
     backdrop-filter: blur(30px) saturate(200%);
     border: 1px solid var(--glass-border);
     box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
+    overflow: visible;
 }
 
 .profile-card.solid-style,
@@ -348,12 +351,14 @@ body {
     background: #000;
     border: 1px solid #111;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+    overflow: visible;
 }
 
 .profile-card.gradient-style,
 .phone-content.gradient-style {
     background: linear-gradient(165deg, #0a0a0a 0%, #000000 100%);
     border: 1px solid rgba(255, 255, 255, 0.04);
+    overflow: visible;
 }
 
 .profile-card.border-style,
@@ -361,6 +366,7 @@ body {
     background: transparent;
     border: 2px solid var(--accent);
     backdrop-filter: blur(10px);
+    overflow: visible;
 }
 
 /* ── IDENTITY ───────────────────────────────────────────────── */
