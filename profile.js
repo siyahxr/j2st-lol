@@ -89,6 +89,10 @@ function renderProfile(user) {
         avatar.style.borderStyle = 'solid';
         avatar.style.boxShadow = `0 0 20px ${user.avatar_frame_color}44`;
     }
+
+    // 8. Stats (Views)
+    const viewsEl = document.querySelector('#views-el span');
+    if (viewsEl) viewsEl.textContent = `${user.views || 0} views`;
 }
 
 function setup3DTilt(el) {

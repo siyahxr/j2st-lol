@@ -26,8 +26,24 @@ export async function onRequestGet({ request, env }) {
       return new Response(JSON.stringify({ error: "User not found" }), { status: 404 });
     }
 
-    return new Response(JSON.stringify(user), {
-      headers: { "Content-Type": "application/json" },
+    // --- VIEW COUNT LOGIC (Unique-ish) ---
+    const cookie = request.headers.get("Cookie") || "";
+    const viewMark = `v_${user.id}`;
+    let updatedViews = user.views || 0;
+
+    if (!cookie.includes(viewMark)) {
+      // Not viewed in this session/hour, increment in DB
+      await env.j2st_db.prepare("UPDATE users SET views = views + 1 WHERE id = ?").bind(user.id).run();
+      updatedViews++;
+    }
+
+    const responseData = { ...user, views: updatedViews };
+
+    return new Response(JSON.stringify(responseData), {
+      headers: { 
+        "Content-Type": "application/json",
+        "Set-Cookie": `${viewMark}=1; Max-Age=3600; Path=/; SameSite=Lax`
+      },
     });
   } catch (err) {
     return new Response(JSON.stringify({ error: err.message }), { status: 500 });
