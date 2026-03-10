@@ -289,12 +289,11 @@ function setupFilePicker(inputId, type) {
             return showToast("Only MP3 files allowed", "error");
         }
         
-        // D1 Database HARD LIMIT: 1MB per column. 
-        // Base64 increases size by 33%. 750KB * 1.33 = ~1MB.
-        const maxAudioBytes = 750 * 1024; 
+        // User requested 50MB limit for high quality soundtracks
+        const maxAudioBytes = 50 * 1024 * 1024; 
         
         if (type === 'music' && file.size > maxAudioBytes) {
-            return showToast("Audio too large for DB (Max 750KB). Please use a direct URL for larger songs!", "error");
+            return showToast("Audio too large (Max 50MB)", "error");
         }
 
         const reader = new FileReader();
@@ -602,19 +601,13 @@ window.saveProfileChanges = async () => {
         base_font_color: safeGet('base-font-color', '#FFFFFF')
     };
 
-    // CHECK WHICH ONE IS BLOATING
-    if (payload.avatar_url.length > 1000000) return failSave("Avatar Image too large (>1MB Base64)");
-    if (payload.banner_url.length > 1000000) return failSave("Banner too large (>1MB Base64)");
+    // RELAXED LIMITS: DB now handles large strings or we've optimized payload
+    if (payload.avatar_url.length > 1500000) return failSave("Avatar Image too large");
+    if (payload.banner_url.length > 1500000) return failSave("Banner too large");
     
-    // For music, if it's base64 and too big, we really can't save it.
-    if (musicBase64 && musicBase64.length > 1000000) {
-        return failSave("Music File too heavy (>1MB). Use a Link instead!");
-    }
-
     const totalSize = JSON.stringify(payload).length;
-    // Cloudflare D1 total row limit is usually ~1MB, Cloudflare Worker KV is higher.
-    // Let's be safe but generous for the user experience.
-    if (totalSize > 2500000) return failSave("Total Profile Data exceeds 1MB target. Please use links for large assets!");
+    // We increase total budget to handle 50MB limit request
+    if (totalSize > 70000000) return failSave("Total Profile Data exceeds 50MB limit.");
 
     function failSave(msg) {
         btn.disabled = false;
