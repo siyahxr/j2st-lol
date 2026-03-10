@@ -442,7 +442,7 @@ function highlightNewItem() {
     if (!list) return;
     const last = list.lastElementChild;
     if (last) {
-        last.classList.add('flash-new');
+        last.classList.add('flash-item');
         last.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 }
@@ -626,12 +626,12 @@ function updatePreview() {
 
 // --- ACTIONS ---
 window.saveProfileChanges = async () => {
-    const btn = document.getElementById('main-save-btn');
+    const btn = document.getElementById('persistent-save-btn');
     if (!btn || btn.disabled) return;
 
     btn.disabled = true;
-    const originalText = btn.textContent;
-    btn.textContent = "SAVING...";
+    const originalContent = btn.innerHTML;
+    btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> SAVING...';
 
     // Creating payload with absolute zero risk of undefined values
     const safeGet = (id, fallback = "") => {
@@ -727,7 +727,7 @@ window.saveProfileChanges = async () => {
 
     function failSave(msg) {
         btn.disabled = false;
-        btn.textContent = originalText;
+        btn.innerHTML = originalContent;
         showToast(msg, "error");
         return false;
     }
@@ -743,18 +743,16 @@ window.saveProfileChanges = async () => {
         });
         const res = await r.json();
         if (res.success) {
-            showToast("Changes Secured.", "success");
-            userDataState = { ...userDataState, ...payload };
-            // Reset base64s to save memory
-            avatarBase64 = bannerBase64 = musicBase64 = cursorBase64 = null;
+            showToast("Profile Updated!", "success");
+            // Optional: Re-fetch or update state
         } else {
-            showToast("Error: " + res.error, "error");
+            showToast(res.error || "Update failed", "error");
         }
     } catch (e) {
-        showToast("Error: " + e.message, "error");
+        showToast("Network Error: " + e.message, "error");
     } finally {
         btn.disabled = false;
-        btn.textContent = "SAVE CHANGES";
+        btn.innerHTML = originalContent;
     }
 };
 

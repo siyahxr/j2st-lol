@@ -84,12 +84,15 @@
                     <p id="tab-sub">Void essence dashboard.</p>
                 </div>
                 <div class="top-actions">
+                    <button id="persistent-save-btn" class="save-btn mini" onclick="saveProfileChanges()">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> SAVE
+                    </button>
                     <div class="user-profile-chip" onclick="switchTab(null, 'settings')">
                         <img src="/assets/icons/user_dragon.png" alt="avatar" class="chip-img">
                         <span class="chip-name">User</span>
                     </div>
                     <button class="save-btn" style="padding: 10px 24px;" onclick="viewProfile()"
-                        data-i18n="dash_view_prof_btn">VIEW PROFILE</button>
+                        data-i18n="dash_view_prof_btn">PREVIEW</button>
                 </div>
             </header>
 
@@ -348,13 +351,7 @@
                             </div>
                         </div>
 
-                        <div class="save-action-footer">
-                            <div id="save-msg"
-                                style="font-weight:800; font-size:12px; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted);">
-                                Standing by...</div>
-                            <button id="main-save-btn" class="save-btn" onclick="saveProfileChanges()"
-                                data-i18n="dash_save_btn">SAVE CHANGES</button>
-                        </div>
+                        <!-- Save footer removed here -->
 
                     </div> <!-- End Editor Panel -->
 
@@ -424,13 +421,7 @@
                         Active Connections</h4>
                     <div class="links-list" id="dashboard-links-list"></div>
 
-                    <div class="save-action-footer">
-                        <div id="save-msg"
-                            style="font-weight:800; font-size:12px; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted);">
-                            Changes detected.</div>
-                        <button id="main-save-btn" class="save-btn" onclick="saveProfileChanges()"
-                            data-i18n="dash_save_btn">SAVE CHANGES</button>
-                    </div>
+                        <!-- Save footer removed here -->
                 </div>
             </div>
 
@@ -459,13 +450,7 @@
                         </div>
                     </div>
 
-                    <div class="save-action-footer">
-                        <div id="save-msg"
-                            style="font-weight:800; font-size:12px; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted);">
-                            Encryption ready.</div>
-                        <button id="main-save-btn" class="save-btn" onclick="saveProfileChanges()"
-                            data-i18n="dash_save_btn">SAVE CHANGES</button>
-                    </div>
+                        <!-- Save footer removed here -->
                 </div>
             </div>
 

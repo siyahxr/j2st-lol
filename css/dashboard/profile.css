@@ -303,44 +303,4 @@
     transform: translateY(-3px) scale(1.2);
 }
 
-/* STICKY FOOTER */
-.save-action-footer {
-    position: fixed;
-    bottom: 30px;
-    left: 300px; /* sidebar (280) + padding */
-    right: 40px;  /* main padding */
-    background: rgba(10, 10, 10, 0.85);
-    backdrop-filter: blur(20px);
-    border: 1px solid var(--accent-border);
-    padding: 16px 32px;
-    border-radius: 100px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    z-index: 1000;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-}
-
-.save-btn {
-    background: #fff;
-    color: #000;
-    border: none;
-    padding: 12px 32px;
-    border-radius: 30px;
-    font-weight: 800;
-    font-size: 14px;
-    cursor: pointer;
-    transition: var(--transition);
-}
-
-.save-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 20px rgba(255,255,255,0.3);
-}
-
-.save-btn:disabled {
-    background: #333;
-    color: #888;
-    cursor: not-allowed;
-    transform: none;
-}
+/* Old Save Footer removed */
