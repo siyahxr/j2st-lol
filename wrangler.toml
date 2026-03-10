@@ -1,8 +1,0 @@
-name = "j2st-platform"
-pages_build_output_dir = "."
-compatibility_date = "2024-04-01"
-
-[[d1_databases]]
-binding = "j2st_db"
-database_name = "j2st-db"
-database_id = "2781890a-c04a-4cb7-bceb-ecdd0cfe4b5f"
