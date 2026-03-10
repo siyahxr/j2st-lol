@@ -244,9 +244,9 @@
 .save-action-footer {
     position: fixed;
     bottom: 30px;
-    left: 320px; /* Sidebar width + padding approx */
-    right: 380px; /* Preview panel padding approx */
-    background: rgba(10, 10, 10, 0.8);
+    left: 300px; /* sidebar (280) + padding */
+    right: 40px;  /* main padding */
+    background: rgba(10, 10, 10, 0.85);
     backdrop-filter: blur(20px);
     border: 1px solid var(--accent-border);
     padding: 16px 32px;
@@ -255,6 +255,7 @@
     justify-content: space-between;
     align-items: center;
     z-index: 1000;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
 }
 
 .save-btn {
