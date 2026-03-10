@@ -278,17 +278,12 @@ function setupFilePicker(inputId, type) {
             return showToast("Only MP3 files allowed", "error");
         }
         
-        // D1 has a tight limit (usually 1MB per row/string)
-        // User requested 50MB limit for picking, but we must warn that 
-        // very large files will fail to save in the DB (limit ~1MB).
-        const maxPickerBytes = 50 * 1024 * 1024; // 50MB
-        const dbWarnBytes = 0.9 * 1024 * 1024; // ~1MB
+        // D1 Database HARD LIMIT: 1MB per column. 
+        // Base64 increases size by 33%. 750KB * 1.33 = ~1MB.
+        const maxAudioBytes = 750 * 1024; 
         
-        if (file.size > maxPickerBytes) {
-            return showToast("File too giant (Max 50MB)", "error");
-        }
-        if (file.size > dbWarnBytes) {
-            showToast("WARNING: Audio > 1MB might fail to save in DB. Use a direct URL for large files.", "neutral");
+        if (type === 'music' && file.size > maxAudioBytes) {
+            return showToast("Audio too large for DB (Max 750KB). Please use a direct URL for larger songs!", "error");
         }
 
         const reader = new FileReader();
@@ -565,6 +560,14 @@ window.saveProfileChanges = async () => {
         base_font: safeGet('base-font', 'Outfit'),
         base_font_color: safeGet('base-font-color', '#FFFFFF')
     };
+
+    // FINAL PAYLOAD SIZE CHECK (Prevent SQLITE_TOOBIG)
+    const totalSize = JSON.stringify(payload).length;
+    if (totalSize > 1000000) { // 1MB total
+        btn.disabled = false;
+        btn.textContent = originalText;
+        return showToast("Changes too large to sync! Link your audio/images via URL instead.", "error");
+    }
 
     try {
         const r = await fetch("/api/profile/update", {
