@@ -276,30 +276,67 @@ function setupFilePicker(inputId, type) {
         if (type === 'music' && !file.type.includes('audio') && !file.name.endsWith('.mp3')) {
             return showToast("Only MP3 files allowed", "error");
         }
-        if (file.size > 5 * 1024 * 1024) return showToast("File too large (Max 5MB)", "error");
+        
+        // D1 has a tight limit (usually 1MB per row/string)
+        // Let's be strict: Images max 500KB, Audio max 750KB
+        const maxBytes = type === 'music' ? 750 * 1024 : 500 * 1024;
+        if (file.size > maxBytes && type === 'music') {
+            return showToast("Audio too large for DB (Max 750KB)", "error");
+        }
 
         const reader = new FileReader();
         reader.onload = (rev) => {
             const b64 = rev.target.result;
-            if (type === 'avatar') {
-                avatarBase64 = b64;
-                const editImg = document.getElementById('preview-avatar-img');
-                const phoneImg = document.getElementById('preview-avatar');
-                if (editImg) editImg.src = b64;
-                if (phoneImg) phoneImg.src = b64;
-            } else if (type === 'banner') {
-                bannerBase64 = b64;
-                const phoneBanner = document.getElementById('preview-banner');
-                if (phoneBanner) phoneBanner.style.backgroundImage = `url(${b64})`;
-            } else if (type === 'music') {
-                musicBase64 = b64;
-                const status = document.getElementById('audio-status-text');
-                if (status) status.textContent = "LOADED: " + file.name;
-            } else if (type === 'cursor') {
-                cursorBase64 = b64;
+            
+            if (type === 'avatar' || type === 'banner') {
+                // Compress Image
+                const img = new Image();
+                img.src = b64;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+                    const maxDim = type === 'avatar' ? 400 : 800; // Avatar smaller than Banner
+                    
+                    if (width > maxDim || height > maxDim) {
+                        if (width > height) {
+                            height *= maxDim / width;
+                            width = maxDim;
+                        } else {
+                            width *= maxDim / height;
+                            height = maxDim;
+                        }
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    const compressedB64 = canvas.toDataURL('image/jpeg', 0.7); // 70% quality jpeg
+                    
+                    if (type === 'avatar') {
+                        avatarBase64 = compressedB64;
+                        document.querySelectorAll('#preview-avatar-img, #preview-avatar').forEach(i => i.src = compressedB64);
+                    } else {
+                        bannerBase64 = compressedB64;
+                        const pb = document.getElementById('preview-banner');
+                        if (pb) pb.style.backgroundImage = `url(${compressedB64})`;
+                    }
+                    updatePreview();
+                    showToast("Asset optimized & ready", "success");
+                };
+            } else {
+                if (type === 'music') {
+                    musicBase64 = b64;
+                    const status = document.getElementById('audio-status-text');
+                    if (status) status.textContent = "LOADED: " + file.name;
+                } else if (type === 'cursor') {
+                    cursorBase64 = b64;
+                }
+                updatePreview();
+                showToast("Asset ready", "success");
             }
-            updatePreview();
-            showToast("Asset ready to deploy", "success");
         };
         reader.readAsDataURL(file);
     };
