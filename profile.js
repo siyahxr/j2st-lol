@@ -85,12 +85,17 @@ function renderProfile(user) {
         if (typeof lList === 'string') try { lList = JSON.parse(lList); } catch(e) { lList = []; }
 
         if (Array.isArray(lList)) {
+            linksEl.style.display = 'flex';
+            linksEl.style.justifyContent = 'center';
+            linksEl.style.gap = '10px';
+            linksEl.style.flexWrap = 'wrap';
+            
             linksEl.innerHTML = lList.map(l => `
-                <a href="${l.url}" target="_blank" class="link-btn">
-                    <span>${l.title}</span>
-                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                <a href="${l.url}" target="_blank" class="badge-item" data-label="${l.title}">
+                    <i class="${l.icon}" style="font-size:20px;"></i>
                 </a>
             `).join('');
+            if (window.twemoji) twemoji.parse(linksEl);
         }
     }
 

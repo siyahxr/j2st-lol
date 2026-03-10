@@ -22,6 +22,43 @@ let bannerBase64 = null;
 let musicBase64 = null;
 let cursorBase64 = null;
 
+const PLATFORMS = [
+    { id: 'snapchat', name: 'Snapchat', icon: 'fa-brands fa-snapchat' },
+    { id: 'youtube', name: 'YouTube', icon: 'fa-brands fa-youtube' },
+    { id: 'discord', name: 'Discord', icon: 'fa-brands fa-discord' },
+    { id: 'spotify', name: 'Spotify', icon: 'fa-brands fa-spotify' },
+    { id: 'instagram', name: 'Instagram', icon: 'fa-brands fa-instagram' },
+    { id: 'x', name: 'X', icon: 'fa-brands fa-x-twitter' },
+    { id: 'tiktok', name: 'TikTok', icon: 'fa-brands fa-tiktok' },
+    { id: 'telegram', name: 'Telegram', icon: 'fa-brands fa-telegram' },
+    { id: 'soundcloud', name: 'SoundCloud', icon: 'fa-brands fa-soundcloud' },
+    { id: 'paypal', name: 'PayPal', icon: 'fa-brands fa-paypal' },
+    { id: 'github', name: 'GitHub', icon: 'fa-brands fa-github' },
+    { id: 'roblox', name: 'Roblox', icon: 'fa-solid fa-ghost' },
+    { id: 'cashapp', name: 'CashApp', icon: 'fa-solid fa-dollar-sign' },
+    { id: 'apple-music', name: 'Apple Music', icon: 'fa-brands fa-apple' },
+    { id: 'gitlab', name: 'GitLab', icon: 'fa-brands fa-gitlab' },
+    { id: 'twitch', name: 'Twitch', icon: 'fa-brands fa-twitch' },
+    { id: 'reddit', name: 'Reddit', icon: 'fa-brands fa-reddit' },
+    { id: 'vk', name: 'VK', icon: 'fa-brands fa-vk' },
+    { id: 'linkedin', name: 'LinkedIn', icon: 'fa-brands fa-linkedin' },
+    { id: 'steam', name: 'Steam', icon: 'fa-brands fa-steam' },
+    { id: 'kick', name: 'Kick', icon: 'fa-solid fa-k' },
+    { id: 'pinterest', name: 'Pinterest', icon: 'fa-brands fa-pinterest' },
+    { id: 'lastfm', name: 'Last.fm', icon: 'fa-brands fa-lastfm' },
+    { id: 'facebook', name: 'Facebook', icon: 'fa-brands fa-facebook' },
+    { id: 'threads', name: 'Threads', icon: 'fa-brands fa-threads' },
+    { id: 'patreon', name: 'Patreon', icon: 'fa-brands fa-patreon' },
+    { id: 'signal', name: 'Signal', icon: 'fa-solid fa-comment' },
+    { id: 'bitcoin', name: 'Bitcoin', icon: 'fa-brands fa-bitcoin' },
+    { id: 'ethereum', name: 'Ethereum', icon: 'fa-brands fa-ethereum' },
+    { id: 'litecoin', name: 'Litecoin', icon: 'fa-solid fa-l' },
+    { id: 'solana', name: 'Solana', icon: 'fa-solid fa-s' },
+    { id: 'monero', name: 'Monero', icon: 'fa-solid fa-m' },
+    { id: 'email', name: 'Email', icon: 'fa-solid fa-envelope' },
+    { id: 'custom', name: 'Custom', icon: 'fa-solid fa-link' }
+];
+
 function hexToRgba(hex, opacity) {
     const r = parseInt(hex.slice(1, 3), 16);
     const g = parseInt(hex.slice(3, 5), 16);
@@ -79,13 +116,83 @@ async function init() {
         setupLivePreview();
         setupUploaders();
         setupTiltPreview();
+        renderPlatformGrid();
     } catch (e) {
         console.error("Init failed:", e);
     }
 }
 
+function renderPlatformGrid() {
+    const grid = document.getElementById('social-platform-grid');
+    if (!grid) return;
+    grid.innerHTML = PLATFORMS.map(p => `
+        <div class="social-platform-item" title="${p.name}" onclick="addPlatformLink('${p.id}')">
+            <i class="${p.icon}"></i>
+        </div>
+    `).join('');
+}
+
+window.addPlatformLink = (platId) => {
+    const plat = PLATFORMS.find(p => p.id === platId);
+    if (!plat) return;
+
+    if (!userDataState.links) userDataState.links = [];
+    if (typeof userDataState.links === 'string') userDataState.links = JSON.parse(userDataState.links);
+    
+    // Check if already exists to prevent duplicates (optional, but good)
+    const exists = userDataState.links.some(l => l.type === platId);
+    if (exists && platId !== 'custom') return showToast("Already added", "error");
+
+    const newL = { 
+        id: Date.now(),
+        type: plat.id,
+        title: plat.name,
+        icon: plat.icon,
+        url: ''
+    };
+    userDataState.links.push(newL);
+    syncActiveLinks();
+    updatePreview();
+};
+
+window.removeLink = (id) => {
+    userDataState.links = userDataState.links.filter(l => l.id !== id);
+    syncActiveLinks();
+    updatePreview();
+};
+
+window.updateLinkUrl = (id, val) => {
+    const l = userDataState.links.find(x => x.id === id);
+    if (l) l.url = val;
+    updatePreview();
+};
+
+function syncActiveLinks() {
+    const container = document.getElementById('dashboard-links-list');
+    if (!container) return;
+    
+    let lList = userDataState.links || [];
+    if (typeof lList === 'string') try { lList = JSON.parse(lList); } catch(e) { lList = []; }
+
+    container.innerHTML = lList.map(l => `
+        <div class="glass-card" style="display:flex; align-items:center; gap:15px; background: rgba(255,255,255,0.02); margin-bottom:10px; padding: 15px;">
+            <i class="${l.icon}" style="font-size:20px; width:24px; text-align:center;"></i>
+            <div style="flex:1">
+                <p style="font-weight:700; font-size:13px;">${l.title}</p>
+                <input type="text" value="${l.url}" placeholder="https://..." 
+                    class="form-input" style="padding: 6px 10px; font-size:11px; margin-top:5px; width:100%"
+                    oninput="updateLinkUrl(${l.id}, this.value)">
+            </div>
+            <button class="form-input" style="padding: 8px; border-color:rgba(255,77,77,0.2)" onclick="removeLink(${l.id})">
+                <i class="fa-solid fa-trash" style="color:#ff4d4d"></i>
+            </button>
+        </div>
+    `).join('');
+}
+
 function syncUI() {
     if (!userDataState) return;
+    syncActiveLinks();
 
     // Header & Info
     document.querySelectorAll('.chip-img, #preview-avatar-img, #preview-avatar').forEach(img => {
@@ -213,6 +320,18 @@ function updatePreview() {
         badgesPreview.innerHTML = userDataState.badges.map(b => `
             <div class="badge-item" data-label="${b.label || ''}" style="width:24px; height:24px;">
                 <img src="${b.icon_url}" alt="${b.label}" class="badge-icon">
+            </div>
+        `).join('');
+    }
+
+    // Links Preview
+    const linksPreview = document.getElementById('preview-links');
+    if (linksPreview) {
+        let lList = userDataState.links || [];
+        if (typeof lList === 'string') try { lList = JSON.parse(lList); } catch(e) { lList = []; }
+        linksPreview.innerHTML = lList.map(l => `
+            <div class="badge-item" data-label="${l.title}" style="width:24px; height:24px;">
+                <i class="${l.icon}" style="font-size:14px;"></i>
             </div>
         `).join('');
     }

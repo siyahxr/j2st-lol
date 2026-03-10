@@ -272,6 +272,48 @@ body {
 .toast-notif.error i { color: var(--danger); }
 .toast-notif span { font-size: 14px; font-weight: 700; }
 
+/* SOCIAL SELECTOR GRID */
+.social-selector-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(42px, 1fr));
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.social-platform-item {
+    aspect-ratio: 1;
+    background: #0e0e0e;
+    border: 1px solid var(--accent-border);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.social-platform-item:hover {
+    background: var(--accent-hover);
+    border-color: rgba(255,255,255,0.2);
+    color: #fff;
+}
+
+.social-platform-item i {
+    transition: transform 0.3s ease;
+    pointer-events: none;
+}
+
+.social-platform-item:hover i {
+    transform: scale(1.2);
+}
+
+.social-platform-item.active {
+    background: #fff;
+    color: #000;
+}
+
 @media (max-width: 1024px) {
     .sidebar { width: 80px; }
     .brand-name, .nav-label, .nav-item span { display: none; }
