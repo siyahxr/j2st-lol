@@ -562,17 +562,22 @@ window.saveProfileChanges = async () => {
     if (avatarInput) avatarBase64 = null;
     if (cursorInput) cursorBase64 = null;
 
-    const bannerVal = bannerInput || bannerBase64 || userDataState.banner_url || "";
-    const musicVal = musicInput || musicBase64 || userDataState.profile_music_url || "";
-    const avatarVal = avatarInput || avatarBase64 || userDataState.avatar_url || "";
-    const cursorVal = cursorInput || cursorBase64 || userDataState.custom_cursor_url || "";
+    // Corrected Priority Logic
+    let finalMusic = safeGet('music-url-direct');
+    if (finalMusic.startsWith('[FILE:')) {
+        // If it's a file placeholder, we MUST use the buffer
+        finalMusic = musicBase64 || userDataState.profile_music_url || "";
+    } else if (!finalMusic && musicBase64) {
+        // Fallback to buffer if input is empty
+        finalMusic = musicBase64;
+    }
 
     const payload = {
         id: String(session.id || ""),
         display_name: safeGet('profile-display-name'),
         bio: safeGet('profile-bio'),
-        avatar_url: String(avatarVal),
-        banner_url: String(bannerVal),
+        avatar_url: String(avatarBase64 || userDataState.avatar_url || ""),
+        banner_url: String(bannerInput || bannerBase64 || userDataState.banner_url || ""),
         accent_color: safeGet('accent-hex', '#FFFFFF'),
         icon_color: safeGet('icon-hex', '#A1A1AA'),
         avatar_frame_color: String(hexToRgba(safeGet('avatar-frame-hex', '#000000'), safeGet('avatar-frame-opacity', '1'))),
@@ -584,8 +589,8 @@ window.saveProfileChanges = async () => {
         bg_effect: safeGet('bg-effect', 'none'),
         entry_anim: safeGet('entry-anim', 'fadeIn'),
         glitch_avatar: safeGet('glitch-avatar') === 1 ? 1 : 0,
-        profile_music_url: String(musicVal),
-        custom_cursor_url: String(cursorVal),
+        profile_music_url: String(finalMusic),
+        custom_cursor_url: String(cursorInput || cursorBase64 || userDataState.custom_cursor_url || ""),
         card_style: safeGet('card-style', 'glass'),
         links: JSON.stringify(userDataState.links || []),
         

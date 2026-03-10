@@ -130,48 +130,46 @@ function renderProfile(user) {
         const mName = document.getElementById('music-name');
         const embedCont = document.getElementById('music-embed-container');
         
-        // Detect Platforms
         const isYoutube = url.includes('youtube.com/') || url.includes('youtu.be/');
         const isSpotify = url.includes('spotify.com/');
         const isSoundCloud = url.includes('soundcloud.com/');
 
         if (isYoutube || isSpotify || isSoundCloud) {
-            // EXTERNAL EMBED MODE
             if (widget) widget.style.display = 'none';
             if (embedCont) {
                 embedCont.style.display = 'block';
                 let embedUrl = "";
-                
                 if (isYoutube) {
                     const vid = url.split('v=')[1]?.split('&')[0] || url.split('/').pop();
-                    embedUrl = `https://www.youtube.com/embed/${vid}?autoplay=1&controls=0`;
+                    embedUrl = `https://www.youtube.com/embed/${vid}?autoplay=1&mute=0&controls=0&origin=${window.location.origin}`;
                 } else if (isSpotify) {
                     const sid = url.split('/track/')[1]?.split('?')[0];
-                    embedUrl = `https://open.spotify.com/embed/track/${sid}?utm_source=generator&theme=0`;
+                    embedUrl = `https://open.spotify.com/embed/track/${sid}?utm_source=generator&theme=0&autoplay=1`;
                 } else if (isSoundCloud) {
-                    embedUrl = `https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}&color=%23ff5500&auto_play=true&hide_related=true&show_comments=false`;
+                    embedUrl = `https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}&auto_play=true`;
                 }
-                
-                embedCont.innerHTML = `<iframe src="${embedUrl}" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" style="border-radius:12px; opacity:0.8;"></iframe>`;
+                embedCont.innerHTML = `<iframe src="${embedUrl}" width="100%" height="80" frameBorder="0" allow="autoplay; encrypted-media" style="border-radius:12px;"></iframe>`;
             }
         } else if (musicPlayer) {
-            // DIRECT AUDIO MODE
             musicPlayer.src = url;
-            musicPlayer.volume = 0.3;
+            musicPlayer.volume = 0.4;
             musicPlayer.loop = true;
-            
             if (widget) widget.style.display = 'flex';
-            if (mName) mName.textContent = url.startsWith('data:') ? "User Soundtrack" : "Direct Audio Streaming";
-            
-            const startPlay = () => {
+            if (mName) mName.textContent = "Atmosphere Active";
+
+            const attemptPlay = () => {
                 musicPlayer.play().then(() => {
-                    document.removeEventListener('click', startPlay);
-                    document.removeEventListener('touchstart', startPlay);
-                }).catch(e => {});
+                    console.log("Music started!");
+                    document.removeEventListener('pointerdown', attemptPlay);
+                }).catch(e => {
+                    console.log("Autoplay blocked, waiting for interaction...");
+                });
             };
-            startPlay();
-            document.addEventListener('click', startPlay);
-            document.addEventListener('touchstart', startPlay);
+
+            // Listen for any touch or click anywhere
+            document.addEventListener('pointerdown', attemptPlay, { once: true });
+            // Also try immediately (some browsers allow it if site interaction history exists)
+            attemptPlay();
         }
     }
 }
