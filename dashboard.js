@@ -223,11 +223,15 @@ function setupEventListeners() {
     const liveIds = [
         'profile-display-name', 'profile-bio', 'name-font', 'name-font-color',
         'bio-font', 'bio-font-color', 'avatar-frame-opacity', 'card-style',
-        'bg-effect', 'entry-anim', 'glitch-avatar', 'banner-url-direct'
+        'bg-effect', 'entry-anim', 'glitch-avatar', 'banner-url-direct',
+        'badge-bg-color'
     ];
     liveIds.forEach(id => {
         const el = document.getElementById(id);
-        if (el) el.oninput = updatePreview;
+        if (el) {
+            el.addEventListener('input', updatePreview);
+            el.addEventListener('change', updatePreview);
+        }
     });
 
     // File Uploaders
@@ -392,11 +396,12 @@ function updatePreview() {
         phone.style.setProperty('--accent', accent);
     }
 
-    // Badges Preview
+    // Backends might need to know about the badge bg
+    const badgeBg = document.getElementById('badge-bg-color').value;
     const badgesPreview = document.getElementById('preview-badges');
     if (badgesPreview) {
         badgesPreview.innerHTML = (userDataState.badges || []).map(b => `
-            <div class="badge-item" data-label="${b.name}">
+            <div class="badge-item" data-label="${b.name}" style="background: ${badgeBg}; border-radius: 4px;">
                 <img src="${b.icon_url}" class="badge-icon">
             </div>
         `).join('');
@@ -406,7 +411,7 @@ function updatePreview() {
     const linksPreview = document.getElementById('preview-links');
     if (linksPreview) {
         linksPreview.innerHTML = userDataState.links.map(l => `
-            <div class="badge-item" data-label="${l.title}">
+            <div class="badge-item" data-label="${l.title}" style="background: ${badgeBg}; border-radius: 4px;">
                 <i class="${l.icon}" style="font-size:14px; color:var(--accent);"></i>
             </div>
         `).join('');

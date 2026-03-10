@@ -136,10 +136,14 @@
         </main>
     </div>
 
-    <!-- Badge Manager Modal -->
     <div class="badge-modal" id="badge-modal">
         <div class="badge-modal-content">
-            <h3 class="panel-title" style="margin-bottom:10px;">Modify Tokens</h3>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3 class="panel-title" style="margin:0;">Modify Tokens</h3>
+                <button onclick="closeBadgeModal()" class="modal-close-btn">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
             <p id="badge-modal-user"
                 style="color:var(--text-dim); margin-bottom:20px; font-size:12px; font-weight:700;"></p>
 

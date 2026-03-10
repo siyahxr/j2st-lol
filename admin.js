@@ -121,10 +121,12 @@ async function loadGlobalBadges(render = true) {
 
 window.openBadgeModal = function (userId, username) {
     currentEditingUserId = userId;
-    const user = allUsers.find(u => u.id === userId);
+    const user = allUsers.find(u => u.id == userId);
     let existingBadges = [];
     try {
-        existingBadges = JSON.parse(user?.badges || "[]");
+        if (user?.badges) {
+            existingBadges = typeof user.badges === 'string' ? JSON.parse(user.badges) : user.badges;
+        }
     } catch (e) {
         existingBadges = [];
     }
@@ -138,7 +140,8 @@ window.openBadgeModal = function (userId, username) {
     if (userLabel) userLabel.textContent = `Assigning Badges to @${username}`;
     
     list.innerHTML = globalBadges.length > 0 ? globalBadges.map(b => {
-        const isAssigned = existingBadges.includes(b.id) || existingBadges.includes(b.name);
+        // Match by ID or Name (legacy support)
+        const isAssigned = existingBadges.some(eb => eb == b.id || eb == b.name);
         return `
             <div class="badge-opt ${isAssigned ? 'selected' : ''}" onclick="toggleBadgeOption(this)">
                 <input type="checkbox" value="${b.id}" ${isAssigned ? 'checked' : ''} style="display:none">
@@ -158,7 +161,10 @@ window.toggleBadgeOption = function(el) {
 };
 
 window.saveUserBadges = async function () {
-    const checkboxes = document.querySelectorAll("#badge-options-list input:checked");
+    const list = document.getElementById("badge-options-list");
+    if (!list) return;
+    
+    const checkboxes = list.querySelectorAll("input:checked");
     const selectedBadges = Array.from(checkboxes).map(c => c.value);
 
     try {
@@ -168,7 +174,10 @@ window.saveUserBadges = async function () {
                 "Content-Type": "application/json",
                 "x-user-id": getSession()?.id || ""
             },
-            body: JSON.stringify({ userId: currentEditingUserId, badges: JSON.stringify(selectedBadges) })
+            body: JSON.stringify({ 
+                userId: currentEditingUserId, 
+                badges: JSON.stringify(selectedBadges) // Send as stringified array
+            })
         });
 
         const data = await res.json();
@@ -176,10 +185,10 @@ window.saveUserBadges = async function () {
             closeBadgeModal();
             loadUsers();
         } else {
-            alert("Failed: " + data.error);
+            alert("Failed: " + (data.error || "Unknown error"));
         }
     } catch (e) {
-        alert("Error: " + e.message);
+        alert("Server communication error: " + e.message);
     }
 };
 
