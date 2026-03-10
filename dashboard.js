@@ -373,99 +373,16 @@ async function saveProfileChanges() {
     }
 }
 
-// --- OTHERS ---
-function initStatCounters() { /* ... unchanged ... */ }
-window.logout = function () { /* ... unchanged ... */ };
-window.viewProfile = function () { /* ... unchanged ... */ };
-
-initDashboard();
-
-// --- SECURITY & ACCOUNT ---
-window.changeUserPassword = async function () {
-    const oldPass = document.getElementById('set-old-pass').value;
-    const newPass = document.getElementById('set-new-pass').value;
-    const newPass2 = document.getElementById('set-new-pass2').value;
-    const msgEl = document.getElementById('pw-change-msg');
-
-    if (!oldPass || !newPass || !newPass2) {
-        showMsg(msgEl, "Please fill all fields.", "error");
-        return;
-    }
-
-    if (newPass !== newPass2) {
-        showMsg(msgEl, "New passwords do not match.", "error");
-        return;
-    }
-
-    if (newPass.length < 8) {
-        showMsg(msgEl, "Password must be at least 8 characters.", "error");
-        return;
-    }
-
-    showMsg(msgEl, "Processing...", "");
-
-    try {
-        const res = await fetch("/api/profile/change-password", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                id: session.id,
-                oldPassword: oldPass,
-                newPassword: newPass
-            })
-        });
-
-        const data = await res.json();
-        if (data.success) {
-            showMsg(msgEl, "Password updated successfully!", "success");
-            document.getElementById('set-old-pass').value = "";
-            document.getElementById('set-new-pass').value = "";
-            document.getElementById('set-new-pass2').value = "";
-        } else {
-            showMsg(msgEl, data.error || "Failed to update password.", "error");
-        }
-    } catch (err) {
-        showMsg(msgEl, "Connection error.", "error");
-    }
-};
-
-function showMsg(el, text, type) {
-    el.textContent = text;
-    el.className = "pw-change-msg " + type;
-    setTimeout(() => {
-        if (type === 'success') el.className = "pw-change-msg";
-    }, 4000);
-}
-
-window.logout = function () {
-    localStorage.removeItem("j2st_session_v2");
-    window.location.replace("/login");
-};
-
-window.viewProfile = function () {
-    const sessionStr = localStorage.getItem("j2st_session_v2");
-    if (sessionStr) {
-        const session = JSON.parse(sessionStr);
-        if (session && session.username) {
-            window.location.href = '/' + session.username;
-        } else {
-            window.location.href = '/';
-        }
-    } else {
-        window.location.replace("/login");
-    }
-};
-
-// --- COUNTER ANIMATION ---
+// --- OTHERS & UTILS ---
 function initStatCounters() {
     const counters = document.querySelectorAll('.stat-value');
     counters.forEach(counter => {
-        const target = +counter.getAttribute('data-target');
+        const targetStr = counter.getAttribute('data-target');
+        const target = targetStr ? +targetStr.replace(/[^0-9]/g, '') : 0;
         if (!target) return;
 
         let count = 0;
-        const inc = target / 50; // speed
-
+        const inc = target / 50; 
         const updateCount = () => {
             if (count < target) {
                 count += inc;
@@ -479,5 +396,57 @@ function initStatCounters() {
     });
 }
 
-// --- BOOT ---
+window.logout = function () {
+    localStorage.removeItem("j2st_session_v2");
+    window.location.replace("/login");
+};
+
+window.viewProfile = function () {
+    if (userDataState && userDataState.username) {
+        window.location.href = '/' + userDataState.username;
+    } else if (session && session.username) {
+        window.location.href = '/' + session.username;
+    } else {
+        window.location.href = '/';
+    }
+};
+
+window.changeUserPassword = async function () {
+    const oldPass = document.getElementById('set-old-pass').value;
+    const newPass = document.getElementById('set-new-pass').value;
+    const newPass2 = document.getElementById('set-new-pass2').value;
+    const msgEl = document.getElementById('pw-change-msg');
+
+    if (!oldPass || !newPass || !newPass2) return showMsg(msgEl, "Please fill all fields.", "error");
+    if (newPass !== newPass2) return showMsg(msgEl, "New passwords do not match.", "error");
+    if (newPass.length < 8) return showMsg(msgEl, "Password must be at least 8 characters.", "error");
+
+    showMsg(msgEl, "Processing...", "");
+
+    try {
+        const res = await fetch("/api/profile/change-password", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: session.id, oldPassword: oldPass, newPassword: newPass })
+        });
+        const data = await res.json();
+        if (data.success) {
+            showMsg(msgEl, "Password updated!", "success");
+            document.querySelectorAll('.settings-input').forEach(i => i.value = "");
+        } else {
+            showMsg(msgEl, data.error || "Failed.", "error");
+        }
+    } catch (err) {
+        showMsg(msgEl, "Error.", "error");
+    }
+};
+
+function showMsg(el, text, type) {
+    if (!el) return;
+    el.textContent = text;
+    el.className = "pw-change-msg " + type;
+    setTimeout(() => { el.className = "pw-change-msg"; }, 4000);
+}
+
+// --- START ---
 initDashboard();
