@@ -342,8 +342,12 @@ function setupFilePicker(inputId, type) {
             } else {
                 if (type === 'music') {
                     musicBase64 = b64;
+                    const urlInput = document.getElementById('music-url-direct');
+                    if (urlInput) {
+                        urlInput.value = "[FILE: " + file.name + "]";
+                    }
                     const status = document.getElementById('audio-status-text');
-                    if (status) status.textContent = "LOADED: " + file.name;
+                    if (status) status.textContent = "READY FOR SYNC: " + file.name;
                 } else if (type === 'cursor') {
                     cursorBase64 = b64;
                 }
@@ -596,10 +600,16 @@ window.saveProfileChanges = async () => {
     // CHECK WHICH ONE IS BLOATING
     if (payload.avatar_url.length > 1000000) return failSave("Avatar Image too large (>1MB Base64)");
     if (payload.banner_url.length > 1000000) return failSave("Banner too large (>1MB Base64)");
-    if (payload.profile_music_url.length > 1000000) return failSave("Music still too heavy for DB! Use a Spotify Link.");
+    
+    // For music, if it's base64 and too big, we really can't save it.
+    if (musicBase64 && musicBase64.length > 1000000) {
+        return failSave("Music File too heavy (>1MB). Use a Link instead!");
+    }
 
     const totalSize = JSON.stringify(payload).length;
-    if (totalSize > 2500000) return failSave("Profile Data exceeds total limit. Remove some huge assets!");
+    // Cloudflare D1 total row limit is usually ~1MB, Cloudflare Worker KV is higher.
+    // Let's be safe but generous for the user experience.
+    if (totalSize > 2500000) return failSave("Total Profile Data exceeds 1MB target. Please use links for large assets!");
 
     function failSave(msg) {
         btn.disabled = false;

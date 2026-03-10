@@ -370,14 +370,16 @@
                         <i class="fa-solid fa-compact-disc"></i>
                         <h3 data-i18n="dash_media">Audio Atmosphere</h3>
                     </div>
-                    <p style="color:var(--text-muted); margin-bottom:32px; font-size:14px;">Enhance your profile with audio. Direct MP3 links or local uploads are supported.</p>
+                    <p style="color:var(--text-muted); margin-bottom:32px; font-size:14px;">Upload an MP3 or paste a YouTube/Spotify link. It will sync and auto-play in your profile.</p>
                     <div class="form-grid">
                         <div class="form-field full">
-                            <label class="form-label">Upload Soundtrack (.mp3)</label>
-                            <div class="color-picker-suite" onclick="document.getElementById('audio-upload-btn').click()" style="cursor:pointer; padding: 16px 20px;">
-                                <i class="fa-solid fa-music"></i>
-                                <span id="audio-status-text" style="font-size:13px; font-weight:700; flex:1; margin-left:15px; color:#fff;">BROWSE LOCAL FILES...</span>
+                            <label class="form-label">Sound Source (File or URL)</label>
+                            <div style="display:flex; gap:10px;">
+                                <input type="text" id="music-url-direct" class="form-input" style="flex:1" placeholder="Paste YouTube/Spotify/Direct MP3 Link...">
+                                <button class="form-input" style="width:50px; cursor:pointer;" onclick="document.getElementById('audio-upload-btn').click()"><i class="fa-solid fa-upload"></i></button>
+                                <input type="file" id="audio-upload-btn" accept=".mp3,audio/mpeg" style="display:none">
                             </div>
+                            <p id="audio-status-text" style="font-size:10px; color:var(--text-muted); margin-top:8px;">Source will be saved as sync anchor.</p>
                         </div>
                     </div>
 
