@@ -1,0 +1,74 @@
+[build]
+  publish = "./"
+  functions = "netlify/functions"
+
+# --- API REDIRECTS (EXPLICIT) ---
+[[redirects]]
+  from = "/api/auth/login"
+  to = "/.netlify/functions/auth_login"
+  status = 200
+
+[[redirects]]
+  from = "/api/auth/register"
+  to = "/.netlify/functions/auth_register"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin/users"
+  to = "/.netlify/functions/admin_users"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin/create_badge"
+  to = "/.netlify/functions/admin_create_badge"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin/delete_user"
+  to = "/.netlify/functions/admin_delete_user"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin/get_badges"
+  to = "/.netlify/functions/admin_get_badges"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin/set_badges"
+  to = "/.netlify/functions/admin_set_badges"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin/set_role"
+  to = "/.netlify/functions/admin_set_role"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin/migrate"
+  to = "/.netlify/functions/admin_migrate"
+  status = 200
+
+[[redirects]]
+  from = "/api/user/profile"
+  to = "/.netlify/functions/user_profile"
+  status = 200
+
+[[redirects]]
+  from = "/api/user/change-username"
+  to = "/.netlify/functions/user_change_username"
+  status = 200
+
+[[redirects]]
+  from = "/api/user/change-password"
+  to = "/.netlify/functions/user_change_password"
+  status = 200
+
+[[redirects]]
+  from = "/api/profile/update"
+  to = "/.netlify/functions/profile_update"
+  status = 200
+
+# --- EDGE ROUTING ---
+[[edge_functions]]
+  path = "/*"
+  function = "routing"
