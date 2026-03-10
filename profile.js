@@ -18,6 +18,9 @@ async function initProfile() {
             return;
         }
 
+        // Show profile first, then render
+        if (container) container.style.display = '';
+
         renderProfile(data);
         if (loadingEl) {
             loadingEl.style.opacity = "0";
