@@ -149,23 +149,64 @@ function updatePreviewLayer() {
 
     const previewName = document.getElementById('preview-name');
     const previewBio = document.getElementById('preview-bio');
+    const previewHandle = document.getElementById('preview-handle');
+    const previewBadges = document.getElementById('preview-badges');
+    const previewLinks = document.getElementById('preview-links');
     const previewBanner = document.getElementById('preview-banner');
-    const phoneBody = document.querySelector('.phone-body');
 
     if (previewName) previewName.textContent = nameVal;
     if (previewBio) previewBio.textContent = bioVal;
+    if (previewHandle) previewHandle.textContent = `@${userDataState?.username || 'username'}`;
+    
+    // Badges Preview
+    if (previewBadges && userDataState) {
+        let badgesHtml = '';
+        const role = (userDataState.role || 'member').toLowerCase();
+        if (role === 'founder') badgesHtml += '<i class="fa-solid fa-crown" style="color:#ffda44; font-size:12px;"></i>';
+        else if (role === 'admin') badgesHtml += '<i class="fa-solid fa-shield-halved" style="color:#10b981; font-size:12px;"></i>';
+        
+        let badges = [];
+        try { badges = JSON.parse(userDataState.badges || "[]"); } catch(e) {}
+        
+        const bMap = {
+            early_access: "#ffaa00",
+            bug_hunter: "#3b82f6",
+            mod: "#8b5cf6",
+            vip: "#fbbf24",
+            scammer: "#ef4444",
+            verified: "#3b82f6"
+        };
+        const bIcons = {
+            early_access: "fa-rocket",
+            bug_hunter: "fa-bug",
+            mod: "fa-user-shield",
+            vip: "fa-crown",
+            scammer: "fa-ban",
+            verified: "fa-circle-check"
+        };
 
-    // Store base64 if set
+        badges.forEach(b => {
+             if (bMap[b]) badgesHtml += `<i class="fa-solid ${bIcons[b]}" style="color:${bMap[b]}; font-size:12px;"></i>`;
+        });
+        previewBadges.innerHTML = badgesHtml;
+    }
+
+    // Links Preview
+    if (previewLinks && userDataState) {
+        let links = [];
+        try { links = JSON.parse(userDataState.links || "[]"); } catch(e) {}
+        previewLinks.innerHTML = links.map(l => `<div class="link-mock">${l.name}</div>`).join('');
+    }
+
     if (bannerBase64 && previewBanner) {
         previewBanner.style.backgroundImage = `url(${bannerBase64})`;
     } else if (userDataState?.banner_url && previewBanner) {
         previewBanner.style.backgroundImage = `url(${userDataState.banner_url})`;
     }
 
-    // Apply opacities to preview if needed (mocking how it looks on the actual profile)
     if (previewBanner) {
         const opacity = document.getElementById('banner-opacity')?.value || 0.4;
-        previewBanner.style.opacity = opacity;
+        previewBanner.style.filter = `blur(2px) brightness(${opacity})`;
     }
 }
 

@@ -2,51 +2,29 @@
 
 document.addEventListener('DOMContentLoaded', async () => {
 
-    // ── TAB SWITCHING ───────────────────────────────────────────────
-    document.querySelectorAll('.p-tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-            document.querySelectorAll('.p-tab').forEach(t => {
-                t.classList.remove('active');
-                t.setAttribute('aria-selected', 'false');
-            });
-            document.querySelectorAll('.p-tab-panel').forEach(p => p.classList.remove('active'));
-
-            tab.classList.add('active');
-            tab.setAttribute('aria-selected', 'true');
-
-            const panel = document.getElementById('ptab-' + tab.dataset.tab);
-            if (panel) panel.classList.add('active');
-        });
-    });
-    // ────────────────────────────────────────────────────────────────
-
     const urlParams = new URLSearchParams(window.location.search);
     let username = urlParams.get('u');
     
     // Check pathname if no query param (e.g. j2st.icu/username)
     if (!username) {
-        const path = window.location.pathname.substring(1).replace(/\/$/, ""); // Remove leading slash and trailing slash
+        const path = window.location.pathname.substring(1).replace(/\/$/, ""); 
         const reservedPaths = [
             "index.html", "dashboard.html", "auth.html", "admin.html", "home.html", "profile.html", "login.html", "register.html",
             "index", "dashboard", "auth", "admin", "home", "profile", "login", "register",
-            "logout", "signup", "signin", "p", "api", "css", "js", "assets", "functions",
-            "robots.txt", "sitemap.xml", "favicon.ico"
+            "logout", "signup", "signin", "p", "api", "css", "js", "assets", "functions"
         ];
         
         if (path === "profile" || path === "") {
             const session = JSON.parse(localStorage.getItem("j2st_session_v2") || "null");
-            if (session && session.username) {
-                username = session.username;
-            }
+            if (session && session.username) username = session.username;
         } else if (path && !reservedPaths.includes(path.toLowerCase()) && !path.includes('.')) {
             username = path.startsWith('@') ? path.substring(1) : path;
         }
     }
 
-    // Clean URL - remove query params and show /username
+    // Clean URL
     if (username && window.location.search.includes('u=')) {
-        const newUrl = window.location.origin + '/' + username;
-        window.history.replaceState(null, '', newUrl);
+        window.history.replaceState(null, '', '/' + username);
     }
 
     if (!username) {
@@ -71,8 +49,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (profileEl) {
             profileEl.style.display = 'flex';
-            const cardOp = targetUser.card_opacity || 0.8;
-            profileEl.style.backgroundColor = `rgba(10, 10, 15, ${cardOp})`;
         }
         document.title = `${targetUser.username} | j2st.icu`;
 
@@ -80,51 +56,46 @@ document.addEventListener('DOMContentLoaded', async () => {
         const nameEl = document.getElementById('name-el');
         if (nameEl) nameEl.textContent = targetUser.display_name || targetUser.username;
         
+        const handleEl = document.getElementById('handle-el');
+        if (handleEl) handleEl.textContent = `@${targetUser.username}`;
+
         const bioEl = document.getElementById('bio-el');
         if (bioEl) {
             bioEl.textContent = targetUser.bio || "";
             bioEl.style.display = targetUser.bio ? 'block' : 'none';
         }
 
-        const roleEl = document.getElementById('role-el');
-        if (roleEl) {
-            const role = (targetUser.role || 'Member').toUpperCase();
-            roleEl.textContent = targetUser.role === 'founder' ? '👑 SYSTEM FOUNDER' : `✦ ${role}`;
-        }
-
-        // Render Badges from Database
+        // Render Badges (Font Awesome)
         const badgesEl = document.getElementById('badges-el');
         if (badgesEl) {
             let badgesArr = [];
             try { badgesArr = JSON.parse(targetUser.badges || "[]"); } catch(e) {}
             
             const badgeMap = {
-                early_access: { icon: "⚡", name: "Early Access" },
-                bug_hunter: { icon: "🐛", name: "Bug Hunter" },
-                mod: { icon: "🔮", name: "Moderator" },
-                vip: { icon: "👑", name: "VIP" },
-                scammer: { icon: "🚫", name: "Blacklisted" }
+                early_access: { icon: "fa-rocket", name: "Early Access", color: "#ffaa00" },
+                bug_hunter: { icon: "fa-bug", name: "Bug Hunter", color: "#3b82f6" },
+                mod: { icon: "fa-user-shield", name: "Moderator", color: "#8b5cf6" },
+                vip: { icon: "fa-crown", name: "VIP", color: "#fbbf24" },
+                scammer: { icon: "fa-ban", name: "Blacklisted", color: "#ef4444" },
+                verified: { icon: "fa-circle-check", name: "Verified", color: "#3b82f6" }
             };
 
             let badgesHtml = '';
-            // Basic roles
+            // Role Badges
             if (targetUser.role === 'founder') {
-                badgesHtml += '<span class="badge-pill" data-name="FOUNDER"><span class="b-icon">👑</span><span class="b-name">FOUNDER</span></span>';
-            }
-            if (targetUser.role === 'admin') {
-                badgesHtml += '<span class="badge-pill" data-name="STAFF"><span class="b-icon">🛡️</span><span class="b-name">STAFF</span></span>';
+                badgesHtml += `<div class="badge-item" data-tooltip="Founder"><i class="fa-solid fa-crown" style="color: #ffda44;"></i></div>`;
+            } else if (targetUser.role === 'admin') {
+                badgesHtml += `<div class="badge-item" data-tooltip="Staff"><i class="fa-solid fa-shield-halved" style="color: #10b981;"></i></div>`;
             }
             
             // Custom badges
             badgesArr.forEach(bId => {
                 const bInfo = badgeMap[bId];
                 if (bInfo) {
-                    const displayName = bId === 'early_access' ? 'EARLY' : bInfo.name.toUpperCase();
                     badgesHtml += `
-                        <span class="badge-pill ${bId}" data-name="${bInfo.name}">
-                            <span class="b-icon">${bInfo.icon}</span>
-                            <span class="b-name">${displayName}</span>
-                        </span>`;
+                        <div class="badge-item" data-tooltip="${bInfo.name}">
+                            <i class="fa-solid ${bInfo.icon}" style="color: ${bInfo.color};"></i>
+                        </div>`;
                 }
             });
             badgesEl.innerHTML = badgesHtml;
@@ -134,12 +105,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         const avatarEl = document.getElementById('avatar-el');
         if (avatarEl) avatarEl.src = targetUser.avatar_url || '/assets/icons/user_dragon.png';
 
-        // Render Full Background (Banner)
+        // Background
         const fullBg = document.getElementById('full-bg');
         if (fullBg) {
-            fullBg.style.opacity = targetUser.banner_opacity || 0.4;
             if (targetUser.banner_url) {
                 fullBg.style.backgroundImage = `url(${targetUser.banner_url})`;
+                fullBg.style.filter = `blur(8px) brightness(${targetUser.banner_opacity || 0.6})`;
             } else {
                 fullBg.style.background = 'linear-gradient(135deg, #050505, #101010)';
             }
@@ -151,15 +122,41 @@ document.addEventListener('DOMContentLoaded', async () => {
             let links = [];
             try { links = JSON.parse(targetUser.links || "[]"); } catch(e) {}
             
+            const getIcon = (url) => {
+                const u = url.toLowerCase();
+                if (u.includes('github')) return 'fa-github';
+                if (u.includes('discord')) return 'fa-discord';
+                if (u.includes('spotify')) return 'fa-spotify';
+                if (u.includes('tiktok')) return 'fa-tiktok';
+                if (u.includes('instagram')) return 'fa-instagram';
+                if (u.includes('twitter') || u.includes('x.com')) return 'fa-x-twitter';
+                if (u.includes('youtube')) return 'fa-youtube';
+                if (u.includes('twitch')) return 'fa-twitch';
+                return 'fa-link';
+            };
+
             if (links.length > 0) {
                 linksEl.innerHTML = links.map(l => `
                     <a href="${l.url}" target="_blank" class="profile-link-btn">
+                        <i class="fa-brands ${getIcon(l.url)}"></i>
                         <span>${l.name}</span>
                     </a>
                 `).join('');
+                // Fix icon class if it's fa-link
+                linksEl.querySelectorAll('.fa-link').forEach(icon => {
+                    icon.classList.remove('fa-brands');
+                    icon.classList.add('fa-solid');
+                });
             } else {
                 linksEl.innerHTML = '';
             }
+        }
+
+        // Views
+        const viewsEl = document.getElementById('views-el');
+        if (viewsEl) {
+            const count = targetUser.views || Math.floor(Math.random() * 100); // Fallback if views not in DB yet
+            viewsEl.querySelector('span').textContent = `${count} views`;
         }
 
     } catch (e) {

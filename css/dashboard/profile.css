@@ -254,18 +254,51 @@
 }
 
 .phone-name {
-    font-size: 22px;
-    font-weight: 900;
+    font-size: 20px;
+    font-weight: 850;
     margin-top: 16px;
     letter-spacing: -0.5px;
 }
 
-.phone-bio {
-    font-size: 14px;
-    font-weight: 600;
+.phone-handle {
+    font-size: 13px;
     color: var(--text-muted);
-    margin-top: 8px;
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+.phone-badges {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 12px 0;
+}
+
+.phone-bio {
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.6);
     line-height: 1.5;
+    font-style: italic;
+}
+
+.preview-links {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+.preview-links .link-mock {
+    width: 100%;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
 }
 
 @media (max-width: 1200px) {

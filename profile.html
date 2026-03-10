@@ -5,60 +5,75 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile | j2st.icu</title>
+    <!-- CSS -->
     <link rel="stylesheet" href="/index.css">
-    <link rel="stylesheet" href="/profile.css?v=2.0">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/profile.css?v=3.0">
+    <!-- FONTS -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- ICONS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 
 <body>
-    <!-- Premium Background -->
-    <div class="profile-bg">
-        <div id="full-bg"></div>
-        <div class="aurora aurora-1"></div>
-        <div class="aurora aurora-2"></div>
-    </div>
+    <!-- Background System -->
+    <div id="full-bg"></div>
+    <div class="profile-bg-vignette"></div>
 
+    <!-- Loading State -->
     <div id="loading" class="full-screen-center">
         <div class="dragon-glow-ring"></div>
     </div>
 
-    <div id="profile-container" style="display:none;">
-        <!-- Banner -->
-        <div class="profile-banner" id="banner-el"></div>
+    <!-- Main Profile Card -->
+    <div id="profile-container">
+        
+        <!-- Identity Section -->
+        <div class="avatar-wrapper">
+            <img id="avatar-el" src="/assets/icons/user_dragon.png" alt="Avatar" class="profile-avatar">
+            <div class="status-indicator"></div>
+        </div>
 
-        <!-- Profile Identity (always visible) -->
-        <div class="profile-identity">
-            <div class="avatar-wrapper">
-                <img id="avatar-el" src="/assets/icons/user_dragon.png" alt="Avatar" class="profile-avatar">
-                <div class="status-indicator"></div>
+        <h1 class="profile-name" id="name-el">j2st</h1>
+        <p class="profile-handle" id="handle-el">@j2st</p>
+
+        <!-- Badges (Always Visible) -->
+        <div id="badges-el">
+            <!-- Badges injected by JS -->
+        </div>
+
+        <!-- Bio -->
+        <p class="profile-bio" id="bio-el"></p>
+
+        <!-- Separator -->
+        <div class="separator"></div>
+
+        <!-- Links List -->
+        <div id="links-el">
+            <!-- Links injected by JS -->
+        </div>
+
+        <!-- Discord Status (Optional) -->
+        <div id="discord-status-container" style="display: none;">
+            <div class="discord-card">
+                <div class="discord-avatar-box">
+                    <img src="" alt="" class="discord-avatar" id="ds-avatar">
+                    <div class="status-indicator" id="ds-status-dot"></div>
+                </div>
+                <div class="discord-info">
+                    <p class="discord-user" id="ds-name">User#0000</p>
+                    <p class="discord-activity" id="ds-activity">Loading status...</p>
+                </div>
             </div>
-            <h1 class="profile-name" id="name-el">j2st</h1>
-            <p class="profile-role iridescent-text" id="role-el"></p>
         </div>
 
-        <!-- Tab Navigation -->
-        <div class="profile-tabs" role="tablist">
-            <button class="p-tab active" data-tab="links" role="tab" aria-selected="true">Links</button>
-            <button class="p-tab" data-tab="badges" role="tab" aria-selected="false">Badges</button>
-            <button class="p-tab" data-tab="about" role="tab" aria-selected="false">About</button>
+        <!-- Footer -->
+        <div class="footer-info">
+            <div class="view-count" id="views-el">
+                <i class="fa-solid fa-eye"></i>
+                <span>0 views</span>
+            </div>
+            <a href="/" class="j2st-watermark">Powered by j2st.icu</a>
         </div>
-
-        <!-- Tab Panels -->
-        <div class="p-tab-panel active" id="ptab-links" role="tabpanel">
-            <div class="links-col" id="links-el"></div>
-        </div>
-
-        <div class="p-tab-panel" id="ptab-badges" role="tabpanel">
-            <div class="badges-row" id="badges-el"></div>
-        </div>
-
-        <div class="p-tab-panel" id="ptab-about" role="tabpanel">
-            <p class="profile-bio" id="bio-el" style="display:none;"></p>
-            <p class="profile-location" id="location-el"></p>
-        </div>
-
-        <!-- J2ST Watermark Footer -->
-        <a href="/" class="j2st-watermark">Powered by j2st.icu</a>
     </div>
 
     <!-- Error State -->
@@ -69,9 +84,6 @@
     </div>
 
     <script type="module" src="/profile.js"></script>
-    <!-- Twemoji -->
-    <script src="https://cdn.jsdelivr.net/npm/@twemoji/api@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
-    <script>twemoji.parse(document.body, { folder: 'svg', ext: '.svg', base: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@latest/assets/' });</script>
 </body>
 
 </html>
