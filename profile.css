@@ -126,7 +126,7 @@ body {
 }
 
 .badge-item {
-    font-size: 20px;
+    font-size: 22px; /* Increased from 20px */
     cursor: pointer;
     transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
@@ -134,10 +134,13 @@ body {
     align-items: center;
     justify-content: center;
     position: relative;
+    width: 24px;
+    height: 24px;
 }
 
 .badge-item:hover {
-    transform: scale(1.3);
+    transform: scale(1.4); /* Increased scale on hover */
+    filter: drop-shadow(0 0 10px var(--accent-silver));
 }
 
 /* Tooltip for badges (Appears from top) */

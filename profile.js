@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             userBadgeIds.forEach(bId => {
                 const b = globalBadges.find(gb => gb.id == bId || gb.name == bId);
                 if (b) {
-                    badgesHtml += `<div class="badge-item" data-tooltip="${b.name.toUpperCase()}"><img src="${b.icon_url}" style="width:18px;height:18px; filter:none;"></div>`;
+                    badgesHtml += `<div class="badge-item" data-tooltip="${b.name.toUpperCase()}"><img src="${b.icon_url}" style="width:22px;height:22px; filter:none; object-fit:contain;"></div>`;
                 }
             });
             badgesEl.innerHTML = badgesHtml;
