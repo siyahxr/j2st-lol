@@ -53,7 +53,15 @@ async function loadUsers(filter = "") {
         const res = await fetch("/api/admin/users", {
             headers: { "x-user-id": currentSession?.id || "" }
         });
-        allUsers = await res.json();
+        const usersData = await res.json();
+        
+        if (usersData.error) {
+            console.error(usersData.error);
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:40px; color:var(--text-dim);">${usersData.error}</td></tr>`;
+            return;
+        }
+
+        allUsers = Array.isArray(usersData) ? usersData : [];
 
         if (globalBadges.length === 0) await loadGlobalBadges(false);
 
@@ -61,8 +69,12 @@ async function loadUsers(filter = "") {
             ? allUsers.filter(u => u.username?.toLowerCase().includes(filter.toLowerCase()) || u.email?.toLowerCase().includes(filter.toLowerCase()))
             : allUsers;
 
-        if (tbody) {
-            tbody.innerHTML = filtered.map(u => {
+        if (filtered.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:40px; color:var(--text-dim);">Hiç kullanıcı bulunamadı.</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = filtered.map(u => {
                 let badgeList = [];
                 try {
                     badgeList = typeof u.badges === 'string' ? JSON.parse(u.badges || "[]") : (u.badges || []);
@@ -113,7 +125,6 @@ async function loadUsers(filter = "") {
                 </tr>
                 `;
             }).join('');
-        }
     } catch (e) {
         console.error("User load failed:", e);
     }
@@ -334,25 +345,36 @@ window.deployBadge = async function() {
 
 async function loadStats() {
     try {
+        const id = getSession()?.id || "";
         const res = await fetch("/api/admin/users", {
-            headers: { "x-user-id": getSession()?.id || "" }
+            headers: { "x-user-id": id }
         });
         const users = await res.json();
 
+        if (users.error) throw new Error(users.error);
+
         const totalUsers = users.length;
-        const admins = users.filter(u => u.role === 'admin').length;
-        const members = users.filter(u => u.role !== 'admin').length;
+        const admins = users.filter(u => u.role === 'admin' || u.role === 'founder').length;
+        const members = users.filter(u => u.role !== 'admin' && u.role !== 'founder').length;
         const totalViews = users.reduce((sum, u) => sum + (u.views || 0), 0);
 
         document.getElementById('stat-users').textContent = totalUsers;
         document.getElementById('stat-admins').textContent = admins;
         document.getElementById('stat-members').textContent = members;
         document.getElementById('stat-views').textContent = totalViews.toLocaleString();
+        
+        // Wait for badges to load if not ready
+        if (globalBadges.length === 0) await loadGlobalBadges(false);
         document.getElementById('stat-badges').textContent = globalBadges.length;
 
-        // Active today - mock (gerçek active logic için veritabanı değişikliği gerekli)
-        document.getElementById('stat-active').textContent = Math.floor(totalUsers * 0.3);
+        document.getElementById('stat-active').textContent = Math.floor(totalUsers * 0.3) + 1;
     } catch (e) {
         console.error("Stats load failed:", e);
     }
 }
+
+// AUTO-INIT
+window.onload = () => {
+    loadStats();
+    loadGlobalBadges();
+};

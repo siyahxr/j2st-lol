@@ -71,31 +71,6 @@
             </div>
         </aside>
 
-        <!-- UPDATES SIDEBAR (Dynamic) -->
-        <aside class="update-sidebar" id="update-sidebar">
-            <div class="update-header">
-                <i class="fa-solid fa-bolt"></i>
-                <span>NEW UPDATES</span>
-                <button class="close-update" onclick="toggleUpdates()"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="update-list">
-                <div class="update-item new">
-                    <span class="update-tag">NEW</span>
-                    <p>Kullanıcı adı değiştirme & 7 gün bekleme süresi eklendi!</p>
-                </div>
-                <div class="update-item">
-                    <span class="update-tag">UI</span>
-                    <p>Dashboard istatistikleri ve analiz görünümü güncellendi.</p>
-                </div>
-                <div class="update-item">
-                    <span class="update-tag">MEDIA</span>
-                    <p>5MB Dosya yükleme desteği (Chunking) aktif edildi.</p>
-                </div>
-                <div class="update-item">
-                    <span class="update-tag">SECURITY</span>
-                    <p>Admin paneli yetkilendirme sistemi güçlendirildi.</p>
-                </div>
-            </div>
         </aside>
 
         <!-- MAIN CONTENT -->
@@ -477,6 +452,32 @@
             </div>
 
         </main>
+
+        <!-- UPDATES SIDEBAR (Dynamic Right Positioned) -->
+        <aside class="update-sidebar" id="update-sidebar">
+            <div class="update-header">
+                <span>PLATFORM UPDATES</span>
+                <button class="close-update" onclick="toggleUpdates()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="update-list">
+                <div class="update-item">
+                    <span class="update-tag">NEW</span>
+                    <p>Kullanıcı adı değiştirme & 7 gün cooldown eklendi!</p>
+                </div>
+                <div class="update-item">
+                    <span class="update-tag">UI</span>
+                    <p>Gelişmiş analiz görünümü ve premium dashboard tasarımı.</p>
+                </div>
+                <div class="update-item">
+                    <span class="update-tag">ENGINE</span>
+                    <p>Dosya yükleme (Chunking) sistemi 5MB limitli optimize edildi.</p>
+                </div>
+                <div class="update-item">
+                    <span class="update-tag">SECURITY</span>
+                    <p>Admin paneli yetkilendirme ve veri gizliliği güncellendi.</p>
+                </div>
+            </div>
+        </aside>
     </div>
 
     <!-- TOAST -->

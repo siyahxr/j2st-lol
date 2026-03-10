@@ -8,18 +8,6 @@ async function initProfile() {
     const container = document.getElementById('profile-container');
     const loadingEl = document.getElementById('loading');
 
-    // Check if we should skip enter overlay (from dashboard viewProfile)
-    const urlParams = new URLSearchParams(window.location.search);
-    const skipEnter = urlParams.get('skipEnter') === '1';
-
-    // Also check sessionStorage for skip flag
-    const sessionSkip = sessionStorage.getItem('skipEnterOverlay') === 'true';
-
-    // Clear the session flag after reading
-    if (sessionSkip) {
-        sessionStorage.removeItem('skipEnterOverlay');
-    }
-
     try {
         const res = await fetch(`/api/user/profile?u=${username}`);
         const data = await res.json();
@@ -33,7 +21,7 @@ async function initProfile() {
         // Show profile first, then render
         if (container) container.style.display = '';
 
-        renderProfile(data, skipEnter || sessionSkip);
+        renderProfile(data, true);
         if (loadingEl) {
             loadingEl.style.opacity = "0";
             loadingEl.style.transition = "opacity 0.5s ease";
@@ -45,7 +33,7 @@ async function initProfile() {
     }
 }
 
-function renderProfile(user, skipEnter = false) {
+function renderProfile(user) {
     // 1. Identity
     const avatar = document.getElementById('avatar-el');
     const name = document.getElementById('name-el');
@@ -160,86 +148,30 @@ function renderProfile(user, skipEnter = false) {
     const viewsEl = document.querySelector('#views-el span');
     if (viewsEl) viewsEl.textContent = `${user.views || 0} views`;
 
-    // 9. Profile Music & Entry Overlay
+    // 9. Profile Music
     const musicPlayer = document.getElementById('profile-music-player');
-    const overlay = document.getElementById('enter-overlay');
 
-    const hasVideo = fullBannerUrl && (fullBannerUrl.includes('video/') || fullBannerUrl.startsWith('data:video/') || fullBannerUrl.endsWith('.mp4'));
-
-    if (fullMusicUrl && musicPlayer) {
+    // Always show profile directly without overlay
+    // Music will play directly
+    if (musicPlayer && fullMusicUrl) {
         musicPlayer.src = fullMusicUrl;
-        musicPlayer.volume = hasVideo ? 0 : 0.6;
+        musicPlayer.volume = 0.6;
         musicPlayer.loop = true;
     }
 
-    const enterAction = (e) => {
-        // Prevent multiple clicks
-        if (document.body.classList.contains('profile-entered')) return;
-
-        // Add click effect class for animation
-        if (overlay) {
-            overlay.classList.add('clicked');
-            overlay.style.pointerEvents = 'none';
-        }
-
-        // Animate out after click effect
-        setTimeout(() => {
-            if (overlay) {
-                overlay.style.transform = 'scale(1.1)';
-                overlay.style.filter = 'blur(20px)';
-                overlay.style.opacity = '0';
-            }
-        }, 300);
-
-        // Complete removal and show profile
-        setTimeout(() => {
-            document.body.classList.add('profile-entered');
-            if (overlay) overlay.remove();
-
-            // UNBLOCK EVERYTHING
-            if (musicPlayer && fullMusicUrl) {
-                musicPlayer.play().catch(e => console.error("Music failed", e));
-            }
-            if (bannerVideo && hasVideo) {
-                bannerVideo.muted = false;
-                bannerVideo.play().catch(e => {
-                    bannerVideo.muted = true;
-                    bannerVideo.play();
-                });
-            }
-        }, 800);
-
-        // Remove event listeners
-        if (overlay) overlay.onclick = null;
-        ["click", "touchstart", "mousedown", "wheel"].forEach(ev => window.removeEventListener(ev, enterAction));
-    };
-
-    if (overlay) {
-        overlay.onclick = enterAction;
-    } else {
-        // Fallback for missing overlay
-        ["click", "touchstart", "mousedown"].forEach(ev => window.addEventListener(ev, enterAction, { once: true }));
+    // Start music automatically
+    if (musicPlayer && fullMusicUrl) {
+        musicPlayer.play().catch(err => console.error("Music failed", err));
+    }
+    if (bannerVideo && hasVideo) {
+        bannerVideo.muted = false;
+        bannerVideo.play().catch(err => {
+            bannerVideo.muted = true;
+            bannerVideo.play();
+        });
     }
 
-    // If skipEnter is true (from dashboard), immediately show the profile without overlay
-    if (typeof skipEnter !== 'undefined' && skipEnter) {
-        if (overlay && overlay.remove) {
-            overlay.remove();
-        }
-        document.body.classList.add('profile-entered');
-
-        // Start music and video
-        if (musicPlayer && fullMusicUrl) {
-            musicPlayer.play().catch(err => console.error("Music failed", err));
-        }
-        if (bannerVideo && hasVideo) {
-            bannerVideo.muted = false;
-            bannerVideo.play().catch(err => {
-                bannerVideo.muted = true;
-                bannerVideo.play();
-            });
-        }
-    }
+    document.body.classList.add('profile-entered');
 }
 
 function setup3DTilt(el) {

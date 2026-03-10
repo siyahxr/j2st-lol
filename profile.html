@@ -16,104 +16,97 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 
-    <!-- Background System -->
-    <div id="enter-overlay" class="enter-overlay">
-        <div class="enter-btn">
-            <i class="fa-solid fa-play"></i>
-            <span>CLICK TO ENTER</span>
+<video id="banner-video" class="banner-video-bg" muted loop playsinline style="display:none;"></video>
+<div id="full-bg"></div>
+<div class="profile-bg-vignette"></div>
+<div class="dynamic-aura"></div>
+
+<!-- Loading State -->
+<div id="loading" class="full-screen-center" style="background:#000; z-index:99999;">
+</div>
+
+<!-- Main Profile Card -->
+<div id="profile-container" class="profile-card">
+
+    <!-- Identity Section -->
+    <div class="avatar-wrapper">
+        <img id="avatar-el" src="/assets/icons/user_dragon.png" alt="Avatar" class="profile-avatar">
+        <div class="status-indicator"></div>
+    </div>
+
+    <h1 class="profile-name" id="name-el">j2st</h1>
+    <p class="profile-handle" id="handle-el">@j2st</p>
+
+    <!-- Badges (Always Visible) -->
+    <div id="badges-el">
+        <!-- Badges injected by JS -->
+    </div>
+
+    <!-- Bio -->
+    <p class="profile-bio" id="bio-el"></p>
+
+    <!-- Separator -->
+    <div class="separator"></div>
+
+    <!-- Links List -->
+    <div id="links-el">
+        <!-- Links injected by JS -->
+    </div>
+
+    <!-- Discord Status (Optional) -->
+    <div id="discord-status-container" style="display: none;">
+        <div class="discord-card">
+            <div class="discord-avatar-box">
+                <img src="" alt="" class="discord-avatar" id="ds-avatar">
+                <div class="status-indicator" id="ds-status-dot"></div>
+            </div>
+            <div class="discord-info">
+                <p class="discord-user" id="ds-name">User#0000</p>
+                <p class="discord-activity" id="ds-activity">Loading status...</p>
+            </div>
         </div>
     </div>
-    <video id="banner-video" class="banner-video-bg" muted loop playsinline style="display:none;"></video>
-    <div id="full-bg"></div>
-    <div class="profile-bg-vignette"></div>
-    <div class="dynamic-aura"></div>
 
-    <!-- Loading State -->
-    <div id="loading" class="full-screen-center" style="background:#000; z-index:99999;">
-    </div>
+    <!-- Footer -->
+    <div class="footer-info">
+        <div id="music-embed-container" style="display:none; width: 100%; margin-bottom: 12px; height:80px;"></div>
 
-    <!-- Main Profile Card -->
-    <div id="profile-container" class="profile-card">
-
-        <!-- Identity Section -->
-        <div class="avatar-wrapper">
-            <img id="avatar-el" src="/assets/icons/user_dragon.png" alt="Avatar" class="profile-avatar">
-            <div class="status-indicator"></div>
-        </div>
-
-        <h1 class="profile-name" id="name-el">j2st</h1>
-        <p class="profile-handle" id="handle-el">@j2st</p>
-
-        <!-- Badges (Always Visible) -->
-        <div id="badges-el">
-            <!-- Badges injected by JS -->
-        </div>
-
-        <!-- Bio -->
-        <p class="profile-bio" id="bio-el"></p>
-
-        <!-- Separator -->
-        <div class="separator"></div>
-
-        <!-- Links List -->
-        <div id="links-el">
-            <!-- Links injected by JS -->
-        </div>
-
-        <!-- Discord Status (Optional) -->
-        <div id="discord-status-container" style="display: none;">
-            <div class="discord-card">
-                <div class="discord-avatar-box">
-                    <img src="" alt="" class="discord-avatar" id="ds-avatar">
-                    <div class="status-indicator" id="ds-status-dot"></div>
-                </div>
-                <div class="discord-info">
-                    <p class="discord-user" id="ds-name">User#0000</p>
-                    <p class="discord-activity" id="ds-activity">Loading status...</p>
-                </div>
+        <div id="music-widget" class="music-player-widget" style="display:none;">
+            <div class="music-info">
+                <i class="fa-solid fa-compact-disc fa-spin"></i>
+                <span id="music-name">Soundtrack</span>
+            </div>
+            <div class="music-controls">
+                <i class="fa-solid fa-volume-high" style="font-size:12px; opacity:0.6;"></i>
             </div>
         </div>
 
-        <!-- Footer -->
-        <div class="footer-info">
-            <div id="music-embed-container" style="display:none; width: 100%; margin-bottom: 12px; height:80px;"></div>
-            
-            <div id="music-widget" class="music-player-widget" style="display:none;">
-                <div class="music-info">
-                    <i class="fa-solid fa-compact-disc fa-spin"></i>
-                    <span id="music-name">Soundtrack</span>
-                </div>
-                <div class="music-controls">
-                    <i class="fa-solid fa-volume-high" style="font-size:12px; opacity:0.6;"></i>
-                </div>
-            </div>
-            
-            <div class="view-count" id="views-el">
-                <i class="fa-solid fa-eye"></i>
-                <span>0 views</span>
-            </div>
-            <a href="/" class="j2st-watermark">Powered by j2st.icu</a>
+        <div class="view-count" id="views-el">
+            <i class="fa-solid fa-eye"></i>
+            <span>0 views</span>
         </div>
+        <a href="/" class="j2st-watermark">Powered by j2st.icu</a>
     </div>
+</div>
 
-    <!-- Error State -->
-    <div id="error-container" class="full-screen-center" style="display:none;">
-        <h1 class="hero-h1">404</h1>
-        <p class="hero-p" style="margin-bottom: 24px;">User not found on j2st.icu</p>
-        <a href="/" class="btn-primary">Return Home</a>
-    </div>
+<!-- Error State -->
+<div id="error-container" class="full-screen-center" style="display:none;">
+    <h1 class="hero-h1">404</h1>
+    <p class="hero-p" style="margin-bottom: 24px;">User not found on j2st.icu</p>
+    <a href="/" class="btn-primary">Return Home</a>
+</div>
 
-    <!-- Profile Music Player (Hidden) -->
-    <audio id="profile-music-player" style="display:none;"></audio>
+<!-- Profile Music Player (Hidden) -->
+<audio id="profile-music-player" style="display:none;"></audio>
 
-    <script src="https://cdn.jsdelivr.net/npm/@twemoji/api@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
-    <script src="/system/i18n.js?v=202603100900"></script>
-    <script type="module" src="/profile.js?v=202603100900"></script>
-    <script>
-        window.onload = () => {
-            if (window.twemoji) twemoji.parse(document.body);
-        }
-    </script>
+<script src="https://cdn.jsdelivr.net/npm/@twemoji/api@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
+<script src="/system/i18n.js?v=202603100900"></script>
+<script type="module" src="/profile.js?v=202603100900"></script>
+<script>
+    window.onload = () => {
+        if (window.twemoji) twemoji.parse(document.body);
+    }
+</script>
 </body>
 
 </html>

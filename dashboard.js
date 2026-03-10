@@ -775,7 +775,7 @@ function showToast(m, type) {
     setTimeout(() => t.classList.remove('active'), 3000);
 }
 
-window.viewProfile = () => window.location.href = '/' + session.username + '?skipEnter=1';
+window.viewProfile = () => window.location.href = '/' + session.username;
 window.logout = () => { localStorage.removeItem(SES_KEY); window.location.replace("/login"); };
 
 // BOOT
