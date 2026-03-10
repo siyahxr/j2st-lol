@@ -205,12 +205,14 @@
                 </div>
             </div>
 
-            <!-- 2. PROFILE EDITOR -->
+            <!-- 2. PREMIUM PROFILE EDITOR (APPEARANCE SUITE) -->
             <div class="tab-panel" id="tab-profile">
                 <div class="profile-grid-container">
                     <div class="editor-panel">
+                        
+                        <!-- 2.1 IDENTITY & AVATAR -->
                         <div class="editor-section">
-                            <h3 class="editor-title">Avatar & Identity</h3>
+                            <h3 class="editor-title"><i class="fa-solid fa-user-pen"></i> Identity & Avatar</h3>
                             <div class="avatar-edit-box">
                                 <div class="avatar-preview-wrapper" onclick="document.getElementById('avatar-upload').click()">
                                     <img src="/assets/icons/user_dragon.png" alt="current" class="avatar-preview-image" id="preview-avatar-img">
@@ -218,44 +220,194 @@
                                     <input type="file" id="avatar-upload" hidden accept="image/*">
                                 </div>
                                 <div class="avatar-info-box">
-                                    <p>Your Profile Avatar</p>
-                                    <span>Reccomended size: 400x400 (Max 2MB)</span>
+                                    <p>Your Bio Avatar</p>
+                                    <span>Recommended: 400x400 (Max 5MB)</span>
                                 </div>
                             </div>
-
                             <div class="form-field">
                                 <label class="form-label">Display Name</label>
-                                <input type="text" class="form-input" id="profile-display-name" placeholder="How you appear on the void">
+                                <input type="text" class="form-input" id="profile-display-name" placeholder="Name on the void">
                             </div>
-                            <div class="form-field" style="margin-bottom: 0;">
+                            <div class="form-field">
                                 <label class="form-label">Bio Description</label>
-                                <textarea class="form-input form-textarea" id="profile-bio" placeholder="Tell the world who you are..."></textarea>
+                                <textarea class="form-input form-textarea" id="profile-bio" placeholder="Tell the world..."></textarea>
                             </div>
                         </div>
 
+                        <!-- 2.2 PROFILE APPEARANCE (COLORS) -->
                         <div class="editor-section">
-                            <h3 class="editor-title">Branding & Banner</h3>
-                            <div class="form-field">
-                                <label class="form-label">Profile Banner</label>
-                                <div class="banner-selector" id="banner-selector" onclick="document.getElementById('banner-upload').click()">
-                                    <span>Click to upload banner (1200x400)</span>
-                                    <input type="file" id="banner-upload" hidden accept="image/*">
+                            <h3 class="editor-title"><i class="fa-solid fa-palette"></i> Profile Appearance</h3>
+                            <div class="premium-controls-grid">
+                                <div class="form-field">
+                                    <label class="form-label">Avatar Frame Color</label>
+                                    <div class="color-picker-group">
+                                        <input type="color" id="avatar-frame-color" class="color-inp-hidden">
+                                        <div class="color-preview-box" id="avatar-frame-prev"></div>
+                                        <input type="text" class="hex-inp" id="avatar-frame-hex" placeholder="#none">
+                                    </div>
+                                </div>
+                                <div class="form-field">
+                                    <label class="form-label">Icon Color</label>
+                                    <div class="color-picker-group">
+                                        <input type="color" id="icon-color" class="color-inp-hidden">
+                                        <div class="color-preview-box" id="icon-color-prev"></div>
+                                        <input type="text" class="hex-inp" id="icon-color-hex" placeholder="#ffffff">
+                                    </div>
+                                </div>
+                                <div class="form-field">
+                                    <label class="form-label">Badge BG Color</label>
+                                    <input type="text" class="form-input" id="badge-bg-color" placeholder="rgba(255,255,255,0.04)">
+                                </div>
+                                <div class="form-field">
+                                    <label class="form-label">Accent Color</label>
+                                    <div class="color-picker-group">
+                                        <input type="color" id="accent-color" class="color-inp-hidden" value="#ffffff">
+                                        <div class="color-preview-box" id="accent-color-prev"></div>
+                                        <input type="text" class="hex-inp" id="accent-color-hex" placeholder="#ffffff">
+                                    </div>
                                 </div>
                             </div>
-                            <div class="settings-field-grid">
+                        </div>
+
+                        <!-- 2.3 TEXT CUSTOMIZATION -->
+                        <div class="editor-section">
+                            <h3 class="editor-title"><i class="fa-solid fa-font"></i> Text Customization</h3>
+                            <div class="premium-controls-grid">
                                 <div class="form-field">
-                                    <label class="form-label">Banner Opacity</label>
-                                    <input type="range" class="form-range" id="banner-opacity" min="0" max="1" step="0.1" value="0.4">
+                                    <label class="form-label">Base Font</label>
+                                    <select class="form-input" id="base-font">
+                                        <option value="Outfit">Outfit</option>
+                                        <option value="Plus Jakarta Sans">Plus Jakarta</option>
+                                        <option value="Inter">Inter</option>
+                                        <option value="Space Grotesk">Space Grotesk</option>
+                                        <option value="Roboto Mono">Roboto Mono</option>
+                                    </select>
                                 </div>
                                 <div class="form-field">
-                                    <label class="form-label">Card Opacity</label>
-                                    <input type="range" class="form-range" id="card-opacity" min="0" max="1" step="0.1" value="0.8">
+                                    <label class="form-label">Base Color</label>
+                                    <input type="color" id="base-font-color" class="form-color-inp" value="#ffffff">
+                                </div>
+                                <div class="form-field">
+                                    <label class="form-label">Display Name Font</label>
+                                    <select class="form-input" id="name-font">
+                                        <option value="Outfit">Outfit</option>
+                                        <option value="Space Grotesk">Space Grotesk</option>
+                                        <option value="Montserrat">Montserrat</option>
+                                        <option value="Bebas Neue">Bebas Neue</option>
+                                    </select>
+                                </div>
+                                <div class="form-field">
+                                    <label class="form-label">Name Color</label>
+                                    <input type="color" id="name-font-color" class="form-color-inp" value="#ffffff">
+                                </div>
+                                <div class="form-field">
+                                    <label class="form-label">Bio Font</label>
+                                    <select class="form-input" id="bio-font">
+                                        <option value="Outfit">Outfit</option>
+                                        <option value="Inter">Inter</option>
+                                        <option value="Lora">Lora (Serif)</option>
+                                    </select>
+                                </div>
+                                <div class="form-field">
+                                    <label class="form-label">Bio Color</label>
+                                    <input type="text" class="form-input" id="bio-font-color" placeholder="rgba(255,255,255,0.7)">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2.4 CARD & INTERACTION -->
+                        <div class="editor-section">
+                            <h3 class="editor-title"><i class="fa-solid fa-layer-group"></i> Card & Interaction</h3>
+                            <div class="card-style-grid">
+                                <div class="style-opt-btn active" data-style="glass">GLASS</div>
+                                <div class="style-opt-btn" data-style="solid">SOLID</div>
+                                <div class="style-opt-btn" data-style="gradient">GRADIENT</div>
+                                <div class="style-opt-btn" data-style="border">BORDER ONLY</div>
+                            </div>
+                            <div class="form-field" style="margin-top: 24px;">
+                                <label class="form-label">Hover Tooltip Text</label>
+                                <input type="text" class="form-input" id="hover-text" placeholder="e.g. j2st.icu">
+                            </div>
+                            <div class="form-field-row">
+                                <div class="form-field" style="flex:1;">
+                                    <label class="form-label">Link Hover Animation</label>
+                                    <select class="form-input" id="link-hover-anim">
+                                        <option value="none">Default</option>
+                                        <option value="glow">Neon Glow</option>
+                                        <option value="shake">Shake</option>
+                                        <option value="bounce">Bounce</option>
+                                    </select>
+                                </div>
+                                <div class="toggle-field">
+                                    <label class="form-label">Glitch Avatar</label>
+                                    <input type="checkbox" id="glitch-avatar" class="toggle-inp">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2.5 MEDIA & BACKGROUND -->
+                        <div class="editor-section">
+                            <h3 class="editor-title"><i class="fa-solid fa-clapperboard"></i> Media & Background</h3>
+                            <div class="form-field">
+                                <label class="form-label">Background Banner / Video (Max 50MB)</label>
+                                <div class="banner-selector-premium" id="banner-selector" onclick="document.getElementById('banner-upload').click()">
+                                    <i class="fa-solid fa-upload"></i>
+                                    <span>UPLOAD IMAGE / VIDEO (MAX 50MB)</span>
+                                    <input type="file" id="banner-upload" hidden accept="image/*,video/*">
+                                </div>
+                                <input type="text" class="form-input small" id="banner-url-direct" placeholder="Or use direct direct URL (.mp4, .gif, .jpg)">
+                            </div>
+                            <div class="form-field">
+                                <label class="form-label">Profile Music (.mp3)</label>
+                                <div class="media-upload-bar" onclick="document.getElementById('audio-upload-btn').click()">
+                                    <i class="fa-solid fa-music"></i>
+                                    <span>UPLOAD MP3 TRACK</span>
+                                    <input type="file" id="audio-upload-btn" hidden accept="audio/mpeg">
+                                </div>
+                                <input type="text" class="form-input small" id="music-url-direct" placeholder="Direct MP3 URL">
+                            </div>
+                        </div>
+
+                        <!-- 2.6 ADVANCED EFFECTS -->
+                        <div class="editor-section">
+                            <h3 class="editor-title"><i class="fa-solid fa-wand-magic-sparkles"></i> Advanced Effects</h3>
+                            <div class="premium-controls-grid">
+                                <div class="form-field">
+                                    <label class="form-label">Background Effect</label>
+                                    <select class="form-input" id="bg-effect">
+                                        <option value="none">None</option>
+                                        <option value="particles">Particles</option>
+                                        <option value="aura">Aura Glow</option>
+                                        <option value="snow">Snowfall</option>
+                                        <option value="glitch">Digital Glitch</option>
+                                    </select>
+                                </div>
+                                <div class="form-field">
+                                    <label class="form-label">Entry Animation</label>
+                                    <select class="form-input" id="entry-anim">
+                                        <option value="fadeIn">Fade In</option>
+                                        <option value="slideTop">Slide From Top</option>
+                                        <option value="slideBottom">Slide From Bottom</option>
+                                        <option value="zoomIn">Zoom In</option>
+                                    </select>
+                                </div>
+                                <div class="toggle-field">
+                                    <label class="form-label">3D Tilt Effect</label>
+                                    <input type="checkbox" id="tilt-3d" class="toggle-inp">
+                                </div>
+                            </div>
+                            <div class="form-field" style="margin-top: 24px;">
+                                <label class="form-label">Custom Cursor (.png)</label>
+                                <div class="cursor-upload-box" onclick="document.getElementById('cursor-upload').click()">
+                                    <span>UPLOAD CURSOR (32x32)</span>
+                                    <input type="file" id="cursor-upload" hidden accept="image/png">
                                 </div>
                             </div>
                         </div>
 
                         <div class="save-action-footer">
-                            <button class="save-btn">Save Changes</button>
+                            <div id="save-msg"></div>
+                            <button class="save-btn" onclick="saveProfileChanges()">SAVE CHANGES</button>
                         </div>
                     </div>
 
@@ -268,13 +420,9 @@
                                     <img src="/assets/icons/user_dragon.png" alt="avatar" class="phone-avatar" id="preview-avatar">
                                     <h4 class="phone-name" id="preview-name">Your Name</h4>
                                     <p class="phone-handle" id="preview-handle">@username</p>
-                                    <div class="phone-badges" id="preview-badges">
-                                        <!-- Badges will be shown here in preview too -->
-                                    </div>
+                                    <div class="phone-badges" id="preview-badges"></div>
                                     <p class="phone-bio" id="preview-bio">Bio teaser appears here...</p>
-                                    <div class="preview-links" id="preview-links">
-                                        <!-- Links will be shown here in preview too -->
-                                    </div>
+                                    <div class="preview-links" id="preview-links"></div>
                                 </div>
                             </div>
                         </div>

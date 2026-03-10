@@ -1,22 +1,29 @@
 export async function onRequestPost({ request, env }) {
   const userId = request.headers.get("x-user-id");
-  const { id, display_name, bio, avatar_url, banner_url, banner_opacity, card_opacity } = await request.json();
+  const data = await request.json();
+  const { id } = data;
 
-  if (!userId) {
+  if (!userId || userId !== id) {
     return new Response(JSON.stringify({ success: false, error: "Unauthorized" }), { status: 401, headers: { "Content-Type": "application/json" } });
   }
 
-  // Verify user can only update their own profile
-  if (userId !== id) {
-    return new Response(JSON.stringify({ success: false, error: "Access denied: You can only update your own profile" }), { status: 403, headers: { "Content-Type": "application/json" } });
-  }
-
   try {
-    await env.j2st_db.prepare(
-      "UPDATE users SET display_name = ?, bio = ?, avatar_url = ?, banner_url = ?, banner_opacity = ?, card_opacity = ? WHERE id = ?"
-    )
-      .bind(display_name, bio, avatar_url, banner_url, banner_opacity, card_opacity, id)
-      .run();
+    const fields = [
+      "display_name", "bio", "avatar_url", "banner_url",
+      "avatar_frame_color", "icon_color", "badge_bg_color", "accent_color",
+      "base_font", "base_font_color", "name_font", "name_font_color", "bio_font", "bio_font_color",
+      "card_style", "hover_text", "link_hover_anim", "glitch_avatar",
+      "profile_music_url", "bg_effect", "entry_anim", "tilt_3d"
+    ];
+
+    let query = "UPDATE users SET ";
+    query += fields.map(f => `${f} = ?`).join(", ");
+    query += " WHERE id = ?";
+
+    const values = fields.map(f => data[f]);
+    values.push(id);
+
+    await env.j2st_db.prepare(query).bind(...values).run();
 
     return new Response(JSON.stringify({ success: true }), {
       headers: { "Content-Type": "application/json" },

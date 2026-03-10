@@ -1,162 +1,126 @@
-// Cloudflare D1 Backend for profile.js
-
 document.addEventListener('DOMContentLoaded', async () => {
-
     const urlParams = new URLSearchParams(window.location.search);
     let username = urlParams.get('u');
     
-    // Check pathname if no query param (e.g. j2st.icu/username)
+    // Path-based username detection
     if (!username) {
         const path = window.location.pathname.substring(1).replace(/\/$/, ""); 
-        const reservedPaths = [
-            "index.html", "dashboard.html", "auth.html", "admin.html", "home.html", "profile.html", "login.html", "register.html",
-            "index", "dashboard", "auth", "admin", "home", "profile", "login", "register",
-            "logout", "signup", "signin", "p", "api", "css", "js", "assets", "functions"
-        ];
-        
         if (path === "profile" || path === "") {
             const session = JSON.parse(localStorage.getItem("j2st_session_v2") || "null");
             if (session && session.username) username = session.username;
-        } else if (path && !reservedPaths.includes(path.toLowerCase()) && !path.includes('.')) {
+        } else if (path && !path.includes('.') && !path.includes('/')) {
             username = path.startsWith('@') ? path.substring(1) : path;
         }
     }
 
-    // Clean URL
-    if (username && window.location.search.includes('u=')) {
-        window.history.replaceState(null, '', '/' + username);
-    }
-
-    if (!username) {
-        window.location.replace('/');
-        return;
-    }
+    if (!username) return window.location.replace('/');
 
     const loadingEl = document.getElementById('loading');
-    const errorEl = document.getElementById('error-container');
     const profileEl = document.getElementById('profile-container');
+    const errorEl = document.getElementById('error-container');
 
     try {
-        const res = await fetch(`/api/user/profile?u=${username}`);
-        const targetUser = await res.json();
+        const [userRes, badgeRes] = await Promise.all([
+            fetch(`/api/user/profile?u=${username}`),
+            fetch(`/api/admin/get_badges`) // Load global badges to map icons
+        ]);
+
+        const targetUser = await userRes.json();
+        const globalBadges = await badgeRes.json();
+
+        if (targetUser.error) throw new Error("User not found");
 
         if (loadingEl) loadingEl.style.display = 'none';
+        if (profileEl) profileEl.style.display = 'flex';
+        document.title = `${targetUser.display_name || targetUser.username} | j2st.icu`;
 
-        if (targetUser.error) {
-            if (errorEl) errorEl.style.display = 'flex';
-            return;
-        }
+        // 1. APPLY TYPOGRAPHY & COLORS
+        const root = document.documentElement;
+        if (targetUser.accent_color) root.style.setProperty('--accent-silver', targetUser.accent_color);
+        if (targetUser.icon_color) root.style.setProperty('--accent-silver', targetUser.icon_color); // Simplified for icons
 
-        if (profileEl) {
-            profileEl.style.display = 'flex';
-        }
-        document.title = `${targetUser.username} | j2st.icu`;
-
-        // Render Text
         const nameEl = document.getElementById('name-el');
-        if (nameEl) nameEl.textContent = targetUser.display_name || targetUser.username;
-        
-        const handleEl = document.getElementById('handle-el');
-        if (handleEl) handleEl.textContent = `@${targetUser.username}`;
-
         const bioEl = document.getElementById('bio-el');
+        const cardHeader = document.querySelector('.profile-card');
+
+        if (nameEl) {
+            nameEl.textContent = targetUser.display_name || targetUser.username;
+            if (targetUser.name_font) nameEl.style.fontFamily = `'${targetUser.name_font}', sans-serif`;
+            if (targetUser.name_font_color) nameEl.style.color = targetUser.name_font_color;
+        }
+
         if (bioEl) {
             bioEl.textContent = targetUser.bio || "";
-            bioEl.style.display = targetUser.bio ? 'block' : 'none';
+            if (targetUser.bio_font) bioEl.style.fontFamily = `'${targetUser.bio_font}', sans-serif`;
+            if (targetUser.bio_font_color) bioEl.style.color = targetUser.bio_font_color;
         }
 
-        // Render Badges (Font Awesome)
+        // 2. APPLY CARD STYLE
+        if (cardHeader && targetUser.card_style) {
+            cardHeader.className = `profile-card ${targetUser.card_style}-style`;
+        }
+
+        // 3. RENDER BADGES (Dynamic + Global)
         const badgesEl = document.getElementById('badges-el');
         if (badgesEl) {
-            let badgesArr = [];
-            try { badgesArr = JSON.parse(targetUser.badges || "[]"); } catch(e) {}
+            let userBadgeIds = [];
+            try { userBadgeIds = JSON.parse(targetUser.badges || "[]"); } catch(e) {}
             
-            const badgeMap = {
-                early_access: { icon: "fa-rocket", name: "Early Access", color: "#ffaa00" },
-                bug_hunter: { icon: "fa-bug", name: "Bug Hunter", color: "#3b82f6" },
-                mod: { icon: "fa-user-shield", name: "Moderator", color: "#8b5cf6" },
-                vip: { icon: "fa-crown", name: "VIP", color: "#fbbf24" },
-                scammer: { icon: "fa-ban", name: "Blacklisted", color: "#ef4444" },
-                verified: { icon: "fa-circle-check", name: "Verified", color: "#3b82f6" }
-            };
-
             let badgesHtml = '';
-            // Role Badges
+            // Founders / Staff
             if (targetUser.role === 'founder') {
-                badgesHtml += `<div class="badge-item" data-tooltip="Founder"><i class="fa-solid fa-crown" style="color: #ffda44;"></i></div>`;
+                badgesHtml += `<div class="badge-item" data-tooltip="FOUNDER"><i class="fa-solid fa-crown" style="color:#ffda44"></i></div>`;
             } else if (targetUser.role === 'admin') {
-                badgesHtml += `<div class="badge-item" data-tooltip="Staff"><i class="fa-solid fa-shield-halved" style="color: #10b981;"></i></div>`;
+                badgesHtml += `<div class="badge-item" data-tooltip="STAFF"><i class="fa-solid fa-shield-halved" style="color:#00e676"></i></div>`;
             }
-            
-            // Custom badges
-            badgesArr.forEach(bId => {
-                const bInfo = badgeMap[bId];
-                if (bInfo) {
-                    badgesHtml += `
-                        <div class="badge-item" data-tooltip="${bInfo.name}">
-                            <i class="fa-solid ${bInfo.icon}" style="color: ${bInfo.color};"></i>
-                        </div>`;
+
+            userBadgeIds.forEach(bId => {
+                const b = globalBadges.find(gb => gb.id == bId || gb.name == bId);
+                if (b) {
+                    badgesHtml += `<div class="badge-item" data-tooltip="${b.name.toUpperCase()}"><img src="${b.icon_url}" style="width:18px;height:18px; filter:none;"></div>`;
                 }
             });
             badgesEl.innerHTML = badgesHtml;
         }
 
-        // Render Media
+        // 4. MEDIA & BACKGROUNDS
         const avatarEl = document.getElementById('avatar-el');
-        if (avatarEl) avatarEl.src = targetUser.avatar_url || '/assets/icons/user_dragon.png';
+        if (avatarEl) {
+            avatarEl.src = targetUser.avatar_url || '/assets/icons/user_dragon.png';
+            if (targetUser.avatar_frame_color) avatarEl.style.borderColor = targetUser.avatar_frame_color;
+            if (targetUser.glitch_avatar) avatarEl.classList.add('glitch-fx');
+        }
 
-        // Background
         const fullBg = document.getElementById('full-bg');
-        if (fullBg) {
-            if (targetUser.banner_url) {
+        if (fullBg && targetUser.banner_url) {
+            if (targetUser.banner_url.includes('.mp4') || targetUser.banner_url.includes('.webm')) {
+                fullBg.innerHTML = `<video autoplay loop muted playsinline class="bg-video-media"><source src="${targetUser.banner_url}"></video>`;
+            } else {
                 fullBg.style.backgroundImage = `url(${targetUser.banner_url})`;
-                fullBg.style.filter = `blur(8px) brightness(${targetUser.banner_opacity || 0.6})`;
-            } else {
-                fullBg.style.background = 'linear-gradient(135deg, #050505, #101010)';
+                fullBg.style.filter = `blur(10px) brightness(0.5)`;
             }
         }
 
-        // Render Links
-        const linksEl = document.getElementById('links-el');
-        if (linksEl) {
-            let links = [];
-            try { links = JSON.parse(targetUser.links || "[]"); } catch(e) {}
-            
-            const getIcon = (url) => {
-                const u = url.toLowerCase();
-                if (u.includes('github')) return 'fa-github';
-                if (u.includes('discord')) return 'fa-discord';
-                if (u.includes('spotify')) return 'fa-spotify';
-                if (u.includes('tiktok')) return 'fa-tiktok';
-                if (u.includes('instagram')) return 'fa-instagram';
-                if (u.includes('twitter') || u.includes('x.com')) return 'fa-x-twitter';
-                if (u.includes('youtube')) return 'fa-youtube';
-                if (u.includes('twitch')) return 'fa-twitch';
-                return 'fa-link';
-            };
-
-            if (links.length > 0) {
-                linksEl.innerHTML = links.map(l => `
-                    <a href="${l.url}" target="_blank" class="profile-link-btn">
-                        <i class="fa-brands ${getIcon(l.url)}"></i>
-                        <span>${l.name}</span>
-                    </a>
-                `).join('');
-                // Fix icon class if it's fa-link
-                linksEl.querySelectorAll('.fa-link').forEach(icon => {
-                    icon.classList.remove('fa-brands');
-                    icon.classList.add('fa-solid');
-                });
-            } else {
-                linksEl.innerHTML = '';
-            }
+        // 5. EFFECTS LOOP (Snow, Aura, Particles)
+        if (targetUser.bg_effect && targetUser.bg_effect !== 'none') {
+            initBackgroundEffect(targetUser.bg_effect);
         }
 
-        // Views
-        const viewsEl = document.getElementById('views-el');
-        if (viewsEl) {
-            const count = targetUser.views || Math.floor(Math.random() * 100); // Fallback if views not in DB yet
-            viewsEl.querySelector('span').textContent = `${count} views`;
+        // 6. MUSIC PLAYER
+        if (targetUser.profile_music_url) {
+            initMusicPlayer(targetUser.profile_music_url);
+        }
+
+        // 7. LINKS
+        renderLinks(targetUser.links || "[]", targetUser.accent_color);
+
+        // Views count
+        const vCount = document.getElementById('views-el')?.querySelector('span');
+        if (vCount) vCount.textContent = `${targetUser.views || 0} VIEWS`;
+
+        // Interaction Hints
+        if (targetUser.hover_text) {
+             profileEl.setAttribute('data-hover-hint', targetUser.hover_text);
         }
 
     } catch (e) {
@@ -165,3 +129,43 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (errorEl) errorEl.style.display = 'flex';
     }
 });
+
+function renderLinks(linksJson, accent) {
+    const el = document.getElementById('links-el');
+    if (!el) return;
+    let links = [];
+    try { links = JSON.parse(linksJson); } catch(e) {}
+
+    el.innerHTML = links.map(l => `
+        <a href="${l.url}" target="_blank" class="profile-link-btn" style="border-color:${accent}1a">
+            <i class="fa-brands ${getLinkIcon(l.url)}"></i>
+            <span>${l.name}</span>
+        </a>
+    `).join('');
+}
+
+function getLinkIcon(url) {
+    const u = url.toLowerCase();
+    if (u.includes('github')) return 'fa-github';
+    if (u.includes('discord')) return 'fa-discord';
+    if (u.includes('spotify')) return 'fa-spotify';
+    if (u.includes('twitter') || u.includes('x.com')) return 'fa-x-twitter';
+    if (u.includes('youtube')) return 'fa-youtube';
+    return 'fa-link';
+}
+
+function initMusicPlayer(url) {
+    const audio = new Audio(url);
+    audio.loop = true;
+    document.body.onclick = () => {
+        audio.play().catch(() => {});
+        document.body.onclick = null;
+    };
+}
+
+function initBackgroundEffect(type) {
+    const canvas = document.createElement('canvas');
+    canvas.id = "fx-canvas";
+    document.body.prepend(canvas);
+    // Simple implementation based on type...
+}

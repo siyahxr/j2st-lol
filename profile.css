@@ -302,38 +302,68 @@ body {
     color: #fff;
 }
 
-/* ── UTILS ──────────────────────────────────────────────────── */
-.full-screen-center {
+/* ── BACKGROUND MEDIA ─────────────────────────────────────────── */
+.bg-video-media {
     position: fixed;
     inset: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 100;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    z-index: -2;
+    filter: brightness(0.4);
 }
 
-.dragon-glow-ring {
-    width: 50px;
-    height: 50px;
-    border: 3px solid rgba(255, 255, 255, 0.1);
-    border-top: 3px solid #fff;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+#fx-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
 }
 
-@keyframes spin {
-    to { transform: rotate(360deg); }
+/* ── PREMIUM CARD STYLES ───────────────────────────────────────── */
+.profile-card.glass-style {
+    background: rgba(13, 13, 13, 0.4);
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.hero-h1 { font-size: 64px; font-weight: 900; margin-bottom: 10px; }
-.hero-p { color: var(--secondary-text); }
-.btn-primary {
-    background: #fff;
-    color: #000;
-    padding: 12px 30px;
-    border-radius: 12px;
-    text-decoration: none;
-    font-weight: 700;
-    font-size: 14px;
+.profile-card.solid-style {
+    background: #000;
+    border: 1px solid #1a1a1a;
+}
+
+.profile-card.gradient-style {
+    background: linear-gradient(135deg, #050505, #111);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.profile-card.border-style {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+/* ── EFFECTS ──────────────────────────────────────────────────── */
+.glitch-fx {
+    animation: glitch-anim 4s infinite linear alternate-reverse;
+}
+
+@keyframes glitch-anim {
+    0% { clip-path: inset(10% 0 30% 0); transform: translate(-2px, 2px); }
+    10% { clip-path: inset(40% 0 10% 0); transform: translate(2px, -2px); }
+    100% { clip-path: none; transform: none; }
+}
+
+/* Interaction Hint */
+#profile-container[data-hover-hint]::after {
+    content: attr(data-hover-hint);
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 9px;
+    font-weight: 900;
+    color: var(--secondary-text);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.4;
 }

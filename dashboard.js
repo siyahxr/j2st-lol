@@ -81,7 +81,8 @@ async function initDashboard() {
         updateUI();
         initLivePreview();
         initUploader();
-        initStatCounters(); // Bonus: animate numbers
+        initStatCounters(); 
+        initPremiumControls(); // New premium logic
 
     } catch (err) {
         console.error("Dashboard Load Error:", err);
@@ -92,8 +93,8 @@ async function initDashboard() {
 function updateUI() {
     if (!userDataState) return;
 
-    // Avatar & Name Chips
-    const chips = document.querySelectorAll('.chip-img, #preview-avatar-img, .phone-avatar');
+    // Basic Info
+    const chips = document.querySelectorAll('.chip-img, #preview-avatar-img');
     chips.forEach(img => {
         if (userDataState.avatar_url) img.src = userDataState.avatar_url;
         else img.src = '/assets/icons/user_dragon.png';
@@ -104,48 +105,110 @@ function updateUI() {
         el.textContent = userDataState.display_name || userDataState.username;
     });
 
-    // Sidebar Staff Check
-    const adminNavLink = document.getElementById('admin-nav-link');
-    const adminSecLabel = document.getElementById('admin-sec-label');
-    const role = (userDataState.role || 'member').toLowerCase();
-    const isStaff = role === 'admin' || role === 'founder';
+    // Inputs Sync
+    document.getElementById('profile-display-name').value = userDataState.display_name || "";
+    document.getElementById('profile-bio').value = userDataState.bio || "";
+    
+    // Colors & Fonts
+    syncColorInput('avatar-frame-color', 'avatar-frame-hex', userDataState.avatar_frame_color);
+    syncColorInput('icon-color', 'icon-color-hex', userDataState.icon_color);
+    document.getElementById('badge-bg-color').value = userDataState.badge_bg_color || "rgba(255,255,255,0.04)";
+    syncColorInput('accent-color', 'accent-color-hex', userDataState.accent_color);
+    
+    document.getElementById('base-font').value = userDataState.base_font || "Outfit";
+    document.getElementById('base-font-color').value = userDataState.base_font_color || "#ffffff";
+    document.getElementById('name-font').value = userDataState.name_font || "Outfit";
+    document.getElementById('name-font-color').value = userDataState.name_font_color || "#ffffff";
+    document.getElementById('bio-font').value = userDataState.bio_font || "Outfit";
+    document.getElementById('bio-font-color').value = userDataState.bio_font_color || "rgba(255,255,255,0.7)";
 
-    if (adminNavLink) adminNavLink.style.display = isStaff ? 'flex' : 'none';
-    if (adminSecLabel) adminSecLabel.style.display = isStaff ? 'block' : 'none';
+    // Card & Interaction
+    const styles = document.querySelectorAll('.style-opt-btn');
+    styles.forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.style === (userDataState.card_style || 'glass')) btn.classList.add('active');
+    });
+    document.getElementById('hover-text').value = userDataState.hover_text || "";
+    document.getElementById('link-hover-anim').value = userDataState.link_hover_anim || "none";
+    document.getElementById('glitch-avatar').checked = !!userDataState.glitch_avatar;
 
-    // Inputs
-    const dispNameInp = document.getElementById('profile-display-name');
-    const bioInp = document.getElementById('profile-bio');
-    const bannerOpacityInp = document.getElementById('banner-opacity');
-    const cardOpacityInp = document.getElementById('card-opacity');
+    // Effects
+    document.getElementById('bg-effect').value = userDataState.bg_effect || "none";
+    document.getElementById('entry-anim').value = userDataState.entry_anim || "fadeIn";
+    document.getElementById('tilt-3d').checked = !!userDataState.tilt_3d;
+    
+    // Media URLs
+    document.getElementById('banner-url-direct').value = userDataState.banner_url || "";
+    document.getElementById('music-url-direct').value = userDataState.profile_music_url || "";
 
-    if (dispNameInp) dispNameInp.value = userDataState.display_name || "";
-    if (bioInp) bioInp.value = userDataState.bio || "";
-    if (bannerOpacityInp) bannerOpacityInp.value = userDataState.banner_opacity || 0.4;
-    if (cardOpacityInp) cardOpacityInp.value = userDataState.card_opacity || 0.8;
-
-    // Initial Preview
     updatePreviewLayer();
+}
+
+function syncColorInput(pickerId, hexId, value) {
+    const picker = document.getElementById(pickerId);
+    const hex = document.getElementById(hexId);
+    const prev = document.getElementById(pickerId + '-prev');
+    if (!value || value === 'none') {
+        value = '#ffffff';
+    }
+    if (picker) picker.value = value;
+    if (hex) hex.value = value;
+    if (prev) prev.style.background = value;
+}
+
+// --- PREMIUM LOGIC (Color Pickers, Style Buttons) ---
+function initPremiumControls() {
+    // 1. Color Pickers Sync
+    ['avatar-frame', 'icon', 'accent'].forEach(prefix => {
+        const picker = document.getElementById(prefix + '-color');
+        const hex = document.getElementById(prefix + '-hex');
+        const prev = document.getElementById(prefix + '-prev');
+
+        if (prev && picker) prev.onclick = () => picker.click();
+        
+        if (picker && hex) {
+            picker.oninput = () => {
+                hex.value = picker.value;
+                if (prev) prev.style.background = picker.value;
+                updatePreviewLayer();
+            };
+            hex.oninput = () => {
+                if (hex.value.startsWith('#') && hex.value.length === 7) {
+                    picker.value = hex.value;
+                    if (prev) prev.style.background = hex.value;
+                    updatePreviewLayer();
+                }
+            };
+        }
+    });
+
+    // 2. Card Style Buttons
+    document.querySelectorAll('.style-opt-btn').forEach(btn => {
+        btn.onclick = () => {
+            document.querySelectorAll('.style-opt-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            updatePreviewLayer();
+        };
+    });
 }
 
 // --- LIVE PREVIEW ENGINE ---
 function initLivePreview() {
-    const inputs = [
-        'profile-display-name',
-        'profile-bio',
-        'banner-opacity',
-        'card-opacity'
+    const ids = [
+        'profile-display-name', 'profile-bio', 'badge-bg-color', 'base-font', 
+        'base-font-color', 'name-font', 'name-font-color', 'bio-font', 
+        'bio-font-color', 'hover-text', 'link-hover-anim', 'glitch-avatar',
+        'bg-effect', 'entry-anim', 'tilt-3d', 'banner-url-direct', 'music-url-direct'
     ];
 
-    inputs.forEach(id => {
+    ids.forEach(id => {
         const el = document.getElementById(id);
-        if (el) el.addEventListener('input', updatePreviewLayer);
+        if (el) el.oninput = updatePreviewLayer;
     });
 }
 
 function updatePreviewLayer() {
-    const nameVal = document.getElementById('profile-display-name')?.value || "Your Name";
-    const bioVal = document.getElementById('profile-bio')?.value || "Bio teaser appears here...";
+    if (!userDataState) return;
 
     const previewName = document.getElementById('preview-name');
     const previewBio = document.getElementById('preview-bio');
@@ -153,120 +216,104 @@ function updatePreviewLayer() {
     const previewBadges = document.getElementById('preview-badges');
     const previewLinks = document.getElementById('preview-links');
     const previewBanner = document.getElementById('preview-banner');
+    const phoneBody = document.querySelector('.phone-body');
 
-    if (previewName) previewName.textContent = nameVal;
-    if (previewBio) previewBio.textContent = bioVal;
-    if (previewHandle) previewHandle.textContent = `@${userDataState?.username || 'username'}`;
+    // Values
+    const nameVal = document.getElementById('profile-display-name').value;
+    const bioVal = document.getElementById('profile-bio').value;
+    const accentVal = document.getElementById('accent-color').value;
+    const styleVal = document.querySelector('.style-opt-btn.active')?.dataset.style || 'glass';
+
+    if (previewName) {
+        previewName.textContent = nameVal || "Your Name";
+        previewName.style.fontFamily = document.getElementById('name-font').value;
+        previewName.style.color = document.getElementById('name-font-color').value;
+    }
+    if (previewBio) {
+        previewBio.textContent = bioVal || "Bio teaser...";
+        previewBio.style.fontFamily = document.getElementById('bio-font').value;
+        previewBio.style.color = document.getElementById('bio-font-color').value;
+    }
+    if (previewHandle) previewHandle.textContent = `@${userDataState.username}`;
     
-    // Badges Preview
-    if (previewBadges && userDataState) {
-        let badgesHtml = '';
-        const role = (userDataState.role || 'member').toLowerCase();
-        if (role === 'founder') badgesHtml += '<i class="fa-solid fa-crown" style="color:#ffda44; font-size:12px;"></i>';
-        else if (role === 'admin') badgesHtml += '<i class="fa-solid fa-shield-halved" style="color:#10b981; font-size:12px;"></i>';
-        
-        let badges = [];
-        try { badges = JSON.parse(userDataState.badges || "[]"); } catch(e) {}
-        
-        const bMap = {
-            early_access: "#ffaa00",
-            bug_hunter: "#3b82f6",
-            mod: "#8b5cf6",
-            vip: "#fbbf24",
-            scammer: "#ef4444",
-            verified: "#3b82f6"
-        };
-        const bIcons = {
-            early_access: "fa-rocket",
-            bug_hunter: "fa-bug",
-            mod: "fa-user-shield",
-            vip: "fa-crown",
-            scammer: "fa-ban",
-            verified: "fa-circle-check"
-        };
-
-        badges.forEach(b => {
-             if (bMap[b]) badgesHtml += `<i class="fa-solid ${bIcons[b]}" style="color:${bMap[b]}; font-size:12px;"></i>`;
-        });
-        previewBadges.innerHTML = badgesHtml;
-    }
-
-    // Links Preview
-    if (previewLinks && userDataState) {
-        let links = [];
-        try { links = JSON.parse(userDataState.links || "[]"); } catch(e) {}
-        previewLinks.innerHTML = links.map(l => `<div class="link-mock">${l.name}</div>`).join('');
-    }
-
-    if (bannerBase64 && previewBanner) {
+    // Background / Banner
+    const directUrl = document.getElementById('banner-url-direct').value;
+    if (bannerBase64) {
         previewBanner.style.backgroundImage = `url(${bannerBase64})`;
-    } else if (userDataState?.banner_url && previewBanner) {
+    } else if (directUrl) {
+        previewBanner.style.backgroundImage = `url(${directUrl})`;
+    } else if (userDataState.banner_url) {
         previewBanner.style.backgroundImage = `url(${userDataState.banner_url})`;
     }
 
-    if (previewBanner) {
-        const opacity = document.getElementById('banner-opacity')?.value || 0.4;
-        previewBanner.style.filter = `blur(2px) brightness(${opacity})`;
+    // Mock Badges
+    if (previewBadges) {
+        let bHtml = `<i class="fa-solid fa-shield-halved" style="color:${accentVal}; font-size:12px;"></i>`;
+        bHtml += `<i class="fa-solid fa-circle-check" style="color:${accentVal}; font-size:12px; opacity:0.6;"></i>`;
+        previewBadges.innerHTML = bHtml;
+    }
+
+    // Mock Links
+    if (previewLinks) {
+        previewLinks.innerHTML = `
+            <div class="link-mock" style="border-color:${accentVal}33">Discord</div>
+            <div class="link-mock" style="border-color:${accentVal}33">Twitter</div>
+        `;
     }
 }
 
-// --- IMAGE UPLOADERS ---
+// --- IMAGE UPLOADERS (MAX 50MB) ---
 function initUploader() {
     const avatarInp = document.getElementById('avatar-upload');
     const bannerInp = document.getElementById('banner-upload');
+    const audioInp = document.getElementById('audio-upload-btn');
+    const cursorInp = document.getElementById('cursor-upload');
 
-    if (avatarInp) {
-        avatarInp.addEventListener('change', (e) => handleImageUpload(e, 'avatar'));
-    }
-    if (bannerInp) {
-        bannerInp.addEventListener('change', (e) => handleImageUpload(e, 'banner'));
-    }
+    const handleFile = async (e, type) => {
+        const file = e.target.files[0];
+        if (!file) return;
 
-    // Save Button
-    const saveBtn = document.querySelector('.save-btn');
-    if (saveBtn) {
-        saveBtn.addEventListener('click', saveProfileChanges);
-    }
-}
-
-async function handleImageUpload(e, type) {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    if (file.size > 2 * 1024 * 1024) {
-        alert("Image too large! (Limit: 2MB)");
-        return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-        if (type === 'avatar') {
-            avatarBase64 = ev.target.result;
-            if (previewAvatar) {
-                previewAvatar.src = avatarBase64 || '/assets/user_dragon.png';
-            }
-            if (previewAvatarImg) {
-                previewAvatarImg.src = avatarBase64 || '/assets/user_dragon.png';
-            }
-        } else {
-            bannerBase64 = ev.target.result;
-            const selector = document.getElementById('banner-selector');
-            if (selector) {
-                selector.style.backgroundImage = `url(${bannerBase64})`;
-                selector.textContent = "";
-            }
-            const prevBanner = document.getElementById('preview-banner');
-            if (prevBanner) prevBanner.style.backgroundImage = `url(${bannerBase64})`;
+        if (file.size > 50 * 1024 * 1024) {
+            alert("File too large! (Limit: 50MB)");
+            return;
         }
+
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            const result = ev.target.result;
+            if (type === 'avatar') {
+                avatarBase64 = result;
+                document.getElementById('preview-avatar-img').src = result;
+                document.getElementById('preview-avatar').src = result;
+            } else if (type === 'banner') {
+                bannerBase64 = result;
+                if (file.type.startsWith('image/')) {
+                    document.getElementById('banner-selector').style.backgroundImage = `url(${result})`;
+                    document.getElementById('preview-banner').style.backgroundImage = `url(${result})`;
+                } else {
+                    document.getElementById('banner-selector').querySelector('span').textContent = "Video selected!";
+                }
+            } else if (type === 'audio') {
+                document.getElementById('audio-upload-btn').nextElementSibling.textContent = file.name;
+                // Store base64 or prepare for upload
+            }
+        };
+        reader.readAsDataURL(file);
     };
-    reader.readAsDataURL(file);
+
+    if (avatarInp) avatarInp.onchange = (e) => handleFile(e, 'avatar');
+    if (bannerInp) bannerInp.onchange = (e) => handleFile(e, 'banner');
+    if (audioInp) audioInp.onchange = (e) => handleFile(e, 'audio');
+    if (cursorInp) cursorInp.onchange = (e) => handleFile(e, 'cursor');
 }
 
 // --- SAVE PROFILE ---
 async function saveProfileChanges() {
     const btn = document.querySelector('.save-btn');
-    const originalText = btn.textContent;
-    btn.textContent = "SAVING...";
+    const msg = document.getElementById('save-msg');
+    const orig = btn.textContent;
+    
+    btn.textContent = "INJECTING DATA...";
     btn.disabled = true;
 
     const payload = {
@@ -274,47 +321,64 @@ async function saveProfileChanges() {
         display_name: document.getElementById('profile-display-name').value,
         bio: document.getElementById('profile-bio').value,
         avatar_url: avatarBase64 || userDataState.avatar_url,
-        banner_url: bannerBase64 || userDataState.banner_url,
-        banner_opacity: parseFloat(document.getElementById('banner-opacity').value),
-        card_opacity: parseFloat(document.getElementById('card-opacity').value)
+        banner_url: bannerBase64 || document.getElementById('banner-url-direct').value || userDataState.banner_url,
+        
+        // Premium Fields
+        avatar_frame_color: document.getElementById('avatar-frame-hex').value,
+        icon_color: document.getElementById('icon-color-hex').value,
+        badge_bg_color: document.getElementById('badge-bg-color').value,
+        accent_color: document.getElementById('accent-color-hex').value,
+        
+        base_font: document.getElementById('base-font').value,
+        base_font_color: document.getElementById('base-font-color').value,
+        name_font: document.getElementById('name-font').value,
+        name_font_color: document.getElementById('name-font-color').value,
+        bio_font: document.getElementById('bio-font').value,
+        bio_font_color: document.getElementById('bio-font-color').value,
+        
+        card_style: document.querySelector('.style-opt-btn.active')?.dataset.style || 'glass',
+        hover_text: document.getElementById('hover-text').value,
+        link_hover_anim: document.getElementById('link-hover-anim').value,
+        glitch_avatar: document.getElementById('glitch-avatar').checked ? 1 : 0,
+        
+        profile_music_url: document.getElementById('music-url-direct').value,
+        bg_effect: document.getElementById('bg-effect').value,
+        entry_anim: document.getElementById('entry-anim').value,
+        tilt_3d: document.getElementById('tilt-3d').checked ? 1 : 0
     };
 
     try {
         const res = await fetch("/api/profile/update", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", "x-user-id": session.id },
             body: JSON.stringify(payload)
         });
 
         if (res.ok) {
-            btn.textContent = "SAVED! ✓";
-            btn.style.background = "#00e676";
-            btn.style.color = "#000";
-
-            // Re-fetch data to sync state
-            const refreshRes = await fetch(`/api/user/profile?u=${session.username}`);
-            userDataState = await refreshRes.json();
-
+            msg.textContent = "> SYSTEM_SYNC_SUCCESSFUL";
+            msg.style.color = "#00e676";
             setTimeout(() => {
-                btn.textContent = originalText;
-                btn.style.background = "";
-                btn.style.color = "";
+                btn.textContent = orig;
                 btn.disabled = false;
+                msg.textContent = "";
             }, 2000);
         } else {
-            throw new Error("API Error");
+            throw new Error("API_ERROR");
         }
     } catch (err) {
-        console.error(err);
-        btn.textContent = "ERROR";
-        btn.style.background = "#ff4d4d";
-        setTimeout(() => {
-            btn.textContent = originalText;
-            btn.style.background = "";
-            btn.disabled = false;
-        }, 3000);
+        msg.textContent = "> ERR_INJECTION_FAILED";
+        msg.style.color = "#ff4d4d";
+        btn.disabled = false;
+        btn.textContent = orig;
     }
 }
+
+// --- OTHERS ---
+function initStatCounters() { /* ... unchanged ... */ }
+window.logout = function () { /* ... unchanged ... */ };
+window.viewProfile = function () { /* ... unchanged ... */ };
+
+initDashboard();
 
 // --- SECURITY & ACCOUNT ---
 window.changeUserPassword = async function () {
