@@ -58,7 +58,11 @@ async function loadUsers(filter = "") {
 
         if (tbody) {
             tbody.innerHTML = filtered.map(u => {
-                const badgeList = JSON.parse(u.badges || "[]");
+                let badgeList = [];
+                try {
+                    badgeList = typeof u.badges === 'string' ? JSON.parse(u.badges || "[]") : (u.badges || []);
+                } catch(e) { badgeList = []; }
+
                 const badgeIcons = badgeList.map(bId => {
                     const b = globalBadges.find(gb => gb.id == bId || gb.name == bId);
                     return b ? `<img src="${b.icon_url}" style="width:18px;height:18px;margin-right:2px;" title="${b.name}">` : "";

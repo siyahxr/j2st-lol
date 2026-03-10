@@ -18,7 +18,27 @@ if (!session.id && session.user?.id) session.id = session.user.id;
 if (!session.username && session.user?.username) session.username = session.user.username;
 
 // --- STATE ---
-let userDataState = null;
+let userDataState = {
+    display_name: "",
+    bio: "",
+    avatar_url: "/assets/icons/user_dragon.png",
+    banner_url: "",
+    links: [],
+    badges: [],
+    available_badges: [],
+    accent_color: "#FFFFFF",
+    icon_color: "#A1A1AA",
+    avatar_frame_color: "rgba(0,0,0,1)",
+    name_font: "Outfit",
+    name_font_color: "#FFFFFF",
+    bio_font: "Outfit",
+    bio_font_color: "#FFFFFF",
+    badge_bg_color: "rgba(255,255,255,0.05)",
+    card_style: "glass",
+    bg_effect: "none",
+    entry_anim: "fadeIn",
+    glitch_avatar: 0
+};
 let avatarBase64 = null;
 let bannerBase64 = null;
 let musicBase64 = null;
@@ -115,16 +135,19 @@ window.switchTab = (el, tabName) => {
 async function init() {
     try {
         const res = await fetch(`/api/user/profile?u=${session.username}`);
-        userDataState = await res.json();
-        if (userDataState.error) throw new Error(userDataState.error);
-
-        // Normalize data
-        if (typeof userDataState.links === 'string') userDataState.links = JSON.parse(userDataState.links);
-        if (!userDataState.links) userDataState.links = [];
+        const data = await res.json();
         
-        // Parse badges if string (though usually array from API)
-        if (typeof userDataState.badges === 'string') userDataState.badges = JSON.parse(userDataState.badges);
-        if (!userDataState.badges) userDataState.badges = [];
+        if (!data.error) {
+            // Merge with default state
+            userDataState = { ...userDataState, ...data };
+            
+            // Normalize data
+            if (typeof userDataState.links === 'string') userDataState.links = JSON.parse(userDataState.links);
+            if (!userDataState.links) userDataState.links = [];
+            
+            if (typeof userDataState.badges === 'string') userDataState.badges = JSON.parse(userDataState.badges);
+            if (!userDataState.badges) userDataState.badges = [];
+        }
 
         syncUI();
         setupEventListeners();
@@ -132,7 +155,9 @@ async function init() {
         loadStats();
     } catch (e) {
         console.error("Dashboard Init Error:", e);
-        showToast("Session error. Please login again.", "error");
+        // Even if API fails, let's keep going with defaults
+        setupEventListeners();
+        renderPlatformGrid();
     }
 }
 
@@ -224,7 +249,7 @@ function setupEventListeners() {
         'profile-display-name', 'profile-bio', 'name-font', 'name-font-color',
         'bio-font', 'bio-font-color', 'avatar-frame-opacity', 'card-style',
         'bg-effect', 'entry-anim', 'glitch-avatar', 'banner-url-direct',
-        'badge-bg-color'
+        'badge-bg-color', 'accent-hex', 'icon-hex', 'avatar-frame-hex'
     ];
     liveIds.forEach(id => {
         const el = document.getElementById(id);
@@ -258,12 +283,18 @@ function setupFilePicker(inputId, type) {
             const b64 = rev.target.result;
             if (type === 'avatar') {
                 avatarBase64 = b64;
-                document.getElementById('preview-avatar-img').src = b64;
+                const editImg = document.getElementById('preview-avatar-img');
+                const phoneImg = document.getElementById('preview-avatar');
+                if (editImg) editImg.src = b64;
+                if (phoneImg) phoneImg.src = b64;
             } else if (type === 'banner') {
                 bannerBase64 = b64;
+                const phoneBanner = document.getElementById('preview-banner');
+                if (phoneBanner) phoneBanner.style.backgroundImage = `url(${b64})`;
             } else if (type === 'music') {
                 musicBase64 = b64;
-                document.getElementById('audio-status-text').textContent = "LOADED: " + file.name;
+                const status = document.getElementById('audio-status-text');
+                if (status) status.textContent = "LOADED: " + file.name;
             } else if (type === 'cursor') {
                 cursorBase64 = b64;
             }
@@ -360,6 +391,9 @@ function syncBadgesCollection() {
 
 // --- PREVIEW ---
 function updatePreview() {
+    // We can preview even with default/empty state
+    const d = userDataState || {};
+
     const name = document.getElementById('preview-name');
     const bio = document.getElementById('preview-bio');
     const handle = document.getElementById('preview-handle');
@@ -368,41 +402,43 @@ function updatePreview() {
     const phone = document.querySelector('.phone-content');
 
     if (name) {
-        name.textContent = document.getElementById('profile-display-name').value || "User";
-        name.style.fontFamily = document.getElementById('name-font').value;
-        name.style.color = document.getElementById('name-font-color').value;
+        name.textContent = document.getElementById('profile-display-name')?.value || "User";
+        name.style.fontFamily = document.getElementById('name-font')?.value || "Outfit";
+        name.style.color = document.getElementById('name-font-color')?.value || "#FFFFFF";
     }
     if (bio) {
-        bio.textContent = document.getElementById('profile-bio').value || "Biological data stream...";
-        bio.style.fontFamily = document.getElementById('bio-font').value;
-        bio.style.color = document.getElementById('bio-font-color').value;
+        bio.textContent = document.getElementById('profile-bio')?.value || "Biological data stream...";
+        bio.style.fontFamily = document.getElementById('bio-font')?.value || "Outfit";
+        bio.style.color = document.getElementById('bio-font-color')?.value || "#FFFFFF";
     }
-    if (handle) handle.textContent = "@" + session.username;
+    if (handle) handle.textContent = "@" + (session.username || "user");
+
+    const bUrl = bannerBase64 || document.getElementById('banner-url-direct')?.value || userDataState.banner_url;
+    if (banner) {
+        banner.style.backgroundImage = bUrl ? `url("${bUrl}")` : 'none';
+    }
 
     if (avatar) {
-        avatar.src = avatarBase64 || userDataState.avatar_url || '/assets/icons/user_dragon.png';
-        const fHex = document.getElementById('avatar-frame-hex').value;
-        const fOp = document.getElementById('avatar-frame-opacity').value;
+        avatar.src = avatarBase64 || d.avatar_url || '/assets/icons/user_dragon.png';
+        const fHex = document.getElementById('avatar-frame-hex')?.value || "#000000";
+        const fOp = document.getElementById('avatar-frame-opacity')?.value || "1";
         avatar.style.borderColor = hexToRgba(fHex, fOp);
-        avatar.classList.toggle('glitch', document.getElementById('glitch-avatar').checked);
+        avatar.classList.toggle('glitch', document.getElementById('glitch-avatar')?.checked || false);
     }
 
-    const bUrl = bannerBase64 || document.getElementById('banner-url-direct').value || userDataState.banner_url;
-    if (banner && bUrl) banner.style.backgroundImage = `url(${bUrl})`;
-
     // Card style & Accent
-    const cStyle = document.getElementById('card-style').value;
-    const accent = document.getElementById('accent-hex').value;
+    const cStyle = document.getElementById('card-style')?.value || "glass";
+    const accent = document.getElementById('accent-hex')?.value || "#FFFFFF";
     if (phone) {
         phone.className = `phone-content ${cStyle}-style`;
         phone.style.setProperty('--accent', accent);
     }
 
     // Backends might need to know about the badge bg
-    const badgeBg = document.getElementById('badge-bg-color').value;
+    const badgeBg = document.getElementById('badge-bg-color')?.value || "rgba(255,255,255,0.05)";
     const badgesPreview = document.getElementById('preview-badges');
     if (badgesPreview) {
-        badgesPreview.innerHTML = (userDataState.badges || []).map(b => `
+        badgesPreview.innerHTML = (d.badges || []).map(b => `
             <div class="badge-item" data-label="${b.name}" style="background: ${badgeBg}; border-radius: 4px;">
                 <img src="${b.icon_url}" class="badge-icon">
             </div>
@@ -412,7 +448,7 @@ function updatePreview() {
     // Links Preview
     const linksPreview = document.getElementById('preview-links');
     if (linksPreview) {
-        linksPreview.innerHTML = userDataState.links.map(l => `
+        linksPreview.innerHTML = (d.links || []).map(l => `
             <div class="badge-item" data-label="${l.title}" style="background: ${badgeBg}; border-radius: 4px;">
                 <i class="${l.icon}" style="font-size:14px; color:var(--accent);"></i>
             </div>
