@@ -10,7 +10,9 @@
     <link rel="stylesheet" href="/index.css">
     <link rel="stylesheet" href="/dashboard.css">
     <link rel="stylesheet" href="/css/dashboard/profile.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;600;800&family=Space+Grotesk:wght@500;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 
@@ -110,20 +112,24 @@
                         <div class="stat-lbl">Badges</div>
                     </div>
                 </div>
-                
+
                 <div class="glass-card" style="margin-top: 24px; padding: 32px;">
                     <div class="editor-section-header">
                         <i class="fa-solid fa-chart-simple"></i>
                         <h3>Platform Analysis</h3>
-                        <button class="ta-btn" style="margin-left:auto; font-size:10px;" onclick="toggleUpdates()">VIEW UPDATES</button>
+                        <button class="ta-btn" style="margin-left:auto; font-size:10px;" onclick="toggleUpdates()">VIEW
+                            UPDATES</button>
                     </div>
                     <div style="display:flex; gap:16px; align-items:center; margin-top:16px;">
-                        <div style="flex:1; height:6px; background:rgba(255,255,255,0.05); border-radius:10px; overflow:hidden;">
+                        <div
+                            style="flex:1; height:6px; background:rgba(255,255,255,0.05); border-radius:10px; overflow:hidden;">
                             <div style="width:65%; height:100%; background:#fff; box-shadow:0 0 10px #fff;"></div>
                         </div>
                         <span style="font-size:12px; font-weight:800; opacity:0.6;">65% Engagement</span>
                     </div>
-                    <p style="color:var(--text-muted); font-size: 13px; margin-top:16px; line-height:1.6;">Sizin için otomatik analiz toplandı. Profil etkileşimleriniz bu hafta %12 arttı. Daha fazla badge toplayarak etkileşimi artırabilirsiniz.</p>
+                    <p style="color:var(--text-muted); font-size: 13px; margin-top:16px; line-height:1.6;">Sizin için
+                        otomatik analiz toplandı. Profil etkileşimleriniz bu hafta %12 arttı. Daha fazla badge
+                        toplayarak etkileşimi artırabilirsiniz.</p>
                 </div>
             </div>
 
@@ -139,15 +145,19 @@
                                 <h3 data-i18n="dash_editor_identity">Identity</h3>
                             </div>
                             <div class="avatar-edit-row">
-                                <div class="avatar-preview-wrapper" onclick="document.getElementById('avatar-upload').click()">
-                                    <img src="/assets/icons/user_dragon.png" id="preview-avatar-img" class="avatar-preview-image">
+                                <div class="avatar-preview-wrapper"
+                                    onclick="document.getElementById('avatar-upload').click()">
+                                    <img src="/assets/icons/user_dragon.png" id="preview-avatar-img"
+                                        class="avatar-preview-image">
                                     <div class="avatar-overlay" data-i18n="dash_lbl_change">CHANGE</div>
                                 </div>
                                 <input type="file" id="avatar-upload" style="display:none" accept="image/*">
                                 <div class="avatar-info">
                                     <p data-i18n="dash_lbl_avatar">Profile Picture</p>
                                     <span data-i18n="dash_hint_avatar">Click to upload or provide a URL below.</span>
-                                    <input type="text" id="avatar-url-direct" class="form-input" style="margin-top:10px; width:100%; font-size:11px;" placeholder="Direct Avatar URL (Optional)">
+                                    <input type="text" id="avatar-url-direct" class="form-input"
+                                        style="margin-top:10px; width:100%; font-size:11px;"
+                                        placeholder="Direct Avatar URL (Optional)">
                                 </div>
                             </div>
                             <div class="form-grid">
@@ -157,7 +167,8 @@
                                 </div>
                                 <div class="form-field full">
                                     <label class="form-label" data-i18n="dash_lbl_bio">Bio</label>
-                                    <textarea id="profile-bio" class="form-input form-textarea" placeholder="Speak your mind..."></textarea>
+                                    <textarea id="profile-bio" class="form-input form-textarea"
+                                        placeholder="Speak your mind..."></textarea>
                                 </div>
                             </div>
                         </div>
@@ -174,7 +185,8 @@
                                     <div class="color-picker-suite">
                                         <div class="color-preview-box" id="accent-prev"></div>
                                         <input type="text" id="accent-hex" class="hex-inp" value="#FFFFFF">
-                                        <input type="color" id="accent-color" style="opacity:0; position:absolute; pointer-events:none;">
+                                        <input type="color" id="accent-color"
+                                            style="opacity:0; position:absolute; pointer-events:none;">
                                     </div>
                                 </div>
                                 <div class="form-field">
@@ -182,7 +194,8 @@
                                     <div class="color-picker-suite">
                                         <div class="color-preview-box" id="icon-prev"></div>
                                         <input type="text" id="icon-hex" class="hex-inp" value="#A1A1AA">
-                                        <input type="color" id="icon-color" style="opacity:0; position:absolute; pointer-events:none;">
+                                        <input type="color" id="icon-color"
+                                            style="opacity:0; position:absolute; pointer-events:none;">
                                     </div>
                                 </div>
                                 <div class="form-field">
@@ -190,18 +203,22 @@
                                     <div class="color-picker-suite">
                                         <div class="color-preview-box" id="avatar-frame-prev"></div>
                                         <input type="text" id="avatar-frame-hex" class="hex-inp" value="#000000">
-                                        <input type="color" id="avatar-frame-color" style="opacity:0; position:absolute; pointer-events:none;">
+                                        <input type="color" id="avatar-frame-color"
+                                            style="opacity:0; position:absolute; pointer-events:none;">
                                     </div>
                                     <div style="margin-top: 12px; padding: 0 4px;">
                                         <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                                            <span style="font-size:10px; font-weight:800; color:var(--text-muted);">OPACITY</span>
+                                            <span
+                                                style="font-size:10px; font-weight:800; color:var(--text-muted);">OPACITY</span>
                                         </div>
-                                        <input type="range" id="avatar-frame-opacity" min="0" max="1" step="0.1" value="1" style="width: 100%; accent-color: #fff; cursor:pointer;">
+                                        <input type="range" id="avatar-frame-opacity" min="0" max="1" step="0.1"
+                                            value="1" style="width: 100%; accent-color: #fff; cursor:pointer;">
                                     </div>
                                 </div>
                                 <div class="form-field">
                                     <label class="form-label" data-i18n="dash_lbl_badge_bg">Badge Background</label>
-                                    <input type="text" id="badge-bg-color" class="form-input" placeholder="rgba(255,255,255,0.05)">
+                                    <input type="text" id="badge-bg-color" class="form-input"
+                                        placeholder="rgba(255,255,255,0.05)">
                                 </div>
                                 <div class="form-field">
                                     <label class="form-label">Profile Card Style</label>
@@ -232,7 +249,8 @@
                                 </div>
                                 <div class="form-field">
                                     <label class="form-label" data-i18n="dash_lbl_name_color">Name Color</label>
-                                    <input type="color" id="name-font-color" style="width: 100%; height:42px; padding:2px; background:#0e0e0e; border:1px solid var(--accent-border); border-radius:12px; cursor:pointer;">
+                                    <input type="color" id="name-font-color"
+                                        style="width: 100%; height:42px; padding:2px; background:#0e0e0e; border:1px solid var(--accent-border); border-radius:12px; cursor:pointer;">
                                 </div>
                                 <div class="form-field">
                                     <label class="form-label" data-i18n="dash_lbl_bio_font">Bio Font</label>
@@ -274,9 +292,12 @@
                                 </div>
                                 <div class="form-field">
                                     <label class="form-label" data-i18n="dash_lbl_glitch">Glitch Avatar</label>
-                                    <div style="padding: 12px 16px; background:#0e0e0e; border: 1px solid var(--accent-border); border-radius:12px; display:flex; justify-content:space-between; align-items:center;">
-                                        <span style="font-size:11px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Enabled</span>
-                                        <input type="checkbox" id="glitch-avatar" style="accent-color: #fff; width:20px; height:20px; cursor:pointer;">
+                                    <div
+                                        style="padding: 12px 16px; background:#0e0e0e; border: 1px solid var(--accent-border); border-radius:12px; display:flex; justify-content:space-between; align-items:center;">
+                                        <span
+                                            style="font-size:11px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Enabled</span>
+                                        <input type="checkbox" id="glitch-avatar"
+                                            style="accent-color: #fff; width:20px; height:20px; cursor:pointer;">
                                     </div>
                                 </div>
                             </div>
@@ -290,26 +311,37 @@
                             </div>
                             <div class="form-grid">
                                 <div class="form-field full">
-                                     <label class="form-label">Background Banner (.mp4 / .gif / .jpg)</label>
-                                     <div style="display:flex; gap:12px;">
-                                         <input type="text" id="banner-url-direct" class="form-input" style="flex:1" placeholder="Direct URL or MP4">
-                                         <button class="form-input" style="width:50px; cursor:pointer;" onclick="document.getElementById('banner-upload').click()"><i class="fa-solid fa-upload"></i></button>
-                                         <input type="file" id="banner-upload" style="display:none" accept="image/*,video/mp4,video/webm">
-                                     </div>
-                                 </div>
-                                 <div class="form-field full">
-                                     <label class="form-label">Profile Music (Direct MP3 - Max 50MB)</label>
-                                     <div style="display:flex; gap:12px;">
-                                         <input type="text" id="music-url-direct" class="form-input" style="flex:1" placeholder="Direct .mp3 URL">
-                                         <button class="form-input" style="width:50px; cursor:pointer;" onclick="document.getElementById('audio-upload-btn').click()"><i class="fa-solid fa-upload"></i></button>
-                                         <input type="file" id="audio-upload-btn" accept=".mp3,audio/mpeg" style="display:none">
-                                     </div>
-                                 </div>
+                                    <label class="form-label">Background Banner (.mp4 / .gif / .jpg)</label>
+                                    <div style="display:flex; gap:12px;">
+                                        <input type="text" id="banner-url-direct" class="form-input" style="flex:1"
+                                            placeholder="Direct URL or MP4">
+                                        <button class="form-input" style="width:50px; cursor:pointer;"
+                                            onclick="document.getElementById('banner-upload').click()"><i
+                                                class="fa-solid fa-upload"></i></button>
+                                        <input type="file" id="banner-upload" style="display:none"
+                                            accept="image/*,video/mp4,video/webm">
+                                    </div>
+                                </div>
+                                <div class="form-field full">
+                                    <label class="form-label">Profile Music (Direct MP3 - Max 50MB)</label>
+                                    <div style="display:flex; gap:12px;">
+                                        <input type="text" id="music-url-direct" class="form-input" style="flex:1"
+                                            placeholder="Direct .mp3 URL">
+                                        <button class="form-input" style="width:50px; cursor:pointer;"
+                                            onclick="document.getElementById('audio-upload-btn').click()"><i
+                                                class="fa-solid fa-upload"></i></button>
+                                        <input type="file" id="audio-upload-btn" accept=".mp3,audio/mpeg"
+                                            style="display:none">
+                                    </div>
+                                </div>
                                 <div class="form-field full">
                                     <label class="form-label">Custom Cursor (.png)</label>
                                     <div style="display:flex; gap:12px;">
-                                        <input type="text" id="cursor-url-direct" class="form-input" style="flex:1" placeholder="Direct URL">
-                                        <button class="form-input" style="width:50px; cursor:pointer;" onclick="document.getElementById('cursor-upload').click()"><i class="fa-solid fa-upload"></i></button>
+                                        <input type="text" id="cursor-url-direct" class="form-input" style="flex:1"
+                                            placeholder="Direct URL">
+                                        <button class="form-input" style="width:50px; cursor:pointer;"
+                                            onclick="document.getElementById('cursor-upload').click()"><i
+                                                class="fa-solid fa-upload"></i></button>
                                         <input type="file" id="cursor-upload" style="display:none">
                                     </div>
                                 </div>
@@ -317,8 +349,11 @@
                         </div>
 
                         <div class="save-action-footer">
-                            <div id="save-msg" style="font-weight:800; font-size:12px; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted);">Standing by...</div>
-                            <button id="main-save-btn" class="save-btn" onclick="saveProfileChanges()" data-i18n="dash_save_btn">SAVE CHANGES</button>
+                            <div id="save-msg"
+                                style="font-weight:800; font-size:12px; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted);">
+                                Standing by...</div>
+                            <button id="main-save-btn" class="save-btn" onclick="saveProfileChanges()"
+                                data-i18n="dash_save_btn">SAVE CHANGES</button>
                         </div>
 
                     </div> <!-- End Editor Panel -->
@@ -332,16 +367,25 @@
                                     <img src="/assets/icons/user_dragon.png" id="preview-avatar" class="phone-avatar">
                                     <h4 class="phone-name" id="preview-name">User</h4>
                                     <p class="phone-handle" id="preview-handle">@user</p>
-                                    <div id="preview-badges" style="display:flex; justify-content:center; gap:8px; margin: 12px 0; min-height:24px;"></div>
+                                    <div id="preview-badges"
+                                        style="display:flex; justify-content:center; gap:8px; margin: 12px 0; min-height:24px;">
+                                    </div>
                                     <p class="phone-bio" id="preview-bio">Biological data stream...</p>
-                                    <div id="preview-links" style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-top:20px;"></div>
-                                    
+                                    <div id="preview-links"
+                                        style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-top:20px;">
+                                    </div>
+
                                     <!-- Music Bar Preview -->
-                                    <div id="preview-music-bar" style="display:none; margin-top: auto; background: rgba(0,0,0,0.4); backdrop-filter: blur(10px); border-radius: 12px; padding: 10px 15px; align-items: center; gap: 12px; border: 1px solid rgba(255,255,255,0.05);">
-                                        <i class="fa-solid fa-compact-disc fa-spin" style="color:var(--accent); font-size:16px;"></i>
+                                    <div id="preview-music-bar"
+                                        style="display:none; margin-top: auto; background: rgba(0,0,0,0.4); backdrop-filter: blur(10px); border-radius: 12px; padding: 10px 15px; align-items: center; gap: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                                        <i class="fa-solid fa-compact-disc fa-spin"
+                                            style="color:var(--accent); font-size:16px;"></i>
                                         <div style="flex:1; overflow:hidden;">
-                                            <p id="preview-music-title" style="font-size:10px; font-weight:800; color:#fff; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">Soundtrack Loaded</p>
-                                            <div style="height:2px; background:rgba(255,255,255,0.1); width:100%; margin-top:4px;">
+                                            <p id="preview-music-title"
+                                                style="font-size:10px; font-weight:800; color:#fff; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">
+                                                Soundtrack Loaded</p>
+                                            <div
+                                                style="height:2px; background:rgba(255,255,255,0.1); width:100%; margin-top:4px;">
                                                 <div style="height:100%; background:var(--accent); width:40%;"></div>
                                             </div>
                                         </div>
@@ -360,17 +404,32 @@
                         <i class="fa-solid fa-link"></i>
                         <h3 data-i18n="dash_links">Connectivity</h3>
                     </div>
-                    <p style="color:var(--text-muted); font-size:13px; margin-bottom:24px;">Add your social platforms. Max 20 links recommended.</p>
-                    
-                    <h4 style="font-size:12px; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:12px;">Select Platform</h4>
+                    <p style="color:var(--text-muted); font-size:13px; margin-bottom:24px;">Add your social platforms.
+                        Max 20 links recommended.</p>
+
+                    <h4
+                        style="font-size:12px; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:12px;">
+                        Select Platform</h4>
                     <div class="social-selector-grid" id="social-platform-grid"></div>
 
-                    <h4 style="font-size:12px; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin: 32px 0 16px;">Active Connections</h4>
+                    <h4
+                        style="font-size:12px; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin: 32px 0 12px;">
+                        Add Badge Link</h4>
+                    <p style="color:var(--text-muted); font-size:11px; margin-bottom:12px;">Add clickable badges that
+                        link to any URL</p>
+                    <div class="social-selector-grid" id="badge-platform-grid" style="opacity:0.9;"></div>
+
+                    <h4
+                        style="font-size:12px; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin: 32px 0 16px;">
+                        Active Connections</h4>
                     <div class="links-list" id="dashboard-links-list"></div>
 
                     <div class="save-action-footer">
-                        <div id="save-msg" style="font-weight:800; font-size:12px; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted);">Changes detected.</div>
-                        <button id="main-save-btn" class="save-btn" onclick="saveProfileChanges()" data-i18n="dash_save_btn">SAVE CHANGES</button>
+                        <div id="save-msg"
+                            style="font-weight:800; font-size:12px; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted);">
+                            Changes detected.</div>
+                        <button id="main-save-btn" class="save-btn" onclick="saveProfileChanges()"
+                            data-i18n="dash_save_btn">SAVE CHANGES</button>
                     </div>
                 </div>
             </div>
@@ -382,22 +441,30 @@
                         <i class="fa-solid fa-compact-disc"></i>
                         <h3 data-i18n="dash_media">Audio Atmosphere</h3>
                     </div>
-                    <p style="color:var(--text-muted); margin-bottom:32px; font-size:14px;">Upload an MP3 or paste a YouTube/Spotify link. It will sync and auto-play in your profile.</p>
+                    <p style="color:var(--text-muted); margin-bottom:32px; font-size:14px;">Upload an MP3 or paste a
+                        YouTube/Spotify link. It will sync and auto-play in your profile.</p>
                     <div class="form-grid">
                         <div class="form-field full">
                             <label class="form-label">Sound Source (File or URL)</label>
                             <div style="display:flex; gap:10px;">
-                                <input type="text" id="music-url-direct" class="form-input" style="flex:1" placeholder="Paste YouTube/Spotify/Direct MP3 Link...">
-                                <button class="form-input" style="width:50px; cursor:pointer;" onclick="document.getElementById('audio-upload-btn').click()"><i class="fa-solid fa-upload"></i></button>
+                                <input type="text" id="music-url-direct" class="form-input" style="flex:1"
+                                    placeholder="Paste YouTube/Spotify/Direct MP3 Link...">
+                                <button class="form-input" style="width:50px; cursor:pointer;"
+                                    onclick="document.getElementById('audio-upload-btn').click()"><i
+                                        class="fa-solid fa-upload"></i></button>
                                 <input type="file" id="audio-upload-btn" accept=".mp3,audio/mpeg" style="display:none">
                             </div>
-                            <p id="audio-status-text" style="font-size:10px; color:var(--text-muted); margin-top:8px;">Source will be saved as sync anchor.</p>
+                            <p id="audio-status-text" style="font-size:10px; color:var(--text-muted); margin-top:8px;">
+                                Source will be saved as sync anchor.</p>
                         </div>
                     </div>
 
                     <div class="save-action-footer">
-                        <div id="save-msg" style="font-weight:800; font-size:12px; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted);">Encryption ready.</div>
-                        <button id="main-save-btn" class="save-btn" onclick="saveProfileChanges()" data-i18n="dash_save_btn">SAVE CHANGES</button>
+                        <div id="save-msg"
+                            style="font-weight:800; font-size:12px; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted);">
+                            Encryption ready.</div>
+                        <button id="main-save-btn" class="save-btn" onclick="saveProfileChanges()"
+                            data-i18n="dash_save_btn">SAVE CHANGES</button>
                     </div>
                 </div>
             </div>
@@ -409,8 +476,10 @@
                         <i class="fa-solid fa-shield"></i>
                         <h3 data-i18n="dash_badges">Trophies</h3>
                     </div>
-                    <p style="color:var(--text-muted); font-size:14px; margin-bottom:32px;">Global achievements and tokens awarded to your account.</p>
-                    <div class="form-grid" id="dashboard-badges-grid" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));">
+                    <p style="color:var(--text-muted); font-size:14px; margin-bottom:32px;">Global achievements and
+                        tokens awarded to your account.</p>
+                    <div class="form-grid" id="dashboard-badges-grid"
+                        style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));">
                         <!-- Badges injected by JS -->
                     </div>
                 </div>
@@ -430,23 +499,28 @@
                             Kullanıcı adını değiştirdikten sonra tekrar değiştirmek için <b>7 gün</b> beklemen gerekir.
                         </p>
                         <div class="form-field full" style="margin-bottom:12px;">
-                            <input type="text" id="set-new-username" class="form-input" placeholder="New Unique Username">
+                            <input type="text" id="set-new-username" class="form-input"
+                                placeholder="New Unique Username">
                         </div>
-                        <button class="save-btn" style="width:100%; margin-bottom: 40px;" onclick="changeUsername()">Update Username</button>
+                        <button class="save-btn" style="width:100%; margin-bottom: 40px;"
+                            onclick="changeUsername()">Update Username</button>
 
                         <h4 style="font-size:14px; margin-bottom:16px;">Security Core</h4>
                         <div class="form-field full" style="margin-bottom:12px;">
                             <input type="password" id="set-old-pass" class="form-input" placeholder="Current Password">
                         </div>
                         <div class="form-field full" style="margin-bottom:20px;">
-                            <input type="password" id="set-new-pass" class="form-input" placeholder="New Secure Password">
+                            <input type="password" id="set-new-pass" class="form-input"
+                                placeholder="New Secure Password">
                         </div>
-                        <button class="save-btn" style="width:100%;" onclick="changeUserPassword()">Update Credentials</button>
-                        
+                        <button class="save-btn" style="width:100%;" onclick="changeUserPassword()">Update
+                            Credentials</button>
+
                         <hr style="border:none; border-top:1px solid var(--accent-border); margin: 40px 0;">
-                        
+
                         <h4 style="font-size:14px; margin-bottom:16px; color:var(--danger);">Danger Zone</h4>
-                        <button class="save-btn" style="background:var(--danger); color:#fff; width:100%;" onclick="logout()">TERMINATE SESSION</button>
+                        <button class="save-btn" style="background:var(--danger); color:#fff; width:100%;"
+                            onclick="logout()">TERMINATE SESSION</button>
                     </div>
                 </div>
             </div>

@@ -88,11 +88,17 @@ function renderProfile(user) {
     // 4. Badges & Links
     const badgesEl = document.getElementById('badges-el');
     if (badgesEl && user.badges && Array.isArray(user.badges)) {
-        badgesEl.innerHTML = user.badges.map(b => `
-            <div class="badge-item" data-label="${b.label || ''}">
+        badgesEl.innerHTML = user.badges.map(b => {
+            const badgeUrl = b.url || '';
+            if (badgeUrl) {
+                return `<a href="${badgeUrl}" target="_blank" class="badge-item" data-label="${b.label || ''}">
+                    <img src="${b.icon_url}" alt="${b.label}" class="badge-icon">
+                </a>`;
+            }
+            return `<div class="badge-item" data-label="${b.label || ''}">
                 <img src="${b.icon_url}" alt="${b.label}" class="badge-icon">
-            </div>
-        `).join('');
+            </div>`;
+        }).join('');
         if (window.twemoji) twemoji.parse(badgesEl);
     }
 
@@ -107,11 +113,17 @@ function renderProfile(user) {
             linksEl.style.gap = '10px';
             linksEl.style.flexWrap = 'wrap';
 
-            linksEl.innerHTML = lList.map(l => `
-                <a href="${l.url}" target="_blank" class="badge-item" data-label="${l.title}">
+            linksEl.innerHTML = lList.map(l => {
+                // Check if it's a badge link
+                if (l.isBadge) {
+                    return `<a href="${l.url}" target="_blank" class="badge-item" data-label="${l.title}" style="width:38px;height:38px;">
+                        <i class="${l.icon}" style="font-size:18px; color:${l.badgeColor || '#fff'};"></i>
+                    </a>`;
+                }
+                return `<a href="${l.url}" target="_blank" class="badge-item" data-label="${l.title}">
                     <i class="${l.icon}" style="font-size:20px;"></i>
-                </a>
-            `).join('');
+                </a>`;
+            }).join('');
             if (window.twemoji) twemoji.parse(linksEl);
         }
     }
@@ -213,13 +225,28 @@ function setup3DTilt(el) {
     el.style.transformStyle = "preserve-3d";
     el.style.transition = "transform 0.1s ease-out";
 
-    document.addEventListener("mousemove", (e) => {
-        const x = (e.clientX / window.innerWidth) - 0.5;
-        const y = (e.clientY / window.innerHeight) - 0.5;
+    let rafId = null;
+    let targetX = 0;
+    let targetY = 0;
+    let currentX = 0;
+    let currentY = 0;
 
-        // NATURAL WEIGHT: If mouse is right, right side goes back (negative Y rotation in CSS)
-        // If mouse is bottom, bottom side goes back (positive X rotation in CSS)
-        el.style.transform = `rotateX(${y * 35}deg) rotateY(${x * -35}deg) translateZ(15px)`;
+    const lerp = (start, end, factor) => start + (end - start) * factor;
+
+    const updateTransform = () => {
+        currentX = lerp(currentX, targetX, 0.15);
+        currentY = lerp(currentY, targetY, 0.15);
+        el.style.transform = `rotateX(${currentY * 35}deg) rotateY(${currentX * -35}deg) translateZ(15px)`;
+        rafId = null;
+    };
+
+    document.addEventListener("mousemove", (e) => {
+        targetX = (e.clientX / window.innerWidth) - 0.5;
+        targetY = (e.clientY / window.innerHeight) - 0.5;
+
+        if (!rafId) {
+            rafId = requestAnimationFrame(updateTransform);
+        }
     });
 }
 

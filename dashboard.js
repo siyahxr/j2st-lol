@@ -157,6 +157,7 @@ async function init() {
         syncUI();
         setupEventListeners();
         renderPlatformGrid();
+        renderBadgeGrid();
         loadStats();
     } catch (e) {
         console.error("Dashboard Init Error:", e);
@@ -374,6 +375,46 @@ function renderPlatformGrid() {
     `).join('');
 }
 
+// Badge listesi - link olarak eklenebilecek
+const BADGE_PLATFORMS = [
+    { id: 'badge_verify', name: 'Verified', icon: 'fa-solid fa-check-circle', color: '#00D9FF' },
+    { id: 'badge_premium', name: 'Premium', icon: 'fa-solid fa-crown', color: '#FFD700' },
+    { id: 'badge_early', name: 'Early Access', icon: 'fa-solid fa-rocket', color: '#FF6B35' },
+    { id: 'badge_supporter', name: 'Supporter', icon: 'fa-solid fa-heart', color: '#FF4D4D' },
+    { id: 'badge_staff', name: 'Staff', icon: 'fa-solid fa-shield-halved', color: '#4CAF50' },
+    { id: 'badge_partner', name: 'Partner', icon: 'fa-solid fa-handshake', color: '#9C27B0' }
+];
+
+function renderBadgeGrid() {
+    const grid = document.getElementById('badge-platform-grid');
+    if (!grid) return;
+    grid.innerHTML = BADGE_PLATFORMS.map(p => `
+        <div class="social-platform-item" title="${p.name}" onclick="addBadgeLink('${p.id}')" style="border-color: ${p.color}40;">
+            <i class="${p.icon}" style="color: ${p.color};"></i>
+        </div>
+    `).join('');
+}
+
+window.addBadgeLink = (badgeId) => {
+    const badge = BADGE_PLATFORMS.find(x => x.id === badgeId);
+    if (!badge) return;
+
+    // Max links check
+    if (userDataState.links.length >= 20) return showToast("Max links reached", "error");
+
+    userDataState.links.push({
+        id: Date.now(),
+        type: badgeId,
+        title: badge.name,
+        icon: badge.icon,
+        url: '',
+        isBadge: true,
+        badgeColor: badge.color
+    });
+    syncActiveLinks();
+    updatePreview();
+};
+
 window.addLink = (platId) => {
     const p = PLATFORMS.find(x => x.id === platId);
     if (!p) return;
@@ -409,20 +450,24 @@ window.updateLinkUrl = (id, val) => {
 function syncActiveLinks() {
     const container = document.getElementById('dashboard-links-list');
     if (!container) return;
-    container.innerHTML = userDataState.links.map(l => `
-        <div class="glass-card link-editor-item" style="display:flex; align-items:center; gap:15px; background: rgba(255,255,255,0.02); margin-bottom:10px; padding: 15px;">
-            <i class="${l.icon}" style="font-size:20px; width:24px; text-align:center;"></i>
+    container.innerHTML = userDataState.links.map(l => {
+        const isBadgeLink = l.isBadge;
+        const badgeStyle = isBadgeLink ? `background: ${l.badgeColor || '#fff'}15; border: 1px solid ${l.badgeColor || '#fff'}30;` : '';
+        const badgeIconStyle = isBadgeLink ? `color: ${l.badgeColor || '#fff'};` : '';
+
+        return `<div class="glass-card link-editor-item" style="display:flex; align-items:center; gap:15px; background: rgba(255,255,255,0.02); margin-bottom:10px; padding: 15px; ${badgeStyle}">
+            <i class="${l.icon}" style="font-size:20px; width:24px; text-align:center; ${badgeIconStyle}"></i>
             <div style="flex:1">
-                <p style="font-weight:700; font-size:13px;">${l.title}</p>
-                <input type="text" value="${l.url}" placeholder="https://..." 
+                <p style="font-weight:700; font-size:13px;">${l.title} ${isBadgeLink ? '<span style="font-size:9px; opacity:0.5;">(Badge Link)</span>' : ''}</p>
+                <input type="text" value="${l.url}" placeholder="${isBadgeLink ? 'Badge URL (e.g. https://...' : 'https://...'}" 
                     class="form-input" style="padding: 6px 10px; font-size:11px; margin-top:5px; width:100%"
                     oninput="updateLinkUrl(${l.id}, this.value)">
             </div>
             <button class="form-input" style="padding: 8px; border-color:rgba(255,77,77,0.2); cursor:pointer;" onclick="removeLink(${l.id})">
                 <i class="fa-solid fa-trash" style="color:#ff4d4d"></i>
             </button>
-        </div>
-    `).join('');
+        </div>`;
+    }).join('');
 }
 
 // --- BADGES ---
@@ -517,11 +562,16 @@ function updatePreview() {
     // Links Preview
     const linksPreview = document.getElementById('preview-links');
     if (linksPreview) {
-        linksPreview.innerHTML = (d.links || []).map(l => `
-            <div class="badge-item" data-label="${l.title}" style="background: ${badgeBg}; border-radius: 4px;">
+        linksPreview.innerHTML = (d.links || []).map(l => {
+            if (l.isBadge) {
+                return `<a href="${l.url}" target="_blank" class="badge-item" data-label="${l.title}" style="width:38px;height:38px;text-decoration:none;">
+                    <i class="${l.icon}" style="font-size:16px; color:${l.badgeColor || '#fff'};"></i>
+                </a>`;
+            }
+            return `<div class="badge-item" data-label="${l.title}" style="background: ${badgeBg}; border-radius: 4px;">
                 <i class="${l.icon}" style="font-size:14px; color:var(--accent);"></i>
-            </div>
-        `).join('');
+            </div>`;
+        }).join('');
     }
 
     // Music Bar Preview
