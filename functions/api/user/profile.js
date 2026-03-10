@@ -26,6 +26,24 @@ export async function onRequestGet({ request, env }) {
       return new Response(JSON.stringify({ error: "User not found" }), { status: 404 });
     }
 
+    // --- RESOLVE BADGES ---
+    let resolvedBadges = [];
+    try {
+      const badgeIds = JSON.parse(user.badges || "[]");
+      if (badgeIds.length > 0) {
+        // Fetch global badges
+        const allGlobal = await env.j2st_db.prepare("SELECT id, name, icon_url FROM global_badges").all();
+        const globalList = allGlobal.results || [];
+        
+        resolvedBadges = badgeIds.map(bId => {
+          const found = globalList.find(gb => gb.id == bId || gb.name == bId);
+          return found ? { label: found.name, icon_url: found.icon_url } : null;
+        }).filter(b => b !== null);
+      }
+    } catch (e) {
+      console.error("Badge resolution failed:", e);
+    }
+
     // --- VIEW COUNT LOGIC (Unique-ish) ---
     const cookie = request.headers.get("Cookie") || "";
     const viewMark = `v_${user.id}`;
@@ -37,7 +55,7 @@ export async function onRequestGet({ request, env }) {
       updatedViews++;
     }
 
-    const responseData = { ...user, views: updatedViews };
+    const responseData = { ...user, views: updatedViews, badges: resolvedBadges };
 
     return new Response(JSON.stringify(responseData), {
       headers: { 

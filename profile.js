@@ -70,18 +70,13 @@ function renderProfile(user) {
     
     // 4. Badges & Links
     const badgesEl = document.getElementById('badges-el');
-    if (badgesEl && user.badges) {
-        // Badges can be a JSON string or an array depending on DB driver
-        let bList = user.badges;
-        if (typeof bList === 'string') try { bList = JSON.parse(bList); } catch(e) { bList = []; }
-        
-        if (Array.isArray(bList)) {
-            badgesEl.innerHTML = bList.map(b => `
-                <div class="badge-item" title="${b.label || ''}">
-                    <i class="${b.icon || 'fa-solid fa-certificate'}"></i>
-                </div>
-            `).join('');
-        }
+    if (badgesEl && user.badges && Array.isArray(user.badges)) {
+        badgesEl.innerHTML = user.badges.map(b => `
+            <div class="badge-item" data-label="${b.label || ''}">
+                <img src="${b.icon_url}" alt="${b.label}" class="badge-icon">
+            </div>
+        `).join('');
+        if (window.twemoji) twemoji.parse(badgesEl);
     }
 
     const linksEl = document.getElementById('links-el');

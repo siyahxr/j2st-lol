@@ -207,6 +207,16 @@ function updatePreview() {
         avPreview.style.borderColor = hexToRgba(fHex, fOp);
     }
 
+    // Badges Preview
+    const badgesPreview = document.getElementById('preview-badges');
+    if (badgesPreview && userDataState.badges && Array.isArray(userDataState.badges)) {
+        badgesPreview.innerHTML = userDataState.badges.map(b => `
+            <div class="badge-item" data-label="${b.label || ''}" style="width:24px; height:24px;">
+                <img src="${b.icon_url}" alt="${b.label}" class="badge-icon">
+            </div>
+        `).join('');
+    }
+
     const bUrl = bannerBase64 || document.getElementById('banner-url-direct').value || userDataState.banner_url;
     if (banner && bUrl) banner.style.backgroundImage = `url(${bUrl})`;
 

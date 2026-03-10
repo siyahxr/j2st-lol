@@ -240,6 +240,56 @@
 .phone-handle { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
 .phone-bio { font-size: 11px; margin-top: 8px; line-height: 1.5; color: #ccc; }
 
+/* BADGES IN PREVIEW */
+.badge-item {
+    position: relative;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+}
+
+.badge-icon {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.badge-item::after {
+    content: attr(data-label);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) translateY(5px);
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(10px);
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 9px;
+    font-weight: 800;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.3s;
+    border: 1px solid rgba(255,255,255,0.1);
+    pointer-events: none;
+    z-index: 1000;
+}
+
+.badge-item:hover::after {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+.badge-item:hover {
+    transform: translateY(-3px) scale(1.2);
+}
+
 /* STICKY FOOTER */
 .save-action-footer {
     position: fixed;
