@@ -106,10 +106,10 @@ async function loadGlobalBadges(render = true) {
             const list = document.getElementById("global-badges-list");
             if (list) {
                 list.innerHTML = globalBadges.map(b => `
-                    <div class="badge-row">
-                        <img src="${b.icon_url}" class="badge-icon-preview">
-                        <span>${b.name}</span>
-                        <span style="color:var(--text-dim);font-size:12px;">${b.description || ''}</span>
+                    <div class="global-badge-item">
+                        <img src="${b.icon_url}" alt="${b.name}">
+                        <span class="global-badge-name">${b.name}</span>
+                        <div style="font-size: 10px; color: var(--text-dim); text-align: center; margin-top: 5px;">${b.description || 'No description'}</div>
                     </div>
                 `).join('');
             }
@@ -122,36 +122,43 @@ async function loadGlobalBadges(render = true) {
 window.openBadgeModal = function (userId, username) {
     currentEditingUserId = userId;
     const user = allUsers.find(u => u.id === userId);
-    const existingBadges = JSON.parse(user?.badges || "[]");
+    let existingBadges = [];
+    try {
+        existingBadges = JSON.parse(user?.badges || "[]");
+    } catch (e) {
+        existingBadges = [];
+    }
 
     const modal = document.getElementById("badge-modal");
-    const list = document.getElementById("badge-assign-list");
-    const title = document.getElementById("badge-modal-title");
+    const list = document.getElementById("badge-options-list");
+    const userLabel = document.getElementById("badge-modal-user");
 
     if (!modal || !list) return;
 
-    title.textContent = `Assign Badges to @${username}`;
-    list.innerHTML = globalBadges.map(b => {
+    if (userLabel) userLabel.textContent = `Assigning Badges to @${username}`;
+    
+    list.innerHTML = globalBadges.length > 0 ? globalBadges.map(b => {
         const isAssigned = existingBadges.includes(b.id) || existingBadges.includes(b.name);
         return `
-            <label class="badge-option ${isAssigned ? 'selected' : ''}">
-                <input type="checkbox" value="${b.id}" ${isAssigned ? 'checked' : ''}>
-                <img src="${b.icon_url}" style="width:24px;height:24px;">
+            <div class="badge-opt ${isAssigned ? 'selected' : ''}" onclick="toggleBadgeOption(this)">
+                <input type="checkbox" value="${b.id}" ${isAssigned ? 'checked' : ''} style="display:none">
+                <img src="${b.icon_url}" style="width:24px;height:24px;object-fit:contain;">
                 <span>${b.name}</span>
-            </label>
+            </div>
         `;
-    }).join('');
+    }).join('') : `<p style="color:var(--text-dim); text-align:center;">No badges available.</p>`;
 
     modal.style.display = "flex";
 };
 
-window.closeBadgeModal = function () {
-    const modal = document.getElementById("badge-modal");
-    if (modal) modal.style.display = "none";
+window.toggleBadgeOption = function(el) {
+    const cb = el.querySelector('input');
+    cb.checked = !cb.checked;
+    el.classList.toggle('selected', cb.checked);
 };
 
-window.saveBadgeAssignments = async function () {
-    const checkboxes = document.querySelectorAll("#badge-assign-list input:checked");
+window.saveUserBadges = async function () {
+    const checkboxes = document.querySelectorAll("#badge-options-list input:checked");
     const selectedBadges = Array.from(checkboxes).map(c => c.value);
 
     try {
@@ -161,7 +168,7 @@ window.saveBadgeAssignments = async function () {
                 "Content-Type": "application/json",
                 "x-user-id": getSession()?.id || ""
             },
-            body: JSON.stringify({ userId: currentEditingUserId, badges: selectedBadges })
+            body: JSON.stringify({ userId: currentEditingUserId, badges: JSON.stringify(selectedBadges) })
         });
 
         const data = await res.json();
@@ -225,24 +232,61 @@ window.deleteUser = async function (userId) {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-    const searchInput = document.getElementById("user-search");
-    if (searchInput) {
-        searchInput.addEventListener("input", (e) => {
-            loadUsers(e.target.value);
-        });
-    }
-
-    const modal = document.getElementById("badge-modal");
-    if (modal) {
-        modal.addEventListener("click", (e) => {
-            if (e.target === modal) closeBadgeModal();
-        });
+    // File input listener for badge creation
+    const badgeFile = document.getElementById('badge-icon-file');
+    if (badgeFile) {
+        badgeFile.onchange = (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                badgeBase64 = ev.target.result;
+                const status = document.getElementById('badge-upload-status');
+                if (status) status.textContent = "Image loaded: " + file.name;
+            };
+            reader.readAsDataURL(file);
+        };
     }
 
     loadUsers();
     loadGlobalBadges();
     loadStats();
 });
+
+window.filterUsers = function(val) {
+    loadUsers(val);
+};
+
+window.deployBadge = async function() {
+    const name = document.getElementById('new-badge-name').value;
+    if (!name || !badgeBase64) {
+        alert("Please provide name and icon");
+        return;
+    }
+
+    try {
+        const res = await fetch("/api/admin/create_badge", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "x-user-id": getSession()?.id || ""
+            },
+            body: JSON.stringify({ name, icon_url: badgeBase64 })
+        });
+        const data = await res.json();
+        if (data.success) {
+            alert("Badge deployed!");
+            document.getElementById('new-badge-name').value = "";
+            badgeBase64 = null;
+            document.getElementById('badge-upload-status').textContent = "Click to upload PNG/SVG";
+            loadGlobalBadges();
+        } else {
+            alert("Deploy failed: " + data.error);
+        }
+    } catch (e) {
+        alert("Error: " + e.message);
+    }
+};
 
 async function loadStats() {
     try {

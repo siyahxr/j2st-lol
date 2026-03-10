@@ -1,21 +1,23 @@
 /**
  * J2ST.ICU — VOID DASHBOARD LOGIC (v4.0)
- * Redesigned for Absolute Performance & Reliability
+ * Rebuilt for Stability, Speed & Premium Aesthetics
  */
 
-// --- SESSION CHECK ---
-const sessionStr = localStorage.getItem("j2st_session_v2");
+// --- SESSION & AUTH ---
+const SES_KEY = "j2st_session_v2";
+const sessionStr = localStorage.getItem(SES_KEY);
 if (!sessionStr) window.location.replace("/login");
 
 let session = JSON.parse(sessionStr);
 if (!session?.username && !session?.id && !session?.user) {
-    localStorage.removeItem("j2st_session_v2");
+    localStorage.removeItem(SES_KEY);
     window.location.replace("/login");
 }
-// Normalize
+// Normalize session object
 if (!session.id && session.user?.id) session.id = session.user.id;
 if (!session.username && session.user?.username) session.username = session.user.username;
 
+// --- STATE ---
 let userDataState = null;
 let avatarBase64 = null;
 let bannerBase64 = null;
@@ -59,7 +61,9 @@ const PLATFORMS = [
     { id: 'custom', name: 'Custom', icon: 'fa-solid fa-link' }
 ];
 
+// --- UTILS ---
 function hexToRgba(hex, opacity) {
+    if (!hex) return `rgba(0,0,0,${opacity})`;
     const r = parseInt(hex.slice(1, 3), 16);
     const g = parseInt(hex.slice(3, 5), 16);
     const b = parseInt(hex.slice(5, 7), 16);
@@ -79,107 +83,218 @@ function parseRgba(rgba) {
 
 // --- TAB SYSTEM ---
 window.switchTab = (el, tabName) => {
-    if (el) {
-        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-        el.classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    if (el) el.classList.add('active');
+    else {
+        // Fallback for logic-driven switches
+        document.querySelectorAll(`.nav-item[href="#${tabName}"]`).forEach(i => i.classList.add('active'));
     }
+
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
     document.getElementById('tab-' + tabName)?.classList.add('active');
 
-    const titles = {
-        overview: ['dash_title_overview', 'Overview essence'],
-        profile: ['dash_title_profile', 'Customize your presence'],
-        links: ['dash_title_links', 'Manage your connectivity'],
-        media: ['dash_title_media', 'Upload atmosphere assets'],
-        badges: ['dash_title_badges', 'Showcase achievements'],
-        settings: ['dash_title_settings', 'Account core management']
+    const meta = {
+        overview: { title: 'dash_overview', sub: 'Void essence dashboard.' },
+        profile: { title: 'dash_profile', sub: 'Customize your presence.' },
+        links: { title: 'dash_links', sub: 'Manage your connectivity.' },
+        media: { title: 'dash_media', sub: 'Upload atmosphere assets.' },
+        badges: { title: 'dash_badges', sub: 'Showcase achievements.' },
+        settings: { title: 'dash_settings', sub: 'Account core management.' }
     };
 
     const t = document.getElementById('tab-title');
     const s = document.getElementById('tab-sub');
-    if (t && titles[tabName]) {
-        t.setAttribute('data-i18n', titles[tabName][0]);
-        s.textContent = titles[tabName][1];
+    if (t && meta[tabName]) {
+        t.setAttribute('data-i18n', meta[tabName].title);
+        s.textContent = meta[tabName].sub;
         if (window.applyLanguage) applyLanguage();
     }
 };
 
-// --- INITIALIZATION ---
+// --- CORE LOGIC ---
 async function init() {
     try {
         const res = await fetch(`/api/user/profile?u=${session.username}`);
         userDataState = await res.json();
         if (userDataState.error) throw new Error(userDataState.error);
 
+        // Normalize data
+        if (typeof userDataState.links === 'string') userDataState.links = JSON.parse(userDataState.links);
+        if (!userDataState.links) userDataState.links = [];
+        
+        // Parse badges if string (though usually array from API)
+        if (typeof userDataState.badges === 'string') userDataState.badges = JSON.parse(userDataState.badges);
+        if (!userDataState.badges) userDataState.badges = [];
+
         syncUI();
-        setupControls();
-        setupLivePreview();
-        setupUploaders();
-        setupTiltPreview();
+        setupEventListeners();
         renderPlatformGrid();
-        loadDashboardStats();
+        loadStats();
     } catch (e) {
-        console.error("Init failed:", e);
+        console.error("Dashboard Init Error:", e);
+        showToast("Session error. Please login again.", "error");
     }
 }
 
-// --- DASHBOARD STATS ---
-async function loadDashboardStats() {
-    try {
-        const res = await fetch(`/api/user/profile?u=${session.username}`);
-        const data = await res.json();
+function syncUI() {
+    if (!userDataState) return;
 
-        // Views
-        const viewsEl = document.getElementById('stat-views');
-        if (viewsEl) viewsEl.textContent = data.views || 0;
-
-        // Links count
-        const linksEl = document.getElementById('stat-links');
-        if (linksEl) {
-            const links = data.links || [];
-            linksEl.textContent = links.length;
-        }
-
-        // Badges count
-        const badgesEl = document.getElementById('stat-badges');
-        if (badgesEl) {
-            const badges = data.badges || [];
-            badgesEl.textContent = badges.length;
-        }
-    } catch (e) {
-        console.error("Failed to load dashboard stats:", e);
+    // Admin Access Control
+    const userRole = session?.role || session?.user?.role;
+    const adminLink = document.getElementById('admin-nav-link');
+    if (adminLink) {
+        const isStaff = userRole === 'admin' || session.username.charCodeAt(0) === 36;
+        adminLink.style.display = isStaff ? 'flex' : 'none';
     }
+
+    // Identity
+    document.getElementById('profile-display-name').value = userDataState.display_name || "";
+    document.getElementById('profile-bio').value = userDataState.bio || "";
+    document.querySelectorAll('.chip-img, #preview-avatar-img').forEach(img => {
+        img.src = userDataState.avatar_url || '/assets/icons/user_dragon.png';
+    });
+    document.querySelectorAll('.chip-name').forEach(el => el.textContent = userDataState.display_name || userDataState.username);
+
+    // Styling
+    syncColor('accent', userDataState.accent_color || '#FFFFFF');
+    syncColor('icon', userDataState.icon_color || '#A1A1AA');
+    
+    const frame = parseRgba(userDataState.avatar_frame_color || 'rgba(0,0,0,1)');
+    syncColor('avatar-frame', frame.hex);
+    document.getElementById('avatar-frame-opacity').value = frame.opacity;
+    document.getElementById('badge-bg-color').value = userDataState.badge_bg_color || "rgba(255,255,255,0.05)";
+    document.getElementById('card-style').value = userDataState.card_style || "glass";
+
+    // Typography
+    document.getElementById('name-font').value = userDataState.name_font || "Outfit";
+    document.getElementById('name-font-color').value = userDataState.name_font_color || "#FFFFFF";
+    document.getElementById('bio-font').value = userDataState.bio_font || "Outfit";
+    document.getElementById('bio-font-color').value = userDataState.bio_font_color || "#FFFFFF";
+
+    // Atmosphere
+    document.getElementById('bg-effect').value = userDataState.bg_effect || "none";
+    document.getElementById('entry-anim').value = userDataState.entry_anim || "fadeIn";
+    document.getElementById('glitch-avatar').checked = !!userDataState.glitch_avatar;
+
+    // Media
+    document.getElementById('banner-url-direct').value = userDataState.banner_url || "";
+    document.getElementById('music-url-direct').value = userDataState.profile_music_url || "";
+    document.getElementById('cursor-url-direct').value = userDataState.custom_cursor_url || "";
+
+    syncActiveLinks();
+    syncBadgesCollection();
+    updatePreview();
 }
 
+function syncColor(id, val) {
+    const hex = document.getElementById(id + '-hex');
+    const pick = document.getElementById(id + '-color');
+    const prev = document.getElementById(id + '-prev');
+    if (hex) hex.value = val;
+    if (pick) pick.value = val;
+    if (prev) prev.style.background = val;
+}
+
+function setupEventListeners() {
+    // Live color updates
+    ['accent', 'icon', 'avatar-frame'].forEach(id => {
+        const hex = document.getElementById(id + '-hex');
+        const pick = document.getElementById(id + '-color');
+        const prev = document.getElementById(id + '-prev');
+
+        if (prev && pick) prev.onclick = () => pick.click();
+        if (pick && hex) {
+            pick.oninput = () => {
+                hex.value = pick.value;
+                if (prev) prev.style.background = pick.value;
+                updatePreview();
+            };
+            hex.oninput = () => {
+                if (hex.value.match(/^#[0-9A-F]{6}$/i)) {
+                    pick.value = hex.value;
+                    if (prev) prev.style.background = hex.value;
+                    updatePreview();
+                }
+            };
+        }
+    });
+
+    // Input changes for live preview
+    const liveIds = [
+        'profile-display-name', 'profile-bio', 'name-font', 'name-font-color',
+        'bio-font', 'bio-font-color', 'avatar-frame-opacity', 'card-style',
+        'bg-effect', 'entry-anim', 'glitch-avatar', 'banner-url-direct'
+    ];
+    liveIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.oninput = updatePreview;
+    });
+
+    // File Uploaders
+    setupFilePicker('avatar-upload', 'avatar');
+    setupFilePicker('banner-upload', 'banner');
+    setupFilePicker('audio-upload-btn', 'music');
+    setupFilePicker('cursor-upload', 'cursor');
+}
+
+function setupFilePicker(inputId, type) {
+    const el = document.getElementById(inputId);
+    if (!el) return;
+    el.onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (type === 'music' && !file.type.includes('audio') && !file.name.endsWith('.mp3')) {
+            return showToast("Only MP3 files allowed", "error");
+        }
+        if (file.size > 5 * 1024 * 1024) return showToast("File too large (Max 5MB)", "error");
+
+        const reader = new FileReader();
+        reader.onload = (rev) => {
+            const b64 = rev.target.result;
+            if (type === 'avatar') {
+                avatarBase64 = b64;
+                document.getElementById('preview-avatar-img').src = b64;
+            } else if (type === 'banner') {
+                bannerBase64 = b64;
+            } else if (type === 'music') {
+                musicBase64 = b64;
+                document.getElementById('audio-status-text').textContent = "LOADED: " + file.name;
+            } else if (type === 'cursor') {
+                cursorBase64 = b64;
+            }
+            updatePreview();
+            showToast("Asset ready to deploy", "success");
+        };
+        reader.readAsDataURL(file);
+    };
+}
+
+// --- LINKS ---
 function renderPlatformGrid() {
     const grid = document.getElementById('social-platform-grid');
     if (!grid) return;
     grid.innerHTML = PLATFORMS.map(p => `
-        <div class="social-platform-item" title="${p.name}" onclick="addPlatformLink('${p.id}')">
+        <div class="social-platform-item" title="${p.name}" onclick="addLink('${p.id}')">
             <i class="${p.icon}"></i>
         </div>
     `).join('');
 }
 
-window.addPlatformLink = (platId) => {
-    const plat = PLATFORMS.find(p => p.id === platId);
-    if (!plat) return;
+window.addLink = (platId) => {
+    const p = PLATFORMS.find(x => x.id === platId);
+    if (!p) return;
+    
+    // Max links check
+    if (userDataState.links.length >= 20) return showToast("Max links reached", "error");
 
-    if (!userDataState.links) userDataState.links = [];
-    if (typeof userDataState.links === 'string') userDataState.links = JSON.parse(userDataState.links);
-
-    // Check if already exists to prevent duplicates (optional, but good)
-    const exists = userDataState.links.some(l => l.type === platId);
-    if (exists && platId !== 'custom') return showToast("Already added", "error");
-
-    const newL = {
+    userDataState.links.push({
         id: Date.now(),
-        type: plat.id,
-        title: plat.name,
-        icon: plat.icon,
+        type: p.id,
+        title: p.name,
+        icon: p.icon,
         url: ''
-    };
-    userDataState.links.push(newL);
+    });
     syncActiveLinks();
     updatePreview();
 };
@@ -199,11 +314,7 @@ window.updateLinkUrl = (id, val) => {
 function syncActiveLinks() {
     const container = document.getElementById('dashboard-links-list');
     if (!container) return;
-
-    let lList = userDataState.links || [];
-    if (typeof lList === 'string') try { lList = JSON.parse(lList); } catch (e) { lList = []; }
-
-    container.innerHTML = lList.map(l => `
+    container.innerHTML = userDataState.links.map(l => `
         <div class="glass-card" style="display:flex; align-items:center; gap:15px; background: rgba(255,255,255,0.02); margin-bottom:10px; padding: 15px;">
             <i class="${l.icon}" style="font-size:20px; width:24px; text-align:center;"></i>
             <div style="flex:1">
@@ -212,178 +323,81 @@ function syncActiveLinks() {
                     class="form-input" style="padding: 6px 10px; font-size:11px; margin-top:5px; width:100%"
                     oninput="updateLinkUrl(${l.id}, this.value)">
             </div>
-            <button class="form-input" style="padding: 8px; border-color:rgba(255,77,77,0.2)" onclick="removeLink(${l.id})">
+            <button class="form-input" style="padding: 8px; border-color:rgba(255,77,77,0.2); cursor:pointer;" onclick="removeLink(${l.id})">
                 <i class="fa-solid fa-trash" style="color:#ff4d4d"></i>
             </button>
         </div>
     `).join('');
 }
 
+// --- BADGES ---
 function syncBadgesCollection() {
-    const container = document.getElementById('dashboard-badges-grid');
-    if (!container || !userDataState.available_badges) return;
+    const grid = document.getElementById('dashboard-badges-grid');
+    if (!grid || !userDataState.available_badges) return;
 
-    const userBadgeIds = (userDataState.badges || []).map(b => b.id);
-    const all = userDataState.available_badges;
-
-    container.innerHTML = all.map(b => {
-        const isOwned = userBadgeIds.includes(b.id);
-        const desc = b.description || "Kurucu tarafından verilir.";
-
+    const ownedIds = (userDataState.badges || []).map(b => parseInt(b.id) || b.id);
+    
+    grid.innerHTML = userDataState.available_badges.map(b => {
+        const isOwned = ownedIds.includes(parseInt(b.id) || b.id);
         return `
-            <div class="glass-card badge-collect-item ${isOwned ? 'owned' : 'locked'}" style="text-align:center; padding: 20px; transition: 0.3s;">
+            <div class="glass-card badge-collect-item ${isOwned ? 'owned' : 'locked'}" style="text-align:center; padding: 20px;">
                 <div class="badge-status-icon">
-                    ${isOwned ? `<img src="${b.icon_url}" style="width:48px; height:48px; object-fit:contain;">` : `<i class="fa-solid fa-lock" style="font-size:32px; opacity:0.3;"></i>`}
+                    ${isOwned ? `<img src="${b.icon_url}" style="width:48px;height:48px;object-fit:contain;">` : `<i class="fa-solid fa-lock" style="font-size:32px; opacity:0.3;"></i>`}
                 </div>
-                <p style="font-weight:800; margin-top:12px;">${b.name}</p>
-                <span style="font-size:11px; color:var(--text-muted); display:block; margin-top:5px;">${desc}</span>
-                ${isOwned ? '<span style="font-size:10px; color:#fff; background:rgba(255,255,255,0.1); padding:2px 8px; border-radius:10px; margin-top:8px; display:inline-block;">OWNED</span>' : ''}
+                <p style="font-weight:800; margin-top:12px; font-size:13px;">${b.name}</p>
+                <span style="font-size:10px; color:var(--text-muted); display:block; margin-top:5px;">${b.description || 'Awarded by system'}</span>
+                ${isOwned ? '<span style="font-size:9px; color:#fff; background:rgba(255,255,255,0.1); padding:2px 8px; border-radius:10px; margin-top:10px; display:inline-block; font-weight:800;">OWNED</span>' : ''}
             </div>
         `;
     }).join('');
 }
 
-function syncUI() {
-    if (!userDataState) return;
-
-    // Admin link control - sadece admin rolü veya $ kullanıcısı görebilir
-    const userRole = session?.role || session?.user?.role;
-    const userName = session?.username || session?.user?.username;
-    const adminLink = document.getElementById('admin-nav-link');
-    if (adminLink) {
-        const isAdminOrFounder = userRole === 'admin' || userName.charCodeAt(0) === 36;
-        adminLink.style.display = isAdminOrFounder ? 'flex' : 'none';
-    }
-
-    syncActiveLinks();
-    syncBadgesCollection();
-
-    // Header & Info
-    document.querySelectorAll('.chip-img, #preview-avatar-img, #preview-avatar').forEach(img => {
-        img.src = userDataState.avatar_url || '/assets/icons/user_dragon.png';
-    });
-    document.querySelectorAll('.chip-name, #preview-name').forEach(el => {
-        el.textContent = userDataState.display_name || userDataState.username;
-    });
-
-    // Profile Fields
-    document.getElementById('profile-display-name').value = userDataState.display_name || "";
-    document.getElementById('profile-bio').value = userDataState.bio || "";
-
-    // Colors
-    syncColor('accent', userDataState.accent_color || '#FFFFFF');
-    syncColor('icon', userDataState.icon_color || '#A1A1AA');
-
-    const frameData = parseRgba(userDataState.avatar_frame_color || '#000000');
-    syncColor('avatar-frame', frameData.hex);
-    document.getElementById('avatar-frame-opacity').value = frameData.opacity;
-
-    document.getElementById('badge-bg-color').value = userDataState.badge_bg_color || "rgba(255,255,255,0.05)";
-
-    // Fonts
-    document.getElementById('name-font').value = userDataState.name_font || "Outfit";
-    document.getElementById('name-font-color').value = userDataState.name_font_color || "#FFFFFF";
-    document.getElementById('bio-font').value = userDataState.bio_font || "Outfit";
-    document.getElementById('bio-font-color').value = userDataState.bio_font_color || "#FFFFFF";
-
-    // Effects
-    document.getElementById('bg-effect').value = userDataState.bg_effect || "none";
-    document.getElementById('entry-anim').value = userDataState.entry_anim || "fadeIn";
-    document.getElementById('glitch-avatar').checked = !!userDataState.glitch_avatar;
-    document.getElementById('card-style').value = userDataState.card_style || "glass";
-
-    // Media
-    document.getElementById('banner-url-direct').value = userDataState.banner_url || "";
-    document.getElementById('music-url-direct').value = userDataState.profile_music_url || "";
-    document.getElementById('cursor-url-direct').value = userDataState.custom_cursor_url || "";
-
-    updatePreview();
-}
-
-function syncColor(id, val) {
-    const hex = document.getElementById(id + '-hex');
-    const pick = document.getElementById(id + '-color');
-    const prev = document.getElementById(id + '-prev');
-    if (hex) hex.value = val;
-    if (pick) pick.value = val;
-    if (prev) prev.style.background = val;
-}
-
-function setupControls() {
-    ['accent', 'icon', 'avatar-frame'].forEach(id => {
-        const hex = document.getElementById(id + '-hex');
-        const pick = document.getElementById(id + '-color');
-        const prev = document.getElementById(id + '-prev');
-
-        if (prev && pick) prev.onclick = () => pick.click();
-        if (pick && hex) {
-            pick.oninput = () => {
-                hex.value = pick.value;
-                if (prev) prev.style.background = pick.value;
-                updatePreview();
-            };
-            hex.oninput = () => {
-                if (hex.value.match(/^#[0-9A-F]{6}$/i)) {
-                    pick.value = hex.value;
-                    if (prev) prev.style.background = hex.value;
-                    updatePreview();
-                }
-            };
-        }
-    });
-    document.getElementById('avatar-frame-opacity').oninput = updatePreview;
-
-    // Color pickers for fonts
-    ['name-font-color'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.oninput = updatePreview;
-    });
-}
-
-function setupLivePreview() {
-    const ids = [
-        'profile-display-name', 'profile-bio', 'name-font', 'bio-font',
-        'bio-font-color', 'banner-url-direct', 'glitch-avatar', 'card-style',
-        'avatar-frame-opacity'
-    ];
-    ids.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.oninput = updatePreview;
-    });
-}
-
+// --- PREVIEW ---
 function updatePreview() {
-    if (!userDataState) return;
-
     const name = document.getElementById('preview-name');
     const bio = document.getElementById('preview-bio');
+    const handle = document.getElementById('preview-handle');
     const banner = document.getElementById('preview-banner');
+    const avatar = document.getElementById('preview-avatar');
+    const phone = document.querySelector('.phone-content');
 
     if (name) {
-        name.textContent = document.getElementById('profile-display-name').value || userDataState.username;
+        name.textContent = document.getElementById('profile-display-name').value || "User";
         name.style.fontFamily = document.getElementById('name-font').value;
         name.style.color = document.getElementById('name-font-color').value;
     }
     if (bio) {
-        bio.textContent = document.getElementById('profile-bio').value || "Bio stream...";
+        bio.textContent = document.getElementById('profile-bio').value || "Biological data stream...";
         bio.style.fontFamily = document.getElementById('bio-font').value;
         bio.style.color = document.getElementById('bio-font-color').value;
     }
+    if (handle) handle.textContent = "@" + session.username;
 
-    // Avatar Frame Preview
-    const avPreview = document.getElementById('preview-avatar');
-    if (avPreview) {
+    if (avatar) {
+        avatar.src = avatarBase64 || userDataState.avatar_url || '/assets/icons/user_dragon.png';
         const fHex = document.getElementById('avatar-frame-hex').value;
         const fOp = document.getElementById('avatar-frame-opacity').value;
-        avPreview.style.borderColor = hexToRgba(fHex, fOp);
+        avatar.style.borderColor = hexToRgba(fHex, fOp);
+        avatar.classList.toggle('glitch', document.getElementById('glitch-avatar').checked);
+    }
+
+    const bUrl = bannerBase64 || document.getElementById('banner-url-direct').value || userDataState.banner_url;
+    if (banner && bUrl) banner.style.backgroundImage = `url(${bUrl})`;
+
+    // Card style & Accent
+    const cStyle = document.getElementById('card-style').value;
+    const accent = document.getElementById('accent-hex').value;
+    if (phone) {
+        phone.className = `phone-content ${cStyle}-style`;
+        phone.style.setProperty('--accent', accent);
     }
 
     // Badges Preview
     const badgesPreview = document.getElementById('preview-badges');
-    if (badgesPreview && userDataState.badges && Array.isArray(userDataState.badges)) {
-        badgesPreview.innerHTML = userDataState.badges.map(b => `
-            <div class="badge-item" data-label="${b.label || ''}" style="width:24px; height:24px;">
-                <img src="${b.icon_url}" alt="${b.label}" class="badge-icon">
+    if (badgesPreview) {
+        badgesPreview.innerHTML = (userDataState.badges || []).map(b => `
+            <div class="badge-item" data-label="${b.name}">
+                <img src="${b.icon_url}" class="badge-icon">
             </div>
         `).join('');
     }
@@ -391,119 +405,43 @@ function updatePreview() {
     // Links Preview
     const linksPreview = document.getElementById('preview-links');
     if (linksPreview) {
-        let lList = userDataState.links || [];
-        if (typeof lList === 'string') try { lList = JSON.parse(lList); } catch (e) { lList = []; }
-        linksPreview.innerHTML = lList.map(l => `
-            <div class="badge-item" data-label="${l.title}" style="width:24px; height:24px;">
-                <i class="${l.icon}" style="font-size:14px;"></i>
+        linksPreview.innerHTML = userDataState.links.map(l => `
+            <div class="badge-item" data-label="${l.title}">
+                <i class="${l.icon}" style="font-size:14px; color:var(--accent);"></i>
             </div>
         `).join('');
     }
-
-    const bUrl = bannerBase64 || document.getElementById('banner-url-direct').value || userDataState.banner_url;
-    if (banner && bUrl) banner.style.backgroundImage = `url(${bUrl})`;
-
-    const phone = document.querySelector('.phone-content');
-    const aura = document.querySelector('.phone-content .dynamic-aura');
-    const cStyle = document.getElementById('card-style').value;
-    const accent = document.getElementById('accent-hex').value;
-
-    if (phone) {
-        phone.className = 'phone-content ' + cStyle + '-style';
-        phone.style.setProperty('--accent', accent);
-    }
-    if (aura) {
-        aura.style.background = accent;
-    }
 }
 
-function setupTiltPreview() {
-    const ph = document.querySelector('.phone');
-    if (ph) {
-        ph.style.transform = "none";
-        ph.style.transformStyle = "flat";
-    }
-}
-
-function setupUploaders() {
-    const map = {
-        'avatar-upload': 'avatar',
-        'banner-upload': 'banner',
-        'audio-upload-btn': 'music',
-        'cursor-upload': 'cursor'
-    };
-
-    Object.keys(map).forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.onchange = (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-
-                // MP3 kontrolü (audio için)
-                if (id === 'audio-upload-btn' && file.type !== 'audio/mpeg' && !file.name.endsWith('.mp3')) {
-                    showToast("Only MP3 files allowed", "error");
-                    return;
-                }
-
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    const res = ev.target.result;
-                    if (id === 'avatar-upload') {
-                        avatarBase64 = res;
-                        document.getElementById('preview-avatar-img').src = res;
-                        document.getElementById('preview-avatar').src = res;
-                    } else if (id === 'banner-upload') {
-                        bannerBase64 = res;
-                        document.getElementById('preview-banner').style.backgroundImage = `url(${res})`;
-                    } else if (id === 'audio-upload-btn') {
-                        musicBase64 = res;
-                        showToast("Audio loaded - Save to apply", "success");
-                    } else if (id === 'cursor-upload') {
-                        cursorBase64 = res;
-                    }
-                };
-                reader.readAsDataURL(file);
-            };
-        }
-    });
-}
-
+// --- ACTIONS ---
 window.saveProfileChanges = async () => {
     const btn = document.getElementById('main-save-btn');
-    const msg = document.getElementById('save-msg');
+    if (!btn || btn.disabled) return;
 
-    if (!btn) return;
-    const lang = localStorage.getItem('j2st_lang') || 'en';
-    btn.textContent = i18n_dict[lang]?.dash_btn_saving || "SAVING...";
     btn.disabled = true;
+    btn.textContent = "SAVING...";
 
     const payload = {
         id: session.id,
-        display_name: document.getElementById('profile-display-name')?.value || "",
-        bio: document.getElementById('profile-bio')?.value || "",
-        avatar_url: avatarBase64 || userDataState?.avatar_url || null,
-        banner_url: bannerBase64 || document.getElementById('banner-url-direct')?.value || userDataState?.banner_url || null,
-        accent_color: document.getElementById('accent-hex')?.value || "#FFFFFF",
-        icon_color: document.getElementById('icon-hex')?.value || "#A1A1AA",
-        avatar_frame_color: hexToRgba(document.getElementById('avatar-frame-hex')?.value || "#000000", document.getElementById('avatar-frame-opacity')?.value || "1"),
-        badge_bg_color: document.getElementById('badge-bg-color')?.value || "rgba(255,255,255,0.05)",
-        name_font: document.getElementById('name-font')?.value || "Outfit",
-        name_font_color: document.getElementById('name-font-color')?.value || "#FFFFFF",
-        bio_font: document.getElementById('bio-font')?.value || "Outfit",
-        bio_font_color: document.getElementById('bio-font-color')?.value || "#FFFFFF",
-        bg_effect: document.getElementById('bg-effect')?.value || "none",
-        entry_anim: document.getElementById('entry-anim')?.value || "fadeIn",
-        glitch_avatar: document.getElementById('glitch-avatar')?.checked ? 1 : 0,
-        profile_music_url: musicBase64 || document.getElementById('music-url-direct')?.value || userDataState?.profile_music_url || null,
-        custom_cursor_url: cursorBase64 || document.getElementById('cursor-url-direct')?.value || userDataState?.custom_cursor_url || null,
-        base_font: userDataState?.base_font || "Inter",
-        base_font_color: userDataState?.base_font_color || "#FFFFFF",
-        card_style: document.getElementById('card-style')?.value || "glass",
-        hover_text: userDataState?.hover_text || "Void Entity",
-        link_hover_anim: userDataState?.link_hover_anim || "float",
-        tilt_3d: userDataState?.tilt_3d ?? 1,
-        links: JSON.stringify(userDataState.links || [])
+        display_name: document.getElementById('profile-display-name').value,
+        bio: document.getElementById('profile-bio').value,
+        avatar_url: avatarBase64 || userDataState.avatar_url,
+        banner_url: bannerBase64 || document.getElementById('banner-url-direct').value,
+        accent_color: document.getElementById('accent-hex').value,
+        icon_color: document.getElementById('icon-hex').value,
+        avatar_frame_color: hexToRgba(document.getElementById('avatar-frame-hex').value, document.getElementById('avatar-frame-opacity').value),
+        badge_bg_color: document.getElementById('badge-bg-color').value,
+        name_font: document.getElementById('name-font').value,
+        name_font_color: document.getElementById('name-font-color').value,
+        bio_font: document.getElementById('bio-font').value,
+        bio_font_color: document.getElementById('bio-font-color').value,
+        bg_effect: document.getElementById('bg-effect').value,
+        entry_anim: document.getElementById('entry-anim').value,
+        glitch_avatar: document.getElementById('glitch-avatar').checked ? 1 : 0,
+        profile_music_url: musicBase64 || document.getElementById('music-url-direct').value,
+        custom_cursor_url: cursorBase64 || document.getElementById('cursor-url-direct').value,
+        card_style: document.getElementById('card-style').value,
+        links: JSON.stringify(userDataState.links)
     };
 
     try {
@@ -512,25 +450,57 @@ window.saveProfileChanges = async () => {
             headers: { "Content-Type": "application/json", "x-user-id": session.id },
             body: JSON.stringify(payload)
         });
-
-        const result = await r.json();
-
-        if (r.ok && result.success) {
+        const res = await r.json();
+        if (res.success) {
+            showToast("Changes Secured.", "success");
             userDataState = { ...userDataState, ...payload };
-            showToast(i18n_dict[lang]?.dash_toast_saved || "Saved!", "success");
-            if (msg) msg.textContent = "CHANGES SECURED.";
+            // Reset base64s to save memory
+            avatarBase64 = bannerBase64 = musicBase64 = cursorBase64 = null;
         } else {
-            throw new Error(result.error || "Save failed");
+            throw new Error(res.error);
         }
     } catch (e) {
-        console.error("Save Error:", e);
-        showToast(i18n_dict[lang]?.dash_toast_error || "Error", "error");
-        if (msg) msg.textContent = "SAVE FAILED: " + e.message;
+        showToast("Error: " + e.message, "error");
     } finally {
-        btn.textContent = i18n_dict[lang]?.dash_save_btn || "SAVE CHANGES";
         btn.disabled = false;
+        btn.textContent = "SAVE CHANGES";
     }
 };
+
+window.changeUserPassword = async () => {
+    const oldP = document.getElementById('set-old-pass').value;
+    const newP = document.getElementById('set-new-pass').value;
+    if (!oldP || !newP) return showToast("Enter passwords", "error");
+
+    try {
+        const r = await fetch("/api/user/change-password", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "x-user-id": session.id },
+            body: JSON.stringify({ userId: session.id, oldPassword: oldP, newPassword: newP })
+        });
+        const res = await r.json();
+        if (res.success) {
+            showToast("Password updated.", "success");
+            document.getElementById('set-old-pass').value = document.getElementById('set-new-pass').value = "";
+        } else {
+            showToast(res.error, "error");
+        }
+    } catch (e) {
+        showToast("Server error", "error");
+    }
+};
+
+async function loadStats() {
+    try {
+        const sViews = document.getElementById('stat-views');
+        const sLinks = document.getElementById('stat-links');
+        const sBadges = document.getElementById('stat-badges');
+
+        if (sViews) sViews.textContent = userDataState.views || 0;
+        if (sLinks) sLinks.textContent = userDataState.links.length;
+        if (sBadges) sBadges.textContent = userDataState.badges.length;
+    } catch (e) {}
+}
 
 function showToast(m, type) {
     const t = document.getElementById('toast');
@@ -541,298 +511,8 @@ function showToast(m, type) {
     setTimeout(() => t.classList.remove('active'), 3000);
 }
 
-window.viewProfile = () => window.location.href = '/' + (userDataState?.username || session.username);
-window.logout = () => { localStorage.removeItem("j2st_session_v2"); window.location.replace("/login"); };
+window.viewProfile = () => window.location.href = '/' + session.username;
+window.logout = () => { localStorage.removeItem(SES_KEY); window.location.replace("/login"); };
 
-init();
-
-syncActiveLinks();
-syncBadgesCollection();
-
-// Header & Info
-document.querySelectorAll('.chip-img, #preview-avatar-img, #preview-avatar').forEach(img => {
-    img.src = userDataState.avatar_url || '/assets/icons/user_dragon.png';
-});
-document.querySelectorAll('.chip-name, #preview-name').forEach(el => {
-    el.textContent = userDataState.display_name || userDataState.username;
-});
-
-// Profile Fields
-document.getElementById('profile-display-name').value = userDataState.display_name || "";
-document.getElementById('profile-bio').value = userDataState.bio || "";
-
-// Colors
-syncColor('accent', userDataState.accent_color || '#FFFFFF');
-syncColor('icon', userDataState.icon_color || '#A1A1AA');
-
-const frameData = parseRgba(userDataState.avatar_frame_color || '#000000');
-syncColor('avatar-frame', frameData.hex);
-document.getElementById('avatar-frame-opacity').value = frameData.opacity;
-
-document.getElementById('badge-bg-color').value = userDataState.badge_bg_color || "rgba(255,255,255,0.05)";
-
-// Fonts
-document.getElementById('name-font').value = userDataState.name_font || "Outfit";
-document.getElementById('name-font-color').value = userDataState.name_font_color || "#FFFFFF";
-document.getElementById('bio-font').value = userDataState.bio_font || "Outfit";
-document.getElementById('bio-font-color').value = userDataState.bio_font_color || "#FFFFFF";
-
-// Effects
-document.getElementById('bg-effect').value = userDataState.bg_effect || "none";
-document.getElementById('entry-anim').value = userDataState.entry_anim || "fadeIn";
-document.getElementById('glitch-avatar').checked = !!userDataState.glitch_avatar;
-document.getElementById('card-style').value = userDataState.card_style || "glass";
-
-// Media
-document.getElementById('banner-url-direct').value = userDataState.banner_url || "";
-document.getElementById('music-url-direct').value = userDataState.profile_music_url || "";
-document.getElementById('cursor-url-direct').value = userDataState.custom_cursor_url || "";
-
-updatePreview();
-}
-
-function syncColor(id, val) {
-    const hex = document.getElementById(id + '-hex');
-    const pick = document.getElementById(id + '-color');
-    const prev = document.getElementById(id + '-prev');
-    if (hex) hex.value = val;
-    if (pick) pick.value = val;
-    if (prev) prev.style.background = val;
-}
-
-function setupControls() {
-    ['accent', 'icon', 'avatar-frame'].forEach(id => {
-        const hex = document.getElementById(id + '-hex');
-        const pick = document.getElementById(id + '-color');
-        const prev = document.getElementById(id + '-prev');
-
-        if (prev && pick) prev.onclick = () => pick.click();
-        if (pick && hex) {
-            pick.oninput = () => {
-                hex.value = pick.value;
-                if (prev) prev.style.background = pick.value;
-                updatePreview();
-            };
-            hex.oninput = () => {
-                if (hex.value.match(/^#[0-9A-F]{6}$/i)) {
-                    pick.value = hex.value;
-                    if (prev) prev.style.background = hex.value;
-                    updatePreview();
-                }
-            };
-        }
-    });
-    document.getElementById('avatar-frame-opacity').oninput = updatePreview;
-
-    // Color pickers for fonts
-    ['name-font-color'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.oninput = updatePreview;
-    });
-}
-
-function setupLivePreview() {
-    const ids = [
-        'profile-display-name', 'profile-bio', 'name-font', 'bio-font',
-        'bio-font-color', 'banner-url-direct', 'glitch-avatar', 'card-style',
-        'avatar-frame-opacity'
-    ];
-    ids.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.oninput = updatePreview;
-    });
-}
-
-function updatePreview() {
-    if (!userDataState) return;
-
-    const name = document.getElementById('preview-name');
-    const bio = document.getElementById('preview-bio');
-    const banner = document.getElementById('preview-banner');
-
-    if (name) {
-        name.textContent = document.getElementById('profile-display-name').value || userDataState.username;
-        name.style.fontFamily = document.getElementById('name-font').value;
-        name.style.color = document.getElementById('name-font-color').value;
-    }
-    if (bio) {
-        bio.textContent = document.getElementById('profile-bio').value || "Bio stream...";
-        bio.style.fontFamily = document.getElementById('bio-font').value;
-        bio.style.color = document.getElementById('bio-font-color').value;
-    }
-
-    // Avatar Frame Preview
-    const avPreview = document.getElementById('preview-avatar');
-    if (avPreview) {
-        const fHex = document.getElementById('avatar-frame-hex').value;
-        const fOp = document.getElementById('avatar-frame-opacity').value;
-        avPreview.style.borderColor = hexToRgba(fHex, fOp);
-    }
-
-    // Badges Preview
-    const badgesPreview = document.getElementById('preview-badges');
-    if (badgesPreview && userDataState.badges && Array.isArray(userDataState.badges)) {
-        badgesPreview.innerHTML = userDataState.badges.map(b => `
-            <div class="badge-item" data-label="${b.label || ''}" style="width:24px; height:24px;">
-                <img src="${b.icon_url}" alt="${b.label}" class="badge-icon">
-            </div>
-        `).join('');
-    }
-
-    // Links Preview
-    const linksPreview = document.getElementById('preview-links');
-    if (linksPreview) {
-        let lList = userDataState.links || [];
-        if (typeof lList === 'string') try { lList = JSON.parse(lList); } catch (e) { lList = []; }
-        linksPreview.innerHTML = lList.map(l => `
-            <div class="badge-item" data-label="${l.title}" style="width:24px; height:24px;">
-                <i class="${l.icon}" style="font-size:14px;"></i>
-            </div>
-        `).join('');
-    }
-
-    const bUrl = bannerBase64 || document.getElementById('banner-url-direct').value || userDataState.banner_url;
-    if (banner && bUrl) banner.style.backgroundImage = `url(${bUrl})`;
-
-    const phone = document.querySelector('.phone-content');
-    const aura = document.querySelector('.phone-content .dynamic-aura');
-    const cStyle = document.getElementById('card-style').value;
-    const accent = document.getElementById('accent-hex').value;
-
-    if (phone) {
-        phone.className = 'phone-content ' + cStyle + '-style';
-        phone.style.setProperty('--accent', accent);
-    }
-    if (aura) {
-        aura.style.background = accent;
-    }
-}
-
-function setupTiltPreview() {
-    const ph = document.querySelector('.phone');
-    if (ph) {
-        ph.style.transform = "none";
-        ph.style.transformStyle = "flat";
-    }
-}
-
-function setupUploaders() {
-    const map = {
-        'avatar-upload': 'avatar',
-        'banner-upload': 'banner',
-        'audio-upload-btn': 'music',
-        'cursor-upload': 'cursor'
-    };
-
-    Object.keys(map).forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.onchange = (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-
-                // MP3 kontrolü (audio için)
-                if (id === 'audio-upload-btn' && file.type !== 'audio/mpeg' && !file.name.endsWith('.mp3')) {
-                    showToast("Only MP3 files allowed", "error");
-                    return;
-                }
-
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    const res = ev.target.result;
-                    if (id === 'avatar-upload') {
-                        avatarBase64 = res;
-                        document.getElementById('preview-avatar-img').src = res;
-                        document.getElementById('preview-avatar').src = res;
-                    } else if (id === 'banner-upload') {
-                        bannerBase64 = res;
-                        document.getElementById('preview-banner').style.backgroundImage = `url(${res})`;
-                    } else if (id === 'audio-upload-btn') {
-                        musicBase64 = res;
-                        showToast("Audio loaded - Save to apply", "success");
-                    } else if (id === 'cursor-upload') {
-                        cursorBase64 = res;
-                    }
-                };
-                reader.readAsDataURL(file);
-            };
-        }
-    });
-}
-
-window.saveProfileChanges = async () => {
-    const btn = document.getElementById('main-save-btn');
-    const msg = document.getElementById('save-msg');
-
-    if (!btn) return;
-    const lang = localStorage.getItem('j2st_lang') || 'en';
-    btn.textContent = i18n_dict[lang]?.dash_btn_saving || "SAVING...";
-    btn.disabled = true;
-
-    const payload = {
-        id: session.id,
-        display_name: document.getElementById('profile-display-name')?.value || "",
-        bio: document.getElementById('profile-bio')?.value || "",
-        avatar_url: avatarBase64 || userDataState?.avatar_url || null,
-        banner_url: bannerBase64 || document.getElementById('banner-url-direct')?.value || userDataState?.banner_url || null,
-        accent_color: document.getElementById('accent-hex')?.value || "#FFFFFF",
-        icon_color: document.getElementById('icon-hex')?.value || "#A1A1AA",
-        avatar_frame_color: hexToRgba(document.getElementById('avatar-frame-hex')?.value || "#000000", document.getElementById('avatar-frame-opacity')?.value || "1"),
-        badge_bg_color: document.getElementById('badge-bg-color')?.value || "rgba(255,255,255,0.05)",
-        name_font: document.getElementById('name-font')?.value || "Outfit",
-        name_font_color: document.getElementById('name-font-color')?.value || "#FFFFFF",
-        bio_font: document.getElementById('bio-font')?.value || "Outfit",
-        bio_font_color: document.getElementById('bio-font-color')?.value || "#FFFFFF",
-        bg_effect: document.getElementById('bg-effect')?.value || "none",
-        entry_anim: document.getElementById('entry-anim')?.value || "fadeIn",
-        glitch_avatar: document.getElementById('glitch-avatar')?.checked ? 1 : 0,
-        profile_music_url: musicBase64 || document.getElementById('music-url-direct')?.value || userDataState?.profile_music_url || null,
-        custom_cursor_url: cursorBase64 || document.getElementById('cursor-url-direct')?.value || userDataState?.custom_cursor_url || null,
-        base_font: userDataState?.base_font || "Inter",
-        base_font_color: userDataState?.base_font_color || "#FFFFFF",
-        card_style: document.getElementById('card-style')?.value || "glass",
-        hover_text: userDataState?.hover_text || "Void Entity",
-        link_hover_anim: userDataState?.link_hover_anim || "float",
-        tilt_3d: userDataState?.tilt_3d ?? 1,
-        links: JSON.stringify(userDataState.links || [])
-    };
-
-    try {
-        const r = await fetch("/api/profile/update", {
-            method: "POST",
-            headers: { "Content-Type": "application/json", "x-user-id": session.id },
-            body: JSON.stringify(payload)
-        });
-
-        const result = await r.json();
-
-        if (r.ok && result.success) {
-            userDataState = { ...userDataState, ...payload };
-            showToast(i18n_dict[lang]?.dash_toast_saved || "Saved!", "success");
-            if (msg) msg.textContent = "CHANGES SECURED.";
-        } else {
-            throw new Error(result.error || "Save failed");
-        }
-    } catch (e) {
-        console.error("Save Error:", e);
-        showToast(i18n_dict[lang]?.dash_toast_error || "Error", "error");
-        if (msg) msg.textContent = "SAVE FAILED: " + e.message;
-    } finally {
-        btn.textContent = i18n_dict[lang]?.dash_save_btn || "SAVE CHANGES";
-        btn.disabled = false;
-    }
-};
-
-function showToast(m, type) {
-    const t = document.getElementById('toast');
-    const tm = document.getElementById('toast-msg');
-    if (!t || !tm) return;
-    tm.textContent = m;
-    t.className = "toast-notif active " + (type === 'error' ? 'error' : '');
-    setTimeout(() => t.classList.remove('active'), 3000);
-}
-
-window.viewProfile = () => window.location.href = '/' + (userDataState?.username || session.username);
-window.logout = () => { localStorage.removeItem("j2st_session_v2"); window.location.replace("/login"); };
-
+// BOOT
 init();
