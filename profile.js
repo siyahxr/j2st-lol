@@ -119,17 +119,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (vCount) vCount.textContent = `${targetUser.views || 0} VIEWS`;
 
         // Interaction Hints
-        if (targetUser.hover_text) {
-             profileEl.setAttribute('data-hover-hint', targetUser.hover_text);
-        }
-
         // 8. CUSTOM CURSOR
         if (targetUser.custom_cursor_url) {
-            document.body.style.cursor = `url(${targetUser.custom_cursor_url}), auto`;
-            // Apply to all interactive elements
             const style = document.createElement('style');
             style.innerHTML = `* { cursor: url(${targetUser.custom_cursor_url}), auto !important; }`;
             document.head.appendChild(style);
+        }
+
+        // 9. 3D TILT EFFECT
+        if (targetUser.tilt_3d) {
+            init3DTilt(cardHeader);
         }
 
     } catch (e) {
@@ -176,5 +175,23 @@ function initBackgroundEffect(type) {
     const canvas = document.createElement('canvas');
     canvas.id = "fx-canvas";
     document.body.prepend(canvas);
-    // Simple implementation based on type...
+}
+
+function init3DTilt(el) {
+    if (!el) return;
+    el.style.transition = "transform 0.1s ease-out";
+    el.parentElement.style.perspective = "1000px";
+
+    document.addEventListener("mousemove", (e) => {
+        const { clientX, clientY } = e;
+        const { innerWidth, innerHeight } = window;
+        const xRotation = ((clientY / innerHeight) - 0.5) * 20; // 10 degree max
+        const yRotation = ((clientX / innerWidth) - 0.5) * -20; // 10 degree max
+
+        el.style.transform = `rotateX(${xRotation}deg) rotateY(${yRotation}deg)`;
+    });
+
+    document.addEventListener("mouseleave", () => {
+        el.style.transform = "rotateX(0deg) rotateY(0deg)";
+    });
 }

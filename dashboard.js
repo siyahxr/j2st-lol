@@ -364,6 +364,11 @@ async function saveProfileChanges() {
         });
 
         if (res.ok) {
+            // Update local state so consecutive saves work
+            userDataState = { ...userDataState, ...payload };
+            // Clear temp base64 cache
+            avatarBase64 = bannerBase64 = musicBase64 = cursorBase64 = null;
+
             msg.textContent = "> SYSTEM_SYNC_SUCCESSFUL";
             msg.style.color = "#00e676";
             setTimeout(() => {
@@ -372,7 +377,8 @@ async function saveProfileChanges() {
                 msg.textContent = "";
             }, 2000);
         } else {
-            throw new Error("API_ERROR");
+            const errData = await res.json().catch(() => ({}));
+            throw new Error(errData.error || "API_ERROR");
         }
     } catch (err) {
         msg.textContent = "> ERR_INJECTION_FAILED";
