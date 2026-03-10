@@ -4,7 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile | j2st.icu</title>
+    <title>Profile | j2st.lol</title>
+    <script>
+        if (window.location.hostname.includes('j2st.icu')) {
+            window.location.replace('https://j2st.lol' + window.location.pathname + window.location.search);
+        }
+    </script>
     <!-- CSS -->
     <link rel="stylesheet" href="/index.css?v=202603100840">
     <link rel="stylesheet" href="/profile.css?v=202603100900">

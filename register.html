@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>j2st.icu | Register</title>
+    <title>j2st.lol | Register</title>
+    <script>
+        if (window.location.hostname.includes('j2st.icu')) {
+            window.location.replace('https://j2st.lol' + window.location.pathname + window.location.search);
+        }
+    </script>
     <link rel="stylesheet" href="/index.css">
     <link rel="stylesheet" href="/auth.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
@@ -20,11 +25,11 @@
     <div class="auth-container">
         <div class="auth-brand">
             <img src="/assets/icons/user_dragon.png" alt="j2st" class="auth-logo">
-            <span class="auth-title iridescent-text">j2st.icu</span>
+            <span class="auth-title iridescent-text">j2st.lol</span>
         </div>
 
         <form class="auth-form glass-card" id="form-register" onsubmit="handleRegister(event)">
-            <h2 class="form-title" data-i18n="auth_reg_title">Join j2st.icu</h2>
+            <h2 class="form-title" data-i18n="auth_reg_title">Join j2st.lol</h2>
             <p class="form-sub" data-i18n="auth_reg_sub">Create your premium bio page today</p>
 
             <div class="field-group">

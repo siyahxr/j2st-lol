@@ -4,7 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>j2st.icu | Void Dashboard</title>
+    <title>j2st.lol | Void Dashboard</title>
+    <script>
+        if (window.location.hostname.includes('j2st.icu')) {
+            window.location.replace('https://j2st.lol' + window.location.pathname + window.location.search);
+        }
+    </script>
 
     <!-- STYLES -->
     <link rel="stylesheet" href="/index.css">
@@ -26,7 +31,7 @@
         <aside class="sidebar">
             <div class="brand-section">
                 <img src="/assets/icons/user_dragon.png" alt="logo" class="brand-logo">
-                <span class="brand-name">j2st.icu</span>
+                <span class="brand-name">j2st.lol</span>
             </div>
 
             <nav class="nav-group">
