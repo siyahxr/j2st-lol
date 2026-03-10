@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TERMINAL | Admin Access</title>
+    <link rel="stylesheet" href="/index.css">
+        <link rel="stylesheet" href="/admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <script>
+        (function() {
+            const session = JSON.parse(localStorage.getItem('j2st_session_v2') || '{}');
+            const role = session.role || 'member';
+            if (role !== 'admin' && role !== 'founder') {
+                document.body.innerHTML = `
+                <div class="restricted-overlay">
+                    <h1 class="restricted-title">SYSTEM HALT</h1>
+                    <p class="restricted-sub">UNAUTHORIZED ACCESS ATTEMPT DETECTED.</p>
+                    <p style="color:#ff0000; font-family:monospace; margin-bottom:50px;">ERR_ACCESS_DENIED_0x884</p>
+                    <a href="/dashboard" class="restricted-btn">ESCAPE</a>
+                </div>`;
+                document.body.style.background = "#000";
+            }
+        })();
+    </script>
+    
+    <div class="grid-overlay"></div>
+
+    <div class="admin-layout">
+
+        <!-- ======= SIDEBAR ======= -->
+        <aside class="admin-sidebar">
+            <div class="asb-brand">
+                <img src="/assets/icons/user_dragon.png" alt="logo" class="asb-logo">
+                <div>
+                    <p class="asb-title" style="font-size:24px; font-weight:900;">SYSTEM_ROOT</p>
+                    <p class="asb-sub">ADMIN_MODE_ACTIVE</p>
+                </div>
+            </div>
+
+            <nav class="asb-nav">
+                <a class="asb-item active" onclick="switchSection(this,'overview')">
+                    > OVERVIEW
+                </a>
+                <a class="asb-item" onclick="switchSection(this,'users')">
+                    > USER_BASE
+                </a>
+                <a class="asb-item" onclick="switchSection(this,'badges')">
+                    > BADGE_SYSTEM
+                </a>
+                <a class="asb-item" onclick="switchSection(this,'widgets')">
+                    > WIDGETS
+                </a>
+                <a class="asb-item" onclick="switchSection(this,'logs')">
+                    > KERNAL_LOGS
+                </a>
+            </nav>
+
+            <div class="asb-footer" style="border-top: 1px solid white; padding-top:20px;">
+                <a href="/dashboard" class="asb-back" style="display:block; margin-bottom:10px;">> RETURN_DASH</a>
+                                <a href="/" class="asb-back">> SHUTDOWN</a>
+            </div>
+        </aside>
+
+        <!-- ======= MAIN ======= -->
+        <main class="admin-main">
+
+            <header class="admin-topbar">
+                <div>
+                    <h1 class="admin-topbar-title" id="sec-title">ROOT@J2ST_ICU</h1>
+                    <p class="admin-topbar-sub" id="sec-sub">ACTIVE_SESSION_001</p>
+                </div>
+                <div class="topbar-right">
+                    <div class="status-pill" style="border-color:#ff0000; color:#ff0000;">
+                        <span class="status-dot-live" style="background:#ff0000; box-shadow:0 0 10px #ff0000;"></span> 
+                        CRITICAL_ONLINE
+                    </div>
+                </div>
+            </header>
+
+            <!-- ======= OVERVIEW SECTION ======= -->
+            <div class="admin-section active" id="sec-overview">
+                <div class="as-stat-row">
+                    <div class="as-card glass-card">
+                        <p class="as-label">POPULATION</p>
+                        <p class="as-value" id="stat-users">...</p>
+                    </div>
+                    <div class="as-card glass-card">
+                        <p class="as-label">ACTIVE_LINK</p>
+                        <p class="as-value" id="stat-online">...</p>
+                    </div>
+                    <div class="as-card glass-card">
+                        <p class="as-label">TOKEN_ARRAY</p>
+                        <p class="as-value" id="stat-badges">...</p>
+                    </div>
+                    <div class="as-card glass-card">
+                        <p class="as-label">TRAFFIC_IN</p>
+                        <p class="as-value" id="stat-views">...</p>
+                    </div>
+                    <div class="as-card glass-card">
+                        <p class="as-label">BREACHES</p>
+                        <p class="as-value">0</p>
+                    </div>
+                </div>
+
+                <div class="overview-grid">
+                    <div class="glass-card ov-card">
+                        <h3 class="panel-title">LATEST_LOGINS</h3>
+                        <div class="rj-list" id="recent-joins">
+                            <p style="color:var(--text-dim);">AWAITING_DATA...</p>
+                        </div>
+                    </div>
+                    <div class="glass-card ov-card">
+                        <h3 class="panel-title">SYSTEM_COMMANDS</h3>
+                        <div class="quick-actions" style="margin-bottom:30px;">
+                            <button class="aqb" onclick="switchSection(null,'users')">EXEC_USER_MGMT</button>
+                            <button class="aqb" onclick="switchSection(null,'badges')">EXEC_BADGE_MGMT</button>
+                            <button class="aqb" onclick="switchSection(null,'logs')">EXEC_LOG_VIEW</button>
+                        </div>
+                        <div class="ss-bars">
+                            <h4 class="ss-title">HW_RESOURCE_MONITOR</h4>
+                            <div class="ss-row">
+                                <span>NET</span>
+                                <div class="ss-bar"><div class="ss-fill" style="width:99%; background:white;"></div></div>
+                            </div>
+                            <div class="ss-row">
+                                <span>SRV</span>
+                                <div class="ss-bar"><div class="ss-fill" style="width:100%; background:white;"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======= USERS SECTION ======= -->
+            <div class="admin-section" id="sec-users">
+                <div class="glass-card admin-table-card">
+                    <div class="table-header">
+                        <h3 class="panel-title">USER_REGISTRY</h3>
+                        <input class="table-search" type="text" id="user-search" placeholder="SEARCH_ID..." oninput="filterUsers(this.value)" style="border-radius:0;">
+                    </div>
+                    <table class="fancy-table">
+                        <thead>
+                            <tr>
+                                <th>IDENTITY</th>
+                                <th>LEVEL</th>
+                                <th>TOKENS</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-tbody">
+                            <!-- JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ======= BADGES SECTION ======= -->
+            <div class="admin-section" id="sec-badges">
+                <p style="color:red; margin-bottom:20px;">> WARNING: BADGE DEPLOYMENT INTERFACE IS IN ACTIVE MONITORING.</p>
+                <div class="badge-admin-grid">
+                    <div class="badge-admin-card glass-card enabled">
+                        <p class="bac-name">EARLY_ACCESS</p>
+                        <p class="bac-desc">PRIORITY_0_USERS</p>
+                    </div>
+                    <div class="badge-admin-card glass-card new">
+                        <p class="bac-name">+ APPEND_NEW_TOKEN</p>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Badge Manager Modal -->
+    <div class="badge-modal" id="badge-modal">
+        <div class="badge-modal-content">
+            <h3 style="margin-top:0;">EDIT_TOKENS</h3>
+            <p id="badge-modal-user" style="color:var(--text-dim); margin-bottom:20px;"></p>
+            <div id="badge-options-list">
+                <div class="badge-opt" data-id="early_access"><span>⚡</span> EARLY ACCESS</div>
+                <div class="badge-opt" data-id="bug_hunter"><span>🐛</span> BUG HUNTER</div>
+                <div class="badge-opt" data-id="mod"><span>🔮</span> MODERATOR</div>
+                <div class="badge-opt" data-id="vip"><span>👑</span> VIP</div>
+                <div class="badge-opt" data-id="scammer"><span>🚫</span> BLACKLISTED</div>
+            </div>
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button class="save-btn" onclick="saveUserBadges()" style="flex:1;">EXECUTE</button>
+                <button class="save-btn" onclick="closeBadgeModal()" style="background:red;">ABORT</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/admin.js"></script>
+</body>
+</html>

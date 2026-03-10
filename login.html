@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>j2st.icu | Login</title>
+    <link rel="stylesheet" href="/index.css">
+    <link rel="stylesheet" href="/auth.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <!-- Cloudflare Turnstile -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+</head>
+<body>
+    <div class="animated-bg">
+        <div class="blob"></div>
+        <div class="blob-2"></div>
+    </div>
+    <div class="grid-overlay"></div>
+
+    <div class="auth-container">
+        <div class="auth-brand">
+            <img src="/assets/icons/user_dragon.png" alt="j2st" class="auth-logo">
+            <span class="auth-title iridescent-text">j2st.icu</span>
+        </div>
+
+        <form class="auth-form glass-card" id="form-login" onsubmit="handleLogin(event)">
+            <h2 class="form-title">Welcome back</h2>
+            <p class="form-sub">Sign in to your j2st.icu account</p>
+
+            <div class="field-group">
+                <label class="field-label">Username</label>
+                <input id="login-email" class="field-input" type="text" placeholder="Enter username or email" required autocomplete="username">
+            </div>
+            <div class="field-group">
+                <label class="field-label">Password</label>
+                <div class="field-pw-wrap">
+                    <input id="login-pass" class="field-input" type="password" placeholder="Enter your password" required autocomplete="current-password">
+                    <button type="button" class="pw-toggle" onclick="togglePw('login-pass',this)">👁</button>
+                </div>
+            </div>
+
+            <!-- Cloudflare Turnstile widget -->
+            <div class="turnstile-wrap">
+                <div class="cf-turnstile" id="ts-login" data-theme="dark"></div>
+            </div>
+
+            <div id="login-error" class="form-error"></div>
+            <div id="login-info" class="form-info"></div>
+
+            <button type="submit" class="auth-submit" id="btn-login">Sign In →</button>
+            <p class="form-hint">No account? <a href="/register">Create one</a></p>
+        </form>
+
+        <p class="auth-back"><a href="/">← Back to home</a></p>
+    </div>
+
+    <script type="module" src="/auth.js"></script>
+</body>
+</html>

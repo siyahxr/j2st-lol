@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>j2st.icu | Dashboard Redesign</title>
+    
+    <!-- CORE STYLES -->
+    <link rel="stylesheet" href="/index.css">
+    <link rel="stylesheet" href="/dashboard.css">
+    
+    <!-- SECTION STYLES (Modular) -->
+    <link rel="stylesheet" href="/css/dashboard/overview.css">
+    <link rel="stylesheet" href="/css/dashboard/profile.css">
+    <link rel="stylesheet" href="/css/dashboard/links.css">
+    <link rel="stylesheet" href="/css/dashboard/media.css">
+    <link rel="stylesheet" href="/css/dashboard/badges.css">
+    <link rel="stylesheet" href="/css/dashboard/settings.css">
+    
+    <!-- FONTS -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    
+    <!-- Background Atmosphere -->
+    <div class="void-atmosphere">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+        <div class="grid-field"></div>
+    </div>
+
+    <!-- MAIN DASHBOARD LAYOUT -->
+    <div class="dash-container">
+        
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="brand-section">
+                <img src="/assets/icons/user_dragon.png" alt="logo" class="brand-logo">
+                <span class="brand-name">j2st.icu</span>
+            </div>
+
+            <nav class="nav-group">
+                <p class="nav-label">Main</p>
+                <a href="#overview" class="nav-item active" onclick="switchTab(this, 'overview')">
+                    <i><img src="/assets/icons/stats.png" alt="overview"></i>
+                    <span>Overview</span>
+                </a>
+                <a href="#profile" class="nav-item" onclick="switchTab(this, 'profile')">
+                    <i><img src="/assets/icons/dragon.png" alt="profile"></i>
+                    <span>Profile Editor</span>
+                </a>
+                <a href="#links" class="nav-item" onclick="switchTab(this, 'links')">
+                    <i><img src="/assets/icons/link.png" alt="links"></i>
+                    <span>Manage Links</span>
+                </a>
+
+                <p class="nav-label">Media</p>
+                <a href="#media" class="nav-item" onclick="switchTab(this, 'media')">
+                    <i><img src="/assets/icons/music.png" alt="sound"></i>
+                    <span>Sound & Files</span>
+                </a>
+                <a href="#badges" class="nav-item" onclick="switchTab(this, 'badges')">
+                    <i><img src="/assets/icons/badge.png" alt="badges"></i>
+                    <span>Your Badges</span>
+                </a>
+                <a href="#settings" class="nav-item" onclick="switchTab(this, 'settings')">
+                    <i><img src="/assets/icons/gear.png" alt="settings"></i>
+                    <span>Settings</span>
+                </a>
+
+                <p class="nav-label" id="admin-sec-label">Admin</p>
+                <a href="/admin" class="nav-item danger" id="admin-nav-link">
+                    <i><img src="/assets/icons/shield.png" alt="admin"></i>
+                    <span>Admin Panel</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="/" class="footer-btn">
+                    <span>← Back to Home</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="main-content">
+            
+            <!-- Content Header -->
+            <header class="top-bar">
+                <div class="page-info">
+                    <h1 id="tab-title">Overview</h1>
+                    <p id="tab-sub">Your bio dashboard at a glance.</p>
+                </div>
+
+                <div class="top-actions">
+                    <div class="status-indicator">
+                        <span class="status-dot"></span>
+                        LIVE
+                    </div>
+                    <div class="user-profile-chip" onclick="switchTab(null, 'settings')">
+                        <img src="/assets/icons/user_dragon.png" alt="avatar" class="chip-img">
+                        <span class="chip-name">j2st</span>
+                    </div>
+                    <button class="btn-primary" onclick="viewProfile()" style="padding: 8px 16px; font-size: 12px;">View Profile</button>
+                </div>
+            </header>
+
+            <!-- TABS PANELS -->
+            
+            <!-- 1. OVERVIEW -->
+            <div class="tab-panel active" id="tab-overview">
+                <div class="overview-grid">
+                    <div class="stat-row">
+                        <div class="stat-card glass-panel">
+                            <div class="stat-icon-box"><i><img src="/assets/icons/stats.png" alt=""></i></div>
+                            <h2 class="stat-value" data-target="2847">0</h2>
+                            <p class="stat-label">Profile Views</p>
+                            <span class="stat-trend trend-up">↑ 12.4%</span>
+                        </div>
+                        <div class="stat-card glass-panel">
+                            <div class="stat-icon-box"><i><img src="/assets/icons/link.png" alt=""></i></div>
+                            <h2 class="stat-value" data-target="341">0</h2>
+                            <p class="stat-label">Link Clicks</p>
+                            <span class="stat-trend trend-up">↑ 8.2%</span>
+                        </div>
+                        <div class="stat-card glass-panel">
+                            <div class="stat-icon-box"><i><img src="/assets/icons/badge.png" alt=""></i></div>
+                            <h2 class="stat-value" data-target="2">0</h2>
+                            <p class="stat-label">Active Badges</p>
+                            <span class="stat-trend">STABLE</span>
+                        </div>
+                        <div class="stat-card glass-panel">
+                            <div class="stat-icon-box"><i><img src="/assets/icons/gear.png" alt=""></i></div>
+                            <h2 class="stat-value">99%</h2>
+                            <p class="stat-label">Uptime</p>
+                            <span class="stat-trend trend-up">↑ 1%</span>
+                        </div>
+                    </div>
+
+                    <div class="content-grid-split">
+                        <div class="activity-panel">
+                            <div class="panel-header">
+                                <h3 class="panel-title">Recent Activity</h3>
+                            </div>
+                            <div class="activity-list">
+                                <div class="activity-item">
+                                    <div class="activity-dot"></div>
+                                    <div class="activity-info">
+                                        <p>Profile viewed from Istanbul, TR</p>
+                                        <span>2 minutes ago</span>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-dot"></div>
+                                    <div class="activity-info">
+                                        <p>Discord link clicked</p>
+                                        <span>15 minutes ago</span>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-dot"></div>
+                                    <div class="activity-info">
+                                        <p>Social media link updated</p>
+                                        <span>1 hour ago</span>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-dot"></div>
+                                    <div class="activity-info">
+                                        <p>Custom sound "vibe.mp3" uploaded</p>
+                                        <span>3 hours ago</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="quick-links-panel">
+                            <div class="panel-header">
+                                <h3 class="panel-title">Quick Actions</h3>
+                            </div>
+                            <div class="quick-actions">
+                                <div class="action-btn" onclick="viewProfile()">
+                                    <i><img src="/assets/icons/stats.png" alt=""></i>
+                                    <span>View Profile</span>
+                                </div>
+                                <div class="action-btn" onclick="switchTab(null, 'profile')">
+                                    <i><img src="/assets/icons/dragon.png" alt=""></i>
+                                    <span>Edit Bio</span>
+                                </div>
+                                <div class="action-btn" onclick="switchTab(null, 'links')">
+                                    <i><img src="/assets/icons/link.png" alt=""></i>
+                                    <span>Add Link</span>
+                                </div>
+                                <div class="action-btn" onclick="switchTab(null, 'media')">
+                                    <i><img src="/assets/icons/music.png" alt=""></i>
+                                    <span>Upload Sound</span>
+                                </div>
+                                <div class="action-btn" onclick="switchTab(null, 'badges')">
+                                    <i><img src="/assets/icons/badge.png" alt=""></i>
+                                    <span>View Badges</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. PROFILE EDITOR -->
+            <div class="tab-panel" id="tab-profile">
+                <div class="profile-grid-container">
+                    <div class="editor-panel">
+                        <div class="editor-section">
+                            <h3 class="editor-title">Avatar & Identity</h3>
+                            <div class="avatar-edit-box">
+                                <div class="avatar-preview-wrapper" onclick="document.getElementById('avatar-upload').click()">
+                                    <img src="/assets/icons/user_dragon.png" alt="current" class="avatar-preview-image" id="preview-avatar-img">
+                                    <div class="avatar-overlay">CHANGE</div>
+                                    <input type="file" id="avatar-upload" hidden accept="image/*">
+                                </div>
+                                <div class="avatar-info-box">
+                                    <p>Your Profile Avatar</p>
+                                    <span>Reccomended size: 400x400 (Max 2MB)</span>
+                                </div>
+                            </div>
+
+                            <div class="form-field">
+                                <label class="form-label">Display Name</label>
+                                <input type="text" class="form-input" id="profile-display-name" placeholder="How you appear on the void">
+                            </div>
+                            <div class="form-field" style="margin-bottom: 0;">
+                                <label class="form-label">Bio Description</label>
+                                <textarea class="form-input form-textarea" id="profile-bio" placeholder="Tell the world who you are..."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="editor-section">
+                            <h3 class="editor-title">Branding & Banner</h3>
+                            <div class="form-field">
+                                <label class="form-label">Profile Banner</label>
+                                <div class="banner-selector" id="banner-selector" onclick="document.getElementById('banner-upload').click()">
+                                    <span>Click to upload banner (1200x400)</span>
+                                    <input type="file" id="banner-upload" hidden accept="image/*">
+                                </div>
+                            </div>
+                            <div class="settings-field-grid">
+                                <div class="form-field">
+                                    <label class="form-label">Banner Opacity</label>
+                                    <input type="range" class="form-range" id="banner-opacity" min="0" max="1" step="0.1" value="0.4">
+                                </div>
+                                <div class="form-field">
+                                    <label class="form-label">Card Opacity</label>
+                                    <input type="range" class="form-range" id="card-opacity" min="0" max="1" step="0.1" value="0.8">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="save-action-footer">
+                            <button class="save-btn">Save Changes</button>
+                        </div>
+                    </div>
+
+                    <div class="preview-panel">
+                        <div class="phone">
+                            <div class="phone-notch"></div>
+                            <div class="phone-content">
+                                <div class="phone-banner" id="preview-banner"></div>
+                                <div class="phone-body">
+                                    <img src="/assets/icons/user_dragon.png" alt="avatar" class="phone-avatar" id="preview-avatar">
+                                    <h4 class="phone-name" id="preview-name">Your Name</h4>
+                                    <p class="phone-bio" id="preview-bio">Bio teaser appears here...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. LINKS -->
+            <div class="tab-panel" id="tab-links">
+                <div class="links-panel glass-panel">
+                    <div class="panel-header">
+                        <h3 class="panel-title">Active Links</h3>
+                        <button class="add-link-btn"><i>+</i> Add New Link</button>
+                    </div>
+                    <div class="links-list">
+                        <div class="link-card">
+                            <div class="drag-handle"><span></span><span></span><span></span></div>
+                            <div class="link-icon-box"><i><img src="/assets/icons/link.png" alt=""></i></div>
+                            <div class="link-details">
+                                <p class="link-name">Discord Server</p>
+                                <p class="link-url">discord.gg/j2st</p>
+                            </div>
+                            <div class="link-actions">
+                                <div class="action-btn-small"><i><img src="/assets/icons/stats.png" alt="edit" style="width:14px;filter:invert(1)"></i></div>
+                                <div class="action-btn-small danger"><i><img src="/assets/icons/link.png" alt="delete" style="width:14px;filter:invert(1)"></i></div>
+                            </div>
+                        </div>
+                        <div class="link-card">
+                            <div class="drag-handle"><span></span><span></span><span></span></div>
+                            <div class="link-icon-box"><i><img src="/assets/icons/music.png" alt=""></i></div>
+                            <div class="link-details">
+                                <p class="link-name">Spotify Playlist</p>
+                                <p class="link-url">open.spotify.com/playlist/...</p>
+                            </div>
+                            <div class="link-actions">
+                                <div class="action-btn-small"><i><img src="/assets/icons/stats.png" alt="edit" style="width:14px;filter:invert(1)"></i></div>
+                                <div class="action-btn-small danger"><i><img src="/assets/icons/link.png" alt="delete" style="width:14px;filter:invert(1)"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. MEDIA -->
+            <div class="tab-panel" id="tab-media">
+                <div class="media-panel">
+                    <div class="panel-header">
+                        <h3 class="panel-title">Profile Sound & Files</h3>
+                    </div>
+                    <div class="media-grid">
+                        <div class="media-section glass-panel">
+                            <h4 class="media-title">Profile Audio</h4>
+                            <p class="media-desc">Upload a track that will play when visitors open your bio.</p>
+                            <label class="upload-drop" for="audio-upload">
+                                <div class="upload-icon"><i><img src="/assets/icons/music.png" alt=""></i></div>
+                                <span>Choose MP3 or WAV (Max 15MB)</span>
+                                <input type="file" id="audio-upload" hidden accept="audio/*">
+                            </label>
+                            <div class="audio-interface">
+                                <div class="play-toggle"><i><img src="/assets/icons/music.png" alt="" style="width:16px;filter:invert(0)"></i></div>
+                                <div class="playback-controls">
+                                    <div class="playback-bar">
+                                        <div class="playback-progress"></div>
+                                    </div>
+                                    <div class="playback-time">
+                                        <span>0:00</span>
+                                        <span>3:24</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="media-section glass-panel">
+                            <h4 class="media-title">Downloadable Files</h4>
+                            <p class="media-desc">Share files with your visitors directly from your profile.</p>
+                            <label class="upload-drop" for="file-upload">
+                                <div class="upload-icon"><i><img src="/assets/icons/link.png" alt=""></i></div>
+                                <span>Drag & Drop files or click to browse</span>
+                                <input type="file" id="file-upload" hidden>
+                            </label>
+                            <div class="file-list">
+                                <div class="file-row">
+                                    <div class="file-icon"><i><img src="/assets/icons/link.png" alt=""></i></div>
+                                    <div class="file-info">
+                                        <p class="file-name">Project_Intro.pdf</p>
+                                        <span class="file-size">1.2 MB</span>
+                                    </div>
+                                    <div class="action-btn-small danger"><i><img src="/assets/icons/link.png" alt=""></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. BADGES -->
+            <div class="tab-panel" id="tab-badges">
+                <div class="badges-panel">
+                    <div class="panel-header">
+                        <h3 class="panel-title">Your Trophies</h3>
+                        <p class="panel-desc">Showcase your achievements and membership status.</p>
+                    </div>
+                    <div class="badges-grid">
+                        <div class="badge-card unlocked">
+                            <div class="badge-mask"><i><img src="/assets/icons/badge.png" alt=""></i></div>
+                            <div class="badge-info">
+                                <p class="badge-name">Early Access</p>
+                                <p class="badge-desc">One of the first 100 users on the platform.</p>
+                            </div>
+                            <div class="badge-status">UNLOCKED</div>
+                        </div>
+                        <div class="badge-card unlocked">
+                            <div class="badge-mask"><i><img src="/assets/icons/shield.png" alt=""></i></div>
+                            <div class="badge-info">
+                                <p class="badge-name">Legacy Member</p>
+                                <p class="badge-desc">Registered during the foundation period.</p>
+                            </div>
+                            <div class="badge-status">UNLOCKED</div>
+                        </div>
+                        <div class="badge-card locked">
+                            <div class="badge-mask"><i><img src="/assets/icons/crown.png" alt=""></i></div>
+                            <div class="badge-info">
+                                <p class="badge-name">Elite Bio</p>
+                                <p class="badge-desc">Unlock premium features to earn this badge.</p>
+                            </div>
+                            <div class="badge-status">LOCKED</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. SETTINGS -->
+            <div class="tab-panel" id="tab-settings">
+                <div class="settings-panel">
+                    <div class="settings-section glass-panel">
+                        <div class="settings-header">
+                            <div>
+                                <h3 class="settings-title">Security & Credentials</h3>
+                                <p class="settings-desc">Keep your account safe by updating your password regularly.</p>
+                            </div>
+                        </div>
+                        <div id="pw-change-msg" class="pw-change-msg"></div>
+                        <div class="settings-field-grid">
+                            <div class="settings-field">
+                                <label class="settings-label">Current Password</label>
+                                <input type="password" class="settings-input" id="set-old-pass" placeholder="••••••••">
+                            </div>
+                            <div class="settings-field">
+                                <label class="settings-label">New Password</label>
+                                <input type="password" class="settings-input" id="set-new-pass" placeholder="At least 8 characters">
+                            </div>
+                            <div class="settings-field">
+                                <label class="settings-label">Confirm New Password</label>
+                                <input type="password" class="settings-input" id="set-new-pass2" placeholder="Repeat new password">
+                            </div>
+                        </div>
+                        <div class="settings-action-row">
+                            <button class="settings-save-btn" onclick="changeUserPassword()">Update Password</button>
+                        </div>
+                    </div>
+
+                    <div class="settings-section glass-panel danger-section">
+                        <div class="settings-header">
+                            <div>
+                                <h3 class="settings-title danger-title">Danger Zone</h3>
+                                <p class="settings-desc">Once you perform these actions, there is no turning back.</p>
+                            </div>
+                        </div>
+                        <div class="settings-action-row" style="justify-content: flex-start; gap: 16px;">
+                            <button class="danger-action-btn" onclick="logout()">Logout of Session</button>
+                            <button class="danger-action-btn" style="background: rgba(255, 77, 77, 0.05);">Deactivate Account</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script type="module" src="/dashboard.js"></script>
+</body>
+</html>

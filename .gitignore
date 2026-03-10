@@ -1,0 +1,23 @@
+# Cloudflare Wrangler
+.wrangler/
+node_modules/
+
+# Logs
+*.log
+deploy_log.txt
+deploy_debug.log
+deploy_debug_full.log
+deploy_final.log
+deploy.out
+final_deploy_log.txt
+
+# Build artifacts
+tmp.html
+test.txt
+
+# Database
+*.sqlite
+
+# OS
+.DS_Store
+Thumbs.db

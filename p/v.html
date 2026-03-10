@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile | j2st.icu</title>
+    <link rel="stylesheet" href="/index.css">
+    <link rel="stylesheet" href="/profile.css?v=2.0">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Premium Background -->
+    <div class="profile-bg">
+        <div id="full-bg"></div>
+        <div class="aurora aurora-1"></div>
+        <div class="aurora aurora-2"></div>
+    </div>
+
+    <div id="loading" class="full-screen-center">
+        <div class="dragon-glow-ring"></div>
+    </div>
+
+    <div id="profile-container" style="display:none;">
+        <!-- Banner -->
+        <div class="profile-banner" id="banner-el"></div>
+
+        <!-- Profile Identity (always visible) -->
+        <div class="profile-identity">
+            <div class="avatar-wrapper">
+                <img id="avatar-el" src="/assets/icons/user_dragon.png" alt="Avatar" class="profile-avatar">
+                <div class="status-indicator"></div>
+            </div>
+            <h1 class="profile-name" id="name-el">j2st</h1>
+            <p class="profile-role iridescent-text" id="role-el"></p>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="profile-tabs" role="tablist">
+            <button class="p-tab active" data-tab="links" role="tab" aria-selected="true">Links</button>
+            <button class="p-tab" data-tab="badges" role="tab" aria-selected="false">Badges</button>
+            <button class="p-tab" data-tab="about" role="tab" aria-selected="false">About</button>
+        </div>
+
+        <!-- Tab Panels -->
+        <div class="p-tab-panel active" id="ptab-links" role="tabpanel">
+            <div class="links-col" id="links-el"></div>
+        </div>
+
+        <div class="p-tab-panel" id="ptab-badges" role="tabpanel">
+            <div class="badges-row" id="badges-el"></div>
+        </div>
+
+        <div class="p-tab-panel" id="ptab-about" role="tabpanel">
+            <p class="profile-bio" id="bio-el" style="display:none;"></p>
+            <p class="profile-location" id="location-el"></p>
+        </div>
+
+        <!-- J2ST Watermark Footer -->
+        <a href="/" class="j2st-watermark">Powered by j2st.icu</a>
+    </div>
+
+    <!-- Error State -->
+    <div id="error-container" class="full-screen-center" style="display:none;">
+        <h1 class="hero-h1">404</h1>
+        <p class="hero-p" style="margin-bottom: 24px;">User not found on j2st.icu</p>
+        <a href="/" class="btn-primary">Return Home</a>
+    </div>
+
+    <script type="module" src="/profile.js"></script>
+    <!-- Twemoji -->
+    <script src="https://cdn.jsdelivr.net/npm/@twemoji/api@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
+    <script>twemoji.parse(document.body, { folder: 'svg', ext: '.svg', base: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@latest/assets/' });</script>
+</body>
+
+</html>

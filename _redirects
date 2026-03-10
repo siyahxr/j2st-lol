@@ -1,0 +1,4 @@
+# Static Assets Only - handled by _middleware.js
+/css/*          /css/:splat              200
+/js/*           /js/:splat               200
+/assets/*       /assets/:splat           200

@@ -1,0 +1,145 @@
+/* ============================================================
+   SETTINGS PANEL STYLES — J2ST.ICU VOID
+   ============================================================ */
+
+.settings-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.settings-section {
+    padding: 35px;
+    border-radius: 32px;
+    background: var(--bg-card);
+    border: 1px solid var(--accent-border);
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.settings-title {
+    font-size: 20px;
+    font-weight: 850;
+    margin-bottom: 8px;
+}
+
+.settings-desc {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.settings-field-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.settings-field {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.settings-label {
+    font-size: 11px;
+    font-weight: 900;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.settings-input {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--accent-border);
+    border-radius: 18px;
+    padding: 16px 20px;
+    color: #fff;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    transition: var(--transition-snappy);
+}
+
+.settings-input:focus {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.3);
+    outline: none;
+}
+
+.settings-action-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
+.settings-save-btn {
+    background: #fff;
+    color: #000;
+    border: none;
+    padding: 14px 32px;
+    border-radius: 18px;
+    font-size: 14px;
+    font-weight: 850;
+    cursor: pointer;
+    transition: var(--transition-snappy);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+}
+
+.settings-save-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.6);
+}
+
+/* Danger Zone */
+.danger-section {
+    border-color: rgba(255, 77, 77, 0.1);
+    background: linear-gradient(to bottom, rgba(255, 77, 77, 0.02), transparent);
+}
+
+.danger-title {
+    color: var(--danger);
+    font-size: 18px;
+    font-weight: 900;
+}
+
+.danger-action-btn {
+    background: rgba(255, 77, 77, 0.1);
+    color: var(--danger);
+    border: 1px solid rgba(255, 77, 77, 0.2);
+    padding: 14px 28px;
+    border-radius: 18px;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: var(--transition-snappy);
+    width: fit-content;
+}
+
+.danger-action-btn:hover {
+    background: var(--danger);
+    color: #fff;
+    border-color: var(--danger);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(255, 77, 77, 0.2);
+}
+
+/* Password Alert Message */
+.pw-change-msg {
+    font-size: 13px;
+    font-weight: 700;
+    padding: 12px 20px;
+    border-radius: 14px;
+    margin-bottom: 20px;
+    display: none;
+}
+
+.pw-change-msg.error { background: rgba(255, 77, 77, 0.1); color: var(--danger); display: block; }
+.pw-change-msg.success { background: rgba(0, 230, 118, 0.1); color: var(--success); display: block; }

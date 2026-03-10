@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>j2st.icu | Premium Bio Platform</title>
+    <meta name="description" content="j2st.icu — Premium gamer bio link platform.">
+    <link rel="stylesheet" href="/index.css">
+    <link rel="stylesheet" href="/home.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Animated background -->
+    <div class="animated-bg">
+        <div class="blob"></div>
+        <div class="blob-2"></div>
+        <div class="blob-3"></div>
+    </div>
+
+    <!-- Grid overlay -->
+    <div class="grid-overlay"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar glass-card" id="navbar">
+        <div class="nav-inner">
+            <div class="nav-brand">
+                <img src="/assets/icons/user_dragon.png" alt="j2st logo" class="nav-logo">
+                <span class="nav-title iridescent-text">j2st.icu</span>
+            </div>
+            <div class="nav-actions">
+                <a href="#features" class="nav-pill">Features</a>
+                <a href="/login" class="nav-pill" id="nav-login">Login</a>
+                <a href="/register" class="btn-ghost" id="nav-register">Register</a>
+                <a href="/dashboard" class="btn-primary" id="nav-user-dash" style="display:none;"></a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ====== HERO ====== -->
+    <section class="hero">
+        <!-- Left: Text -->
+        <div class="hero-text">
+            <div class="hero-tag">
+                <span class="live-dot"></span>
+                <span>j2st.icu — Live Platform</span>
+            </div>
+            <h1 class="hero-h1">
+                Your <span class="iridescent-text">Digital</span><br>
+                Identity, Perfected.
+            </h1>
+            <p class="hero-p">
+                One sleek page to showcase everything — your links, sound, badges, and personality. Built for gamers who want to stand out.
+            </p>
+            <div class="hero-btns">
+                <a href="/register" class="btn-primary large">Get Started</a>
+                <a href="/dashboard" class="btn-ghost large">Customize</a>
+            </div>
+
+            <!-- Mini stats -->
+            <div class="hero-counters">
+                <div class="counter-item">
+                    <span class="counter-val" data-target="1240">0</span>
+                    <span class="counter-label">Profiles</span>
+                </div>
+                <div class="counter-sep"></div>
+                <div class="counter-item">
+                    <span class="counter-val" data-target="99">0</span><span class="counter-pct">%</span>
+                    <span class="counter-label">Uptime</span>
+                </div>
+                <div class="counter-sep"></div>
+                <div class="counter-item">
+                    <span class="counter-val">∞</span>
+                    <span class="counter-label">Links</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Dragon + profile card -->
+        <div class="hero-visual">
+            <div class="dragon-glow-ring"></div>
+            <div class="dragon-glow-ring ring-outer"></div>
+            <img src="/assets/icons/user_dragon.png" alt="j2st Dragon" class="hero-dragon">
+
+            <!-- Floating profile card -->
+            <div class="float-card glass-card fc-profile">
+                <img src="/assets/icons/user_dragon.png" alt="" class="fc-avatar">
+                <div>
+                    <p class="fc-name iridescent-text">j2st</p>
+                    <p class="fc-sub">Gamer &amp; Developer</p>
+                </div>
+            </div>
+
+            <!-- Floating badge card -->
+            <div class="float-card glass-card fc-badge">
+                <img src="/assets/icons/badge.png" alt="badge" class="fc-icon">
+                <div>
+                    <p class="fc-name">Early Access</p>
+                    <p class="fc-sub">Badge unlocked</p>
+                </div>
+            </div>
+
+            <!-- Floating link card -->
+            <div class="float-card glass-card fc-link">
+                <img src="/assets/icons/link.png" alt="link" class="fc-icon-sm">
+                <p class="fc-name">3 Links Active</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== FEATURES ====== -->
+    <section class="features" id="features">
+        <div class="features-label">WHAT YOU GET</div>
+        <h2 class="features-title">Everything in <span class="iridescent-text">one place</span></h2>
+
+        <div class="feat-grid">
+            <a href="/" class="feat-card glass-card" id="feat-profile-link">
+                <div class="feat-top">
+                    <span class="feat-icon"><img src="/assets/icons/dragon.png" alt="profile"></span>
+                    <span class="feat-arrow">↗</span>
+                </div>
+                <h3>Profile Page</h3>
+                <p>Your public face — dragon avatar, bio, links, and badges all in one stunning page.</p>
+                <div class="feat-bar"></div>
+            </a>
+            <a href="/dashboard" class="feat-card glass-card">
+                <div class="feat-top">
+                    <span class="feat-icon"><img src="/assets/icons/gear.png" alt="dashboard"></span>
+                    <span class="feat-arrow">↗</span>
+                </div>
+                <h3>Dashboard</h3>
+                <p>Upload PPs, banners, sounds, and manage all your profile content in real-time.</p>
+                <div class="feat-bar"></div>
+            </a>
+            <a href="/admin" class="feat-card glass-card">
+                <div class="feat-top">
+                    <span class="feat-icon"><img src="/assets/icons/shield.png" alt="admin"></span>
+                    <span class="feat-arrow">↗</span>
+                </div>
+                <h3>Admin Panel</h3>
+                <p>Control users, toggle global badges, and manage the platform from one panel.</p>
+                <div class="feat-bar"></div>
+            </a>
+        </div>
+
+        <!-- Marquee strip -->
+        <div class="marquee-wrap">
+            <div class="marquee-track">
+                <span>Profile</span><span class="marquee-dot">·</span>
+                <span>Sound</span><span class="marquee-dot">·</span>
+                <span>Badges</span><span class="marquee-dot">·</span>
+                <span>Links</span><span class="marquee-dot">·</span>
+                <span>Dashboard</span><span class="marquee-dot">·</span>
+                <span>Admin</span><span class="marquee-dot">·</span>
+                <span>Analytics</span><span class="marquee-dot">·</span>
+                <span>Profile</span><span class="marquee-dot">·</span>
+                <span>Sound</span><span class="marquee-dot">·</span>
+                <span>Badges</span><span class="marquee-dot">·</span>
+                <span>Links</span><span class="marquee-dot">·</span>
+                <span>Dashboard</span><span class="marquee-dot">·</span>
+                <span>Admin</span><span class="marquee-dot">·</span>
+                <span>Analytics</span><span class="marquee-dot">·</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== CTA ====== -->
+    <section class="cta-section">
+        <div class="cta-inner glass-card">
+            <img src="/assets/icons/user_dragon.png" class="cta-dragon" alt="dragon">
+            <div class="cta-text">
+                <h2>Start now. <span class="iridescent-text">It's free.</span></h2>
+                <p>Join the j2st.icu community and own your digital identity.</p>
+            </div>
+            <a href="/register" class="btn-primary large">Get Started →</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <span class="iridescent-text" style="font-weight:700; font-size:18px;">j2st.icu</span>
+        <span style="color: var(--text-dim); font-size:13px;">© 2026 j2st · All rights reserved</span>
+    </footer>
+
+    <!-- (Floating Profile Button removed per request, now only accessible from dashboard) -->
+
+    <script src="/home.js"></script>
+    <!-- Twemoji: high-quality emoji rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/@twemoji/api@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
+    <script>twemoji.parse(document.body, { folder: 'svg', ext: '.svg', base: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@latest/assets/' });</script>
+</body>
+</html>
