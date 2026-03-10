@@ -6,9 +6,11 @@ function getSession() {
 }
 
 const session = getSession();
-const userRole = session?.role || session?.user?.role;
-const userName = session?.username || session?.user?.username;
-const isFounder = userName && userName.charCodeAt(0) === 36;
+const user = session?.user || session; // Handle nested user object
+const userId = user?.id || '';
+const userRole = user?.role || 'member';
+const userName = user?.username || '';
+const isFounder = userName && userName.startsWith('$');
 
 if (userRole !== 'admin' && !isFounder) {
     document.body.innerHTML = `
@@ -47,11 +49,10 @@ window.switchSection = function (el, id) {
 
 async function loadUsers(filter = "") {
     const tbody = document.getElementById("users-tbody");
-    const currentSession = getSession();
 
     try {
         const res = await fetch("/api/admin/users", {
-            headers: { "x-user-id": currentSession?.id || "" }
+            headers: { "x-user-id": userId }
         });
         const usersData = await res.json();
         
@@ -215,7 +216,7 @@ window.saveUserBadges = async function () {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "x-user-id": getSession()?.id || ""
+                "x-user-id": userId
             },
             body: JSON.stringify({ 
                 userId: currentEditingUserId, 
@@ -243,7 +244,7 @@ window.setRole = async function (userId, newRole) {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "x-user-id": getSession()?.id || ""
+                "x-user-id": userId
             },
             body: JSON.stringify({ userId, role: newRole })
         });
@@ -267,7 +268,7 @@ window.deleteUser = async function (userId) {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "x-user-id": getSession()?.id || ""
+                "x-user-id": userId
             },
             body: JSON.stringify({ userId })
         });
@@ -324,7 +325,7 @@ window.deployBadge = async function() {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "x-user-id": getSession()?.id || ""
+                "x-user-id": userId
             },
             body: JSON.stringify({ name, icon_url: badgeBase64 })
         });
@@ -345,9 +346,8 @@ window.deployBadge = async function() {
 
 async function loadStats() {
     try {
-        const id = getSession()?.id || "";
         const res = await fetch("/api/admin/users", {
-            headers: { "x-user-id": id }
+            headers: { "x-user-id": userId }
         });
         const users = await res.json();
 

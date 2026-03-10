@@ -1,0 +1,7 @@
+﻿git : Everything up-to-date
+At line:1 char:1
++ git push origin main 2>&1 | Out-File -FilePath git_push_error.txt -En ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Everything up-to-date:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
