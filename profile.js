@@ -7,7 +7,7 @@ async function initProfile() {
     const username = window.location.pathname.split('/').pop() || 'j2st';
     const container = document.getElementById('profile-container');
     const loadingEl = document.getElementById('loading');
-    
+
     try {
         const res = await fetch(`/api/user/profile?u=${username}`);
         const data = await res.json();
@@ -67,7 +67,7 @@ function renderProfile(user) {
     if (container && user.card_style) {
         container.className = 'profile-card ' + user.card_style + '-style';
     }
-    
+
     // 4. Badges & Links
     const badgesEl = document.getElementById('badges-el');
     if (badgesEl && user.badges && Array.isArray(user.badges)) {
@@ -82,14 +82,14 @@ function renderProfile(user) {
     const linksEl = document.getElementById('links-el');
     if (linksEl && user.links) {
         let lList = user.links;
-        if (typeof lList === 'string') try { lList = JSON.parse(lList); } catch(e) { lList = []; }
+        if (typeof lList === 'string') try { lList = JSON.parse(lList); } catch (e) { lList = []; }
 
         if (Array.isArray(lList)) {
             linksEl.style.display = 'flex';
             linksEl.style.justifyContent = 'center';
             linksEl.style.gap = '10px';
             linksEl.style.flexWrap = 'wrap';
-            
+
             linksEl.innerHTML = lList.map(l => `
                 <a href="${l.url}" target="_blank" class="badge-item" data-label="${l.title}">
                     <i class="${l.icon}" style="font-size:20px;"></i>
@@ -106,7 +106,7 @@ function renderProfile(user) {
     // 6. Effects
     if (user.bg_effect === 'particles') initParticles();
     if (user.glitch_avatar) avatar.classList.add('glitch-fx');
-    
+
     // 7. Avatar Frame
     if (user.avatar_frame_color) {
         avatar.style.borderColor = user.avatar_frame_color;
@@ -118,6 +118,20 @@ function renderProfile(user) {
     // 8. Stats (Views)
     const viewsEl = document.querySelector('#views-el span');
     if (viewsEl) viewsEl.textContent = `${user.views || 0} views`;
+
+    // 9. Profile Music - Auto Play
+    if (user.profile_music_url) {
+        const musicPlayer = document.getElementById('profile-music-player');
+        if (musicPlayer) {
+            musicPlayer.src = user.profile_music_url;
+            musicPlayer.volume = 0.3;
+            // Auto play - browser may block without user interaction
+            musicPlayer.play().catch(() => {
+                // Silent fail - browsers block autoplay
+                console.log('Autoplay blocked - user interaction required');
+            });
+        }
+    }
 }
 
 function setup3DTilt(el) {
@@ -129,7 +143,7 @@ function setup3DTilt(el) {
     document.addEventListener("mousemove", (e) => {
         const x = (e.clientX / window.innerWidth) - 0.5;
         const y = (e.clientY / window.innerHeight) - 0.5;
-        
+
         // NATURAL WEIGHT: If mouse is right, right side goes back (negative Y rotation in CSS)
         // If mouse is bottom, bottom side goes back (positive X rotation in CSS)
         el.style.transform = `rotateX(${y * 35}deg) rotateY(${x * -35}deg) translateZ(15px)`;
