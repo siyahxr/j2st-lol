@@ -311,15 +311,17 @@ window.removeLink = (id) => {
 
 window.updateLinkUrl = (id, val) => {
     const l = userDataState.links.find(x => x.id === id);
-    if (l) l.url = val;
-    updatePreview();
+    if (l) {
+        l.url = val;
+        updatePreview();
+    }
 };
 
 function syncActiveLinks() {
     const container = document.getElementById('dashboard-links-list');
     if (!container) return;
     container.innerHTML = userDataState.links.map(l => `
-        <div class="glass-card" style="display:flex; align-items:center; gap:15px; background: rgba(255,255,255,0.02); margin-bottom:10px; padding: 15px;">
+        <div class="glass-card link-editor-item" style="display:flex; align-items:center; gap:15px; background: rgba(255,255,255,0.02); margin-bottom:10px; padding: 15px;">
             <i class="${l.icon}" style="font-size:20px; width:24px; text-align:center;"></i>
             <div style="flex:1">
                 <p style="font-weight:700; font-size:13px;">${l.title}</p>
@@ -427,26 +429,26 @@ window.saveProfileChanges = async () => {
     btn.textContent = "SAVING...";
 
     const payload = {
-        id: session.id,
-        display_name: document.getElementById('profile-display-name').value,
-        bio: document.getElementById('profile-bio').value,
-        avatar_url: avatarBase64 || userDataState.avatar_url,
-        banner_url: bannerBase64 || document.getElementById('banner-url-direct').value,
-        accent_color: document.getElementById('accent-hex').value,
-        icon_color: document.getElementById('icon-hex').value,
-        avatar_frame_color: hexToRgba(document.getElementById('avatar-frame-hex').value, document.getElementById('avatar-frame-opacity').value),
-        badge_bg_color: document.getElementById('badge-bg-color').value,
-        name_font: document.getElementById('name-font').value,
-        name_font_color: document.getElementById('name-font-color').value,
-        bio_font: document.getElementById('bio-font').value,
-        bio_font_color: document.getElementById('bio-font-color').value,
-        bg_effect: document.getElementById('bg-effect').value,
-        entry_anim: document.getElementById('entry-anim').value,
-        glitch_avatar: document.getElementById('glitch-avatar').checked ? 1 : 0,
-        profile_music_url: musicBase64 || document.getElementById('music-url-direct').value,
-        custom_cursor_url: cursorBase64 || document.getElementById('cursor-url-direct').value,
-        card_style: document.getElementById('card-style').value,
-        links: JSON.stringify(userDataState.links)
+        id: session.id || "",
+        display_name: (document.getElementById('profile-display-name')?.value || "").trim(),
+        bio: (document.getElementById('profile-bio')?.value || "").trim(),
+        avatar_url: avatarBase64 || userDataState.avatar_url || "",
+        banner_url: bannerBase64 || document.getElementById('banner-url-direct')?.value || "",
+        accent_color: document.getElementById('accent-hex')?.value || "#FFFFFF",
+        icon_color: document.getElementById('icon-hex')?.value || "#A1A1AA",
+        avatar_frame_color: hexToRgba(document.getElementById('avatar-frame-hex')?.value || "#000000", document.getElementById('avatar-frame-opacity')?.value || "1"),
+        badge_bg_color: document.getElementById('badge-bg-color')?.value || "rgba(255,255,255,0.05)",
+        name_font: document.getElementById('name-font')?.value || "Outfit",
+        name_font_color: document.getElementById('name-font-color')?.value || "#FFFFFF",
+        bio_font: document.getElementById('bio-font')?.value || "Outfit",
+        bio_font_color: document.getElementById('bio-font-color')?.value || "#FFFFFF",
+        bg_effect: document.getElementById('bg-effect')?.value || "none",
+        entry_anim: document.getElementById('entry-anim')?.value || "fadeIn",
+        glitch_avatar: document.getElementById('glitch-avatar')?.checked ? 1 : 0,
+        profile_music_url: musicBase64 || document.getElementById('music-url-direct')?.value || "",
+        custom_cursor_url: cursorBase64 || document.getElementById('cursor-url-direct')?.value || "",
+        card_style: document.getElementById('card-style')?.value || "glass",
+        links: JSON.stringify(userDataState.links || [])
     };
 
     try {

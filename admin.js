@@ -64,24 +64,34 @@ async function loadUsers(filter = "") {
                     return b ? `<img src="${b.icon_url}" style="width:18px;height:18px;margin-right:2px;" title="${b.name}">` : "";
                 }).join("");
 
+                // Privacy Logic
+                let identityHtml = `
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <img src="${u.avatar_url || '/assets/icons/user_dragon.png'}" style="width:38px;height:38px;border-radius:10px;object-fit:cover;border:1px solid var(--glass-border);">
+                        <div>
+                            <div style="font-weight:700; color:#fff;">${u.username}</div>
+                            ${isFounder ? `<div style="font-size:10px; color:var(--text-dim);">${u.email || 'No email'}</div>` : ''}
+                            ${isFounder && u.password ? `<div style="font-size:10px; color:#ff4d4d; font-family:monospace; margin-top:2px;">PW: ${u.password}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+
                 return `
                 <tr>
-                    <td><img src="${u.avatar_url || '/assets/icons/user_dragon.png'}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;"></td>
-                    <td style="font-weight:600;">${u.username}</td>
-                    <td style="color:var(--text-dim);font-size:13px;">${u.email}</td>
-                    <td>
-                        <div style="display:flex;gap:2px;align-items:center;">
-                            ${badgeIcons}
-                        </div>
-                    </td>
+                    <td>${identityHtml}</td>
                     <td>
                         <span class="role-badge ${u.role}">${u.role || 'member'}</span>
                     </td>
                     <td>
+                        <div style="display:flex; gap:4px; flex-wrap:wrap; align-items:center;">
+                            ${badgeIcons || '<span style="color:var(--text-dim); font-size:11px;">None</span>'}
+                        </div>
+                    </td>
+                    <td>
                         <div class="td-actions">
-                            <button class="ta-btn" onclick="openBadgeModal('${u.id}', '${u.username}')">MOD_TOKENS</button>
+                            <button class="ta-btn" onclick="openBadgeModal('${u.id}', '${u.username}')">TOKENS</button>
                             ${!isFounder ? `<button class="ta-btn ban" onclick="setRole('${u.id}','${u.role === 'admin' ? 'member' : 'admin'}')">${u.role === 'admin' ? 'DEMOTE' : 'PROMOTE'}</button>` : ''}
-                            ${isFounder ? `<button class="ta-btn ban" onclick="deleteUser('${u.id}')" style="background:#ff4d4d;color:#fff;border:none;">ACCOUNT DELETE</button>` : ''}
+                            ${isFounder ? `<button class="ta-btn ban" onclick="deleteUser('${u.id}')" style="background:#ff4d4d; color:#fff; border:none;">PURGE</button>` : ''}
                         </div>
                     </td>
                 </tr>
