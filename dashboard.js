@@ -505,8 +505,13 @@ function updatePreview() {
         if (musicUrl) {
             musicBar.style.display = 'flex';
             if (musicTitle) {
-                const fileName = document.getElementById('audio-upload-btn')?.files[0]?.name || "Soundtrack Loaded";
-                musicTitle.textContent = musicUrl.startsWith('data:') ? fileName : "Remote Streaming...";
+                if (musicUrl.includes('youtube.com') || musicUrl.includes('youtu.be')) musicTitle.textContent = "YouTube Engine Active";
+                else if (musicUrl.includes('spotify.com')) musicTitle.textContent = "Spotify Stream Active";
+                else if (musicUrl.includes('soundcloud.com')) musicTitle.textContent = "SoundCloud Stream Active";
+                else {
+                    const fileName = document.getElementById('audio-upload-btn')?.files[0]?.name || "Direct MP3 Link";
+                    musicTitle.textContent = musicUrl.startsWith('data:') ? fileName : "Direct Audio Stream";
+                }
             }
         } else {
             musicBar.style.display = 'none';

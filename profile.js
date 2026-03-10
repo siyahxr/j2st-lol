@@ -122,19 +122,46 @@ function renderProfile(user) {
     const viewsEl = document.querySelector('#views-el span');
     if (viewsEl) viewsEl.textContent = `${user.views || 0} views`;
 
-    // 9. Profile Music - Auto Play
+    // 9. Profile Music & External Embeds
     if (user.profile_music_url) {
+        const url = user.profile_music_url.trim();
         const musicPlayer = document.getElementById('profile-music-player');
         const widget = document.getElementById('music-widget');
         const mName = document.getElementById('music-name');
+        const embedCont = document.getElementById('music-embed-container');
         
-        if (musicPlayer) {
-            musicPlayer.src = user.profile_music_url;
+        // Detect Platforms
+        const isYoutube = url.includes('youtube.com/') || url.includes('youtu.be/');
+        const isSpotify = url.includes('spotify.com/');
+        const isSoundCloud = url.includes('soundcloud.com/');
+
+        if (isYoutube || isSpotify || isSoundCloud) {
+            // EXTERNAL EMBED MODE
+            if (widget) widget.style.display = 'none';
+            if (embedCont) {
+                embedCont.style.display = 'block';
+                let embedUrl = "";
+                
+                if (isYoutube) {
+                    const vid = url.split('v=')[1]?.split('&')[0] || url.split('/').pop();
+                    embedUrl = `https://www.youtube.com/embed/${vid}?autoplay=1&controls=0`;
+                } else if (isSpotify) {
+                    const sid = url.split('/track/')[1]?.split('?')[0];
+                    embedUrl = `https://open.spotify.com/embed/track/${sid}?utm_source=generator&theme=0`;
+                } else if (isSoundCloud) {
+                    embedUrl = `https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}&color=%23ff5500&auto_play=true&hide_related=true&show_comments=false`;
+                }
+                
+                embedCont.innerHTML = `<iframe src="${embedUrl}" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" style="border-radius:12px; opacity:0.8;"></iframe>`;
+            }
+        } else if (musicPlayer) {
+            // DIRECT AUDIO MODE
+            musicPlayer.src = url;
             musicPlayer.volume = 0.3;
             musicPlayer.loop = true;
             
             if (widget) widget.style.display = 'flex';
-            if (mName) mName.textContent = user.profile_music_url.startsWith('data:') ? "User Soundtrack" : "Soundtrack Playing";
+            if (mName) mName.textContent = url.startsWith('data:') ? "User Soundtrack" : "Direct Audio Streaming";
             
             const startPlay = () => {
                 musicPlayer.play().then(() => {
@@ -142,7 +169,6 @@ function renderProfile(user) {
                     document.removeEventListener('touchstart', startPlay);
                 }).catch(e => {});
             };
-
             startPlay();
             document.addEventListener('click', startPlay);
             document.addEventListener('touchstart', startPlay);
