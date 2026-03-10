@@ -77,7 +77,15 @@ function renderProfile(user) {
 
     // 6. Effects
     if (user.bg_effect === 'particles') initParticles();
-    if (user.glitch_avatar) avatar.classList.add('glitch-active');
+    if (user.glitch_avatar) avatar.classList.add('glitch-fx');
+    
+    // 7. Avatar Frame
+    if (user.avatar_frame_color) {
+        avatar.style.borderColor = user.avatar_frame_color;
+        avatar.style.borderWidth = '3px';
+        avatar.style.borderStyle = 'solid';
+        avatar.style.boxShadow = `0 0 20px ${user.avatar_frame_color}44`;
+    }
 }
 
 function setup3DTilt(el) {
