@@ -1,8 +1,14 @@
 # Domain Redirect
 https://j2st.icu/* https://j2st.lol/:splat 301!
 
+# API Forwarding (For Cloudflare Functions / Netlify Functions)
+/api/*          /:splat                  200
+
 # Static Assets
 /css/*          /css/:splat              200
 /js/*           /js/:splat               200
 /assets/*       /assets/:splat           200
 /system/*       /system/:splat           200
+
+# SPA Catch-all (Redirect all other routes to index.html for CSR)
+/*              /index.html              200
