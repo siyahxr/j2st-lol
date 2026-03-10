@@ -466,7 +466,9 @@ function updatePreview() {
     }
     if (handle) handle.textContent = "@" + (session.username || "user");
 
-    const bUrl = bannerBase64 || document.getElementById('banner-url-direct')?.value || userDataState.banner_url;
+    const fullBanner = bannerBase64 || document.getElementById('banner-url-direct')?.value || (d.banner_url || "") + (d.banner_url_p2 || "") + (d.banner_url_p3 || "") + (d.banner_url_p4 || "") + (d.banner_url_p5 || "");
+    const bUrl = fullBanner;
+
     if (banner) {
         const isVideo = bUrl && (bUrl.includes('video/') || bUrl.endsWith('.mp4') || bUrl.endsWith('.webm') || bUrl.startsWith('data:video/'));
         if (isVideo) {
@@ -520,7 +522,8 @@ function updatePreview() {
     // Music Bar Preview
     const musicBar = document.getElementById('preview-music-bar');
     const musicTitle = document.getElementById('preview-music-title');
-    const musicUrl = musicBase64 || document.getElementById('music-url-direct')?.value || d.profile_music_url || "";
+    const fullMusic = musicBase64 || document.getElementById('music-url-direct')?.value || (d.profile_music_url || "") + (d.profile_music_url_p2 || "") + (d.profile_music_url_p3 || "") + (d.profile_music_url_p4 || "") + (d.profile_music_url_p5 || "");
+    const musicUrl = fullMusic;
 
     if (musicBar) {
         if (musicUrl) {
@@ -567,20 +570,51 @@ window.saveProfileChanges = async () => {
     if (avatarInput) avatarBase64 = null;
     if (cursorInput) cursorBase64 = null;
     
-    // Priority: 1. Locally uploaded Base64, 2. Manual URL Input, 3. Old State
-    let finalMusic = userDataState.profile_music_url || "";
+    // Priority: 1. Locally uploaded Base64, 2. Manual URL Input, 3. Old State (Joined from parts)
+    const oldMusic = (userDataState.profile_music_url || "") + (userDataState.profile_music_url_p2 || "") + (userDataState.profile_music_url_p3 || "") + (userDataState.profile_music_url_p4 || "") + (userDataState.profile_music_url_p5 || "");
+    const oldBanner = (userDataState.banner_url || "") + (userDataState.banner_url_p2 || "") + (userDataState.banner_url_p3 || "") + (userDataState.banner_url_p4 || "") + (userDataState.banner_url_p5 || "");
+
+    let finalMusic = oldMusic;
     if (musicBase64) {
         finalMusic = musicBase64;
     } else if (musicInput && !musicInput.startsWith('[FILE:')) {
         finalMusic = musicInput;
     }
 
+    let finalBanner = avatarInput || bannerBase64 || oldBanner || "";
+    if (bannerInput) finalBanner = bannerInput;
+
+    const chunker = (str, partSize) => {
+        if (!str) return ["", "", "", "", ""];
+        const parts = [];
+        for (let i = 0; i < 5; i++) {
+            parts.push(str.substring(i * partSize, (i + 1) * partSize));
+        }
+        return parts;
+    };
+
+    const MB = 1000000;
+    const musicParts = chunker(String(finalMusic), MB);
+    const bannerParts = chunker(String(finalBanner), MB);
+
     const payload = {
         id: String(session.id || ""),
         display_name: safeGet('profile-display-name'),
         bio: safeGet('profile-bio'),
         avatar_url: String(avatarBase64 || avatarInput || userDataState.avatar_url || ""),
-        banner_url: String(bannerInput || bannerBase64 || userDataState.banner_url || ""),
+        
+        profile_music_url: musicParts[0],
+        profile_music_url_p2: musicParts[1],
+        profile_music_url_p3: musicParts[2],
+        profile_music_url_p4: musicParts[3],
+        profile_music_url_p5: musicParts[4],
+
+        banner_url: bannerParts[0],
+        banner_url_p2: bannerParts[1],
+        banner_url_p3: bannerParts[2],
+        banner_url_p4: bannerParts[3],
+        banner_url_p5: bannerParts[4],
+
         accent_color: safeGet('accent-hex', '#FFFFFF'),
         icon_color: safeGet('icon-hex', '#A1A1AA'),
         avatar_frame_color: String(hexToRgba(safeGet('avatar-frame-hex', '#000000'), safeGet('avatar-frame-opacity', '1'))),
@@ -592,7 +626,6 @@ window.saveProfileChanges = async () => {
         bg_effect: safeGet('bg-effect', 'none'),
         entry_anim: safeGet('entry-anim', 'fadeIn'),
         glitch_avatar: safeGet('glitch-avatar') === 1 ? 1 : 0,
-        profile_music_url: String(finalMusic),
         custom_cursor_url: String(cursorInput || cursorBase64 || userDataState.custom_cursor_url || ""),
         card_style: safeGet('card-style', 'glass'),
         links: JSON.stringify(userDataState.links || []),
@@ -605,13 +638,10 @@ window.saveProfileChanges = async () => {
         base_font_color: safeGet('base-font-color', '#FFFFFF')
     };
 
-    // D1 Veritabanı Limiti Kontrolü (Row limit: 1MB)
+    // New 5MB limit check (Total ~12MB budget)
     const totalSize = JSON.stringify(payload).length;
-    
-    // 1MB sınırı Cloudflare D1 için kritiktir. 
-    // Data URL (Base64) %30 yer kaplar, yani ~700KB üstü sorun çıkarır.
-    if (totalSize > 1000000) {
-        return failSave("HATA: Dosya veritabanı için çok büyük (Max 1MB). 50MB'a kadar olan dosyalar için lütfen dış link (Discord veya Catbox gibi) kullanın!");
+    if (totalSize > 12000000) {
+        return failSave("HATA: Dosya 5MB sınırını geçiyor. Lütfen daha küçük bir MP3 veya Video deneyin!");
     }
 
     function failSave(msg) {

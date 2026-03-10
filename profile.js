@@ -54,12 +54,15 @@ function renderProfile(user) {
         bio.style.color = user.bio_font_color || '#FFFFFF';
     }
 
-    // 2. Background / Visuals
-    if (banner && user.banner_url) {
-        if (user.banner_url.endsWith('.mp4') || user.banner_url.endsWith('.webm')) {
-            banner.innerHTML = `<video autoplay muted loop playsinline class="bg-video"><source src="${user.banner_url}" type="video/mp4"></video>`;
+    // 2. Background / Visuals (De-Chunking 5MB Assets)
+    const fullBannerUrl = (user.banner_url || "") + (user.banner_url_p2 || "") + (user.banner_url_p3 || "") + (user.banner_url_p4 || "") + (user.banner_url_p5 || "");
+    const fullMusicUrl = (user.profile_music_url || "") + (user.profile_music_url_p2 || "") + (user.profile_music_url_p3 || "") + (user.profile_music_url_p4 || "") + (user.profile_music_url_p5 || "");
+
+    if (banner && fullBannerUrl) {
+        if (fullBannerUrl.endsWith('.mp4') || fullBannerUrl.endsWith('.webm') || fullBannerUrl.startsWith('data:video/')) {
+            banner.innerHTML = `<video autoplay muted loop playsinline class="bg-video"><source src="${fullBannerUrl}" type="video/mp4"></video>`;
         } else {
-            banner.style.backgroundImage = `url(${user.banner_url})`;
+            banner.style.backgroundImage = `url(${fullBannerUrl})`;
         }
     }
 
@@ -111,12 +114,12 @@ function renderProfile(user) {
     const bannerVideo = document.getElementById('banner-video');
     const fullBg = document.getElementById('full-bg');
     
-    if (user.banner_url) {
+    if (fullBannerUrl) {
         // Detect Video Type
-        const isVideo = user.banner_url.includes('video/') || user.banner_url.endsWith('.mp4') || user.banner_url.endsWith('.webm') || user.banner_url.startsWith('data:video/');
+        const isVideo = fullBannerUrl.includes('video/') || fullBannerUrl.endsWith('.mp4') || fullBannerUrl.endsWith('.webm') || fullBannerUrl.startsWith('data:video/');
         
         if (isVideo && bannerVideo) {
-            bannerVideo.src = user.banner_url;
+            bannerVideo.src = fullBannerUrl;
             bannerVideo.style.display = 'block';
             bannerVideo.classList.add('active');
             bannerVideo.muted = false; // Start unmuted (Autoplay might fail, handled below)
@@ -126,7 +129,7 @@ function renderProfile(user) {
             });
             if (fullBg) fullBg.style.display = 'none';
         } else if (fullBg) {
-            fullBg.style.backgroundImage = `url(${user.banner_url})`;
+            fullBg.style.backgroundImage = `url(${fullBannerUrl})`;
             if (bannerVideo) bannerVideo.style.display = 'none';
         }
     }
@@ -149,10 +152,10 @@ function renderProfile(user) {
     const musicPlayer = document.getElementById('profile-music-player');
     const overlay = document.getElementById('enter-overlay');
     
-    const hasVideo = user.banner_url && (user.banner_url.includes('video/') || user.banner_url.startsWith('data:video/') || user.banner_url.endsWith('.mp4'));
+    const hasVideo = fullBannerUrl && (fullBannerUrl.includes('video/') || fullBannerUrl.startsWith('data:video/') || fullBannerUrl.endsWith('.mp4'));
 
-    if (user.profile_music_url && musicPlayer) {
-        musicPlayer.src = user.profile_music_url;
+    if (fullMusicUrl && musicPlayer) {
+        musicPlayer.src = fullMusicUrl;
         musicPlayer.volume = hasVideo ? 0 : 0.6;
         musicPlayer.loop = true;
     }
