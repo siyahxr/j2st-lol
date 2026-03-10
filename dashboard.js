@@ -288,12 +288,9 @@ function setupFilePicker(inputId, type) {
         const file = e.target.files[0];
         if (!file) return;
 
-        // HARD LIMIT: Cloudflare D1 cannot store more than 1MB per column.
-        // We set limit to 750KB to account for Base64 (750KB * 1.33 = 1MB)
-        const maxSaveLimit = 750 * 1024;
-        
-        if (type === 'music' && file.size > maxSaveLimit) {
-            return showToast("File too big for DB (Max 750KB). For long songs, please use a YouTube/Spotify link!", "error");
+        // User requested 50MB limit only
+        if (file.size > 50 * 1024 * 1024) {
+            return showToast("File too large (Max 50MB)", "error");
         }
 
         const reader = new FileReader();
@@ -333,26 +330,29 @@ function setupFilePicker(inputId, type) {
                     } else {
                         bannerBase64 = compressedB64;
                         const pb = document.getElementById('preview-banner');
-                        if (pb) pb.style.backgroundImage = `url(${compressedB64})`;
+                        if (pb) {
+                            pb.innerHTML = ""; // Clear video if any
+                            pb.style.backgroundImage = `url(${compressedB64})`;
+                        }
                     }
-                    updatePreview();
-                    showToast("Asset optimized & ready", "success");
                 };
-            } else {
-                if (type === 'music') {
-                    musicBase64 = b64;
-                    const urlInput = document.getElementById('music-url-direct');
-                    if (urlInput) {
-                        urlInput.value = "[FILE: " + file.name + "]";
-                    }
-                    const status = document.getElementById('audio-status-text');
-                    if (status) status.textContent = "READY FOR SYNC: " + file.name;
-                } else if (type === 'cursor') {
-                    cursorBase64 = b64;
+            } else if (type === 'banner' && file.type.startsWith('video/')) {
+                bannerBase64 = b64;
+                const pb = document.getElementById('preview-banner');
+                if (pb) {
+                    pb.innerHTML = `<video src="${b64}" muted loop autoplay style="width:100%; height:100%; object-fit:cover;"></video>`;
+                    pb.style.backgroundImage = 'none'; // Clear background image if any
                 }
-                updatePreview();
-                showToast("Asset ready", "success");
+            } else if (type === 'music') {
+                musicBase64 = b64;
+                const mi = document.getElementById('music-url-direct');
+                if (mi) mi.value = "[FILE: " + file.name + "]";
+                document.getElementById('audio-status-text').textContent = "READY: " + file.name;
+            } else if (type === 'cursor') {
+                cursorBase64 = b64;
             }
+            updatePreview();
+            showToast("Synced " + file.name, "success");
         };
         reader.readAsDataURL(file);
     };
@@ -598,13 +598,10 @@ window.saveProfileChanges = async () => {
         base_font_color: safeGet('base-font-color', '#FFFFFF')
     };
 
-    // RELAXED LIMITS: DB now handles large strings or we've optimized payload
-    if (payload.avatar_url.length > 1500000) return failSave("Avatar Image too large");
-    if (payload.banner_url.length > 1500000) return failSave("Banner too large");
-    
+    // User requested bypass of link-warning logic. 
+    // We increase limits for high fidelity soundtracks up to 50MB.
     const totalSize = JSON.stringify(payload).length;
-    // We increase total budget to handle 50MB limit request
-    if (totalSize > 70000000) return failSave("Total Profile Data exceeds 50MB limit.");
+    if (totalSize > 80000000) return failSave("Total payload exceeds 50MB limit!");
 
     function failSave(msg) {
         btn.disabled = false;

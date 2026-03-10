@@ -278,21 +278,21 @@
                             </div>
                             <div class="form-grid">
                                 <div class="form-field full">
-                                    <label class="form-label">Background Banner (.mp4 / .gif / .jpg)</label>
-                                    <div style="display:flex; gap:12px;">
-                                        <input type="text" id="banner-url-direct" class="form-input" style="flex:1" placeholder="Direct URL">
-                                        <button class="form-input" style="width:50px; cursor:pointer;" onclick="document.getElementById('banner-upload').click()"><i class="fa-solid fa-upload"></i></button>
-                                        <input type="file" id="banner-upload" style="display:none">
-                                    </div>
-                                </div>
-                                <div class="form-field full">
-                                    <label class="form-label">Profile Music (Direct .mp3 URL)</label>
-                                    <div style="display:flex; gap:12px;">
-                                        <input type="text" id="music-url-direct" class="form-input" style="flex:1" placeholder="Direct URL">
-                                        <button class="form-input" style="width:50px; cursor:pointer;" onclick="document.getElementById('audio-upload-btn').click()"><i class="fa-solid fa-upload"></i></button>
-                                        <input type="file" id="audio-upload-btn" accept=".mp3,audio/mpeg" style="display:none">
-                                    </div>
-                                </div>
+                                     <label class="form-label">Background Banner (.mp4 / .gif / .jpg)</label>
+                                     <div style="display:flex; gap:12px;">
+                                         <input type="text" id="banner-url-direct" class="form-input" style="flex:1" placeholder="Direct URL or MP4">
+                                         <button class="form-input" style="width:50px; cursor:pointer;" onclick="document.getElementById('banner-upload').click()"><i class="fa-solid fa-upload"></i></button>
+                                         <input type="file" id="banner-upload" style="display:none" accept="image/*,video/mp4,video/webm">
+                                     </div>
+                                 </div>
+                                 <div class="form-field full">
+                                     <label class="form-label">Profile Music (Direct MP3 - Max 50MB)</label>
+                                     <div style="display:flex; gap:12px;">
+                                         <input type="text" id="music-url-direct" class="form-input" style="flex:1" placeholder="Direct .mp3 URL">
+                                         <button class="form-input" style="width:50px; cursor:pointer;" onclick="document.getElementById('audio-upload-btn').click()"><i class="fa-solid fa-upload"></i></button>
+                                         <input type="file" id="audio-upload-btn" accept=".mp3,audio/mpeg" style="display:none">
+                                     </div>
+                                 </div>
                                 <div class="form-field full">
                                     <label class="form-label">Custom Cursor (.png)</label>
                                     <div style="display:flex; gap:12px;">

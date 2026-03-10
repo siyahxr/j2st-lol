@@ -34,14 +34,32 @@ body {
 }
 
 /* ── ATMOSPHERE ─────────────────────────────────────────────── */
+.banner-video-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    z-index: -5;
+    transition: opacity 1s ease;
+    opacity: 0;
+}
+
+.banner-video-bg.active {
+    opacity: 1;
+}
+
 #full-bg {
     position: fixed;
-    inset: 0;
-    z-index: -3;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background-size: cover;
     background-position: center;
-    filter: brightness(0.4) saturate(1.2);
-    transition: var(--transition-smooth);
+    z-index: -10;
+    transition: 0.5s ease;
 }
 
 .profile-bg-vignette {

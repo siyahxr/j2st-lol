@@ -107,7 +107,30 @@ function renderProfile(user) {
     if (card) setup3DTilt(card);
 
     // 6. Effects
-    if (user.bg_effect === 'particles') initParticles();
+    // 6. Effects & Banners
+    const bannerVideo = document.getElementById('banner-video');
+    const fullBg = document.getElementById('full-bg');
+    
+    if (user.banner_url) {
+        // Detect Video Type
+        const isVideo = user.banner_url.includes('video/') || user.banner_url.endsWith('.mp4') || user.banner_url.endsWith('.webm') || user.banner_url.startsWith('data:video/');
+        
+        if (isVideo && bannerVideo) {
+            bannerVideo.src = user.banner_url;
+            bannerVideo.style.display = 'block';
+            bannerVideo.classList.add('active');
+            bannerVideo.muted = false; // Start unmuted (Autoplay might fail, handled below)
+            bannerVideo.play().catch(() => {
+                bannerVideo.muted = true; // Fallback to muted autoplay
+                bannerVideo.play();
+            });
+            if (fullBg) fullBg.style.display = 'none';
+        } else if (fullBg) {
+            fullBg.style.backgroundImage = `url(${user.banner_url})`;
+            if (bannerVideo) bannerVideo.style.display = 'none';
+        }
+    }
+
     if (user.glitch_avatar) avatar.classList.add('glitch-fx');
 
     // 7. Avatar Frame
@@ -122,57 +145,35 @@ function renderProfile(user) {
     const viewsEl = document.querySelector('#views-el span');
     if (viewsEl) viewsEl.textContent = `${user.views || 0} views`;
 
-    // 9. Profile Music & External Embeds
-    if (user.profile_music_url) {
-        const url = user.profile_music_url.trim();
-        const musicPlayer = document.getElementById('profile-music-player');
-        const widget = document.getElementById('music-widget');
-        const mName = document.getElementById('music-name');
-        const embedCont = document.getElementById('music-embed-container');
-        const isYoutube = url.includes('youtube.com/') || url.includes('youtu.be/');
-        const isSpotify = url.includes('spotify.com/');
-        const isSoundCloud = url.includes('soundcloud.com/');
+    // 9. Profile Music
+    const musicPlayer = document.getElementById('profile-music-player');
+    const widget = document.getElementById('music-widget');
+    
+    // Rule: If video banner exists, mute the music player to avoid overlap
+    const hasVideo = user.banner_url && (user.banner_url.includes('video/') || user.banner_url.startsWith('data:video/'));
 
-        if (isYoutube || isSpotify || isSoundCloud) {
-            if (widget) widget.style.display = 'none';
-            if (embedCont) {
-                embedCont.style.display = 'block';
-                let embedUrl = "";
-                
-                if (isYoutube) {
-                    const match = url.match(/(?:v=|\/)([0-9A-Za-z_-]{11})(?:&|$|\?)/);
-                    const vid = match ? match[1] : "";
-                    embedUrl = `https://www.youtube.com/embed/${vid}?autoplay=1&mute=0&controls=0&origin=${window.location.origin}`;
-                } else if (isSpotify) {
-                    const match = url.match(/track\/([0-9A-Za-z]{22})/);
-                    const sid = match ? match[1] : "";
-                    embedUrl = `https://open.spotify.com/embed/track/${sid}?utm_source=generator&theme=0&autoplay=1`;
-                } else if (isSoundCloud) {
-                    embedUrl = `https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}&auto_play=true&visual=true`;
-                }
-                
-                if (embedUrl) {
-                    embedCont.innerHTML = `<iframe src="${embedUrl}" width="100%" height="80" frameBorder="0" allow="autoplay; encrypted-media; fullscreen" style="border-radius:12px;"></iframe>`;
-                }
+    if (user.profile_music_url && musicPlayer) {
+        musicPlayer.src = user.profile_music_url;
+        musicPlayer.volume = hasVideo ? 0 : 0.6; // Mute if video is present
+        musicPlayer.loop = true;
+        if (widget && !hasVideo) widget.style.display = 'flex';
+
+        const startAll = () => {
+            musicPlayer.play().catch(() => {});
+            if (bannerVideo) {
+                bannerVideo.muted = false;
+                bannerVideo.play().catch(() => {});
             }
-        } else if (musicPlayer) {
-            // DIRECT MP3 OR DATA URI
-            musicPlayer.src = url;
-            musicPlayer.volume = 0.5;
-            musicPlayer.loop = true;
-            if (widget) widget.style.display = 'flex';
-            
-            const startAll = () => {
-                musicPlayer.play().then(() => {
-                    console.log("Audio live");
-                    window.removeEventListener('click', startAll);
-                    window.removeEventListener('touchstart', startAll);
-                }).catch(() => {});
-            };
-            window.addEventListener('click', startAll);
-            window.addEventListener('touchstart', startAll);
-            startAll();
-        }
+            console.log("Audio Unlocked");
+            ["click", "touchstart", "mousedown", "wheel"].forEach(ev => window.removeEventListener(ev, startAll));
+        };
+
+        ["click", "touchstart", "mousedown", "wheel"].forEach(ev => {
+            window.addEventListener(ev, startAll, { once: true });
+        });
+        
+        // Initial attempt
+        startAll();
     }
 }
 
