@@ -216,6 +216,13 @@ function syncBadgesCollection() {
 
 function syncUI() {
     if (!userDataState) return;
+
+    // Admin link control - sadece admin rolü görebilir
+    const adminLink = document.getElementById('admin-nav-link');
+    if (adminLink) {
+        adminLink.style.display = (userDataState.role === 'admin') ? 'flex' : 'none';
+    }
+
     syncActiveLinks();
     syncBadgesCollection();
 
@@ -400,6 +407,13 @@ function setupUploaders() {
             el.onchange = (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
+
+                // MP3 kontrolü (audio için)
+                if (id === 'audio-upload-btn' && file.type !== 'audio/mpeg' && !file.name.endsWith('.mp3')) {
+                    showToast("Only MP3 files allowed", "error");
+                    return;
+                }
+
                 const reader = new FileReader();
                 reader.onload = (ev) => {
                     const res = ev.target.result;
@@ -412,6 +426,7 @@ function setupUploaders() {
                         document.getElementById('preview-banner').style.backgroundImage = `url(${res})`;
                     } else if (id === 'audio-upload-btn') {
                         musicBase64 = res;
+                        showToast("Audio loaded - Save to apply", "success");
                     } else if (id === 'cursor-upload') {
                         cursorBase64 = res;
                     }

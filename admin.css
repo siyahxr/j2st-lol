@@ -3,13 +3,14 @@
    ============================== */
 
 :root {
-    --bg-dark: #050507;
-    --bg-surface: #0a0a0f;
-    --accent: #6366f1; /* Indigo */
-    --accent-glow: rgba(99, 102, 241, 0.2);
+    --bg-dark: #0a0a0a;
+    --bg-surface: #141414;
+    --accent: #4a4a4a;
+    /* Gray */
+    --accent-glow: rgba(100, 100, 100, 0.1);
     --glass-border: rgba(255, 255, 255, 0.05);
-    --text-main: #f8fafc;
-    --text-dim: #94a3b8;
+    --text-main: #e0e0e0;
+    --text-dim: #888888;
     --surface-light: rgba(255, 255, 255, 0.02);
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -180,8 +181,15 @@ body::before {
 }
 
 @keyframes slideUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* TABLES */
@@ -190,7 +198,7 @@ body::before {
     border: 1px solid var(--glass-border);
     border-radius: 24px;
     padding: 30px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
 }
 
 .fancy-table {
@@ -276,7 +284,7 @@ body::before {
 
 .badge-input {
     width: 100%;
-    background: rgba(0,0,0,0.2);
+    background: rgba(0, 0, 0, 0.2);
     border: 1px solid var(--glass-border);
     padding: 14px;
     border-radius: 12px;
@@ -289,7 +297,7 @@ body::before {
 
 .badge-input:focus {
     border-color: var(--accent);
-    background: rgba(0,0,0,0.3);
+    background: rgba(0, 0, 0, 0.3);
 }
 
 .badge-upload-box {
@@ -361,11 +369,14 @@ body::before {
 
 /* MODAL */
 .badge-modal {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.8);
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(8px);
     z-index: 9999;
-    display: none; align-items: center; justify-content: center;
+    display: none;
+    align-items: center;
+    justify-content: center;
 }
 
 .badge-modal-content {
@@ -374,21 +385,32 @@ body::before {
     padding: 40px;
     border-radius: 24px;
     width: 480px;
-    box-shadow: 0 30px 60px -12px rgba(0,0,0,0.5);
+    box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.5);
 }
 
 .badge-opt {
-    display: flex; align-items: center; gap: 15px; padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 14px 20px;
     border-radius: 12px;
     border: 1px solid var(--glass-border);
-    margin-bottom: 10px; cursor: pointer;
+    margin-bottom: 10px;
+    cursor: pointer;
     transition: var(--transition);
     font-weight: 700;
     font-size: 14px;
 }
 
-.badge-opt:hover { background: var(--surface-light); }
-.badge-opt.selected { border-color: var(--accent); background: var(--accent-glow); color: #fff; }
+.badge-opt:hover {
+    background: var(--surface-light);
+}
+
+.badge-opt.selected {
+    border-color: var(--accent);
+    background: var(--accent-glow);
+    color: #fff;
+}
 
 /* ROLES */
 .role-tag {
@@ -397,12 +419,36 @@ body::before {
     font-size: 10px;
     font-weight: 900;
 }
-.role-tag.founder { background: #fee2e2; color: #ef4444; }
-.role-tag.admin { background: #e0e7ff; color: #6366f1; }
-.role-tag.member { background: rgba(255,255,255,0.05); color: var(--text-dim); }
+
+.role-tag.founder {
+    background: #fee2e2;
+    color: #ef4444;
+}
+
+.role-tag.admin {
+    background: #e0e7ff;
+    color: #6366f1;
+}
+
+.role-tag.member {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-dim);
+}
 
 /* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--glass-border);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent);
+}

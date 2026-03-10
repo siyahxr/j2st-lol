@@ -1,8 +1,21 @@
 const SES_KEY = "j2st_session_v2";
 
 function getSession() {
-    try { return JSON.parse(localStorage.getItem(SES_KEY) || "null"); } 
+    try { return JSON.parse(localStorage.getItem(SES_KEY) || "null"); }
     catch { return null; }
+}
+
+// Check admin access on load
+const session = getSession();
+const userRole = session?.role || session?.user?.role;
+if (userRole !== 'admin') {
+    document.body.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;background:#0a0a0a;color:#fff;font-family:sans-serif;">
+        <i class="fa-solid fa-lock" style="font-size:64px;margin-bottom:20px;opacity:0.5;"></i>
+        <h1 style="font-size:24px;margin-bottom:10px;">Access Denied</h1>
+        <p style="color:#888;">This area is restricted to administrators only.</p>
+        <a href="/dashboard" style="margin-top:20px;color:#fff;text-decoration:underline;">Return to Dashboard</a>
+    </div>`;
+    throw new Error("Access denied");
 }
 
 let allUsers = [];
@@ -11,7 +24,7 @@ let currentEditingUserId = null;
 let badgeBase64 = null;
 
 // --- UI Logic ---
-window.switchSection = function(el, id) {
+window.switchSection = function (el, id) {
     document.querySelectorAll(".asb-item").forEach(a => a.classList.remove("active"));
     document.querySelectorAll(".admin-section").forEach(s => s.classList.remove("active"));
     if (el) el.classList.add("active");
@@ -29,13 +42,13 @@ window.switchSection = function(el, id) {
 async function loadUsers(filter = "") {
     const tbody = document.getElementById("users-tbody");
     const currentSession = getSession();
-    
+
     try {
         const res = await fetch("/api/admin/users", {
             headers: { "x-user-id": currentSession?.id || "" }
         });
         allUsers = await res.json();
-        
+
         // Fetch global badges if not loaded
         if (globalBadges.length === 0) await loadGlobalBadges(false);
 
@@ -112,7 +125,7 @@ document.addEventListener('change', (e) => {
     }
 });
 
-window.deployBadge = async function() {
+window.deployBadge = async function () {
     const name = document.getElementById("new-badge-name").value;
     if (!name || !badgeBase64) return alert("MISSING_DATA");
 
@@ -120,7 +133,7 @@ window.deployBadge = async function() {
     try {
         const res = await fetch("/api/admin/create_badge", {
             method: "POST",
-            headers: { 
+            headers: {
                 "Content-Type": "application/json",
                 "x-user-id": currentSession?.id || ""
             },
@@ -136,7 +149,7 @@ window.deployBadge = async function() {
 };
 
 // --- Badge Assignment Modal ---
-window.openBadgeModal = function(userId, username) {
+window.openBadgeModal = function (userId, username) {
     currentEditingUserId = userId;
     const user = allUsers.find(u => u.id === userId);
     const existingBadges = JSON.parse(user?.badges || "[]");
@@ -152,11 +165,11 @@ window.openBadgeModal = function(userId, username) {
     `).join("") || "<p>NO_TOKENS_FOUND</p>";
 };
 
-window.closeBadgeModal = function() {
+window.closeBadgeModal = function () {
     document.getElementById("badge-modal").style.display = "none";
 };
 
-window.saveUserBadges = async function() {
+window.saveUserBadges = async function () {
     const selectedBadges = Array.from(document.querySelectorAll(".badge-opt.selected"))
         .map(opt => opt.getAttribute("data-id"));
 
@@ -164,7 +177,7 @@ window.saveUserBadges = async function() {
     try {
         const res = await fetch("/api/admin/set_badges", {
             method: "POST",
-            headers: { 
+            headers: {
                 "Content-Type": "application/json",
                 "x-user-id": currentSession?.id || ""
             },
@@ -180,13 +193,13 @@ window.saveUserBadges = async function() {
     }
 };
 
-window.setRole = async function(userId, newRole) {
+window.setRole = async function (userId, newRole) {
     if (!confirm(`CONFIRM_LEVEL_SHIFT_${newRole.toUpperCase()}?`)) return;
     const currentSession = getSession();
     try {
         const res = await fetch("/api/admin/set_role", {
             method: "POST",
-            headers: { 
+            headers: {
                 "Content-Type": "application/json",
                 "x-user-id": currentSession?.id || ""
             },
@@ -196,7 +209,7 @@ window.setRole = async function(userId, newRole) {
     } catch (e) { console.error(e); }
 };
 
-window.filterUsers = function(val) { loadUsers(val); };
+window.filterUsers = function (val) { loadUsers(val); };
 
 (function init() {
     loadUsers();
