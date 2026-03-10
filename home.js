@@ -1,3 +1,30 @@
+// Lang Switcher UI Logic
+document.addEventListener('DOMContentLoaded', () => {
+    const langBtn = document.getElementById('lang-btn');
+    const langDropdown = document.getElementById('lang-dropdown');
+    
+    if (langBtn && langDropdown) {
+        langBtn.onclick = (e) => {
+            e.stopPropagation();
+            langDropdown.classList.toggle('active');
+        };
+
+        const langCodes = ["tr", "en", "de", "ru"];
+        document.querySelectorAll('.lang-opt').forEach(opt => {
+            opt.onclick = () => {
+                const l = opt.getAttribute('data-lang');
+                let currentPath = window.location.pathname.substring(1).split('/');
+                if (langCodes.includes(currentPath[0])) currentPath.shift();
+                window.location.href = "/" + l + "/" + currentPath.join("/");
+            };
+        });
+
+        document.addEventListener('click', () => {
+            langDropdown.classList.remove('active');
+        });
+    }
+});
+
 // Navbar scroll effect
 const navbar = document.getElementById('navbar');
 window.addEventListener('scroll', () => {

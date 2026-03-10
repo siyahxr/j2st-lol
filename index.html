@@ -28,10 +28,24 @@
                 <span class="nav-title iridescent-text">j2st.icu</span>
             </div>
             <div class="nav-actions">
-                <a href="#features" class="nav-pill">Features</a>
-                <a href="/login" class="nav-pill" id="nav-login">Login</a>
-                <a href="/register" class="btn-ghost" id="nav-register">Register</a>
+                <a href="#features" class="nav-pill" data-i18n="nav_features">Features</a>
+                <a href="/login" class="nav-pill" id="nav-login" data-i18n="nav_login">Login</a>
+                <a href="/register" class="btn-ghost" id="nav-register" data-i18n="nav_register">Register</a>
                 <a href="/dashboard" class="btn-primary" id="nav-user-dash" style="display:none;"></a>
+
+                <!-- Lang Switcher -->
+                <div class="lang-switcher">
+                    <button class="lang-btn" id="lang-btn">
+                        <span class="lang-flag" id="current-flag">🇺🇸</span>
+                        <span id="current-lang-name">EN</span>
+                    </button>
+                    <div class="lang-dropdown" id="lang-dropdown">
+                        <button class="lang-opt" data-lang="en"><span class="lang-flag">🇺🇸</span> EN</button>
+                        <button class="lang-opt" data-lang="tr"><span class="lang-flag">🇹🇷</span> TR</button>
+                        <button class="lang-opt" data-lang="de"><span class="lang-flag">🇩🇪</span> DE</button>
+                        <button class="lang-opt" data-lang="ru"><span class="lang-flag">🇷🇺</span> RU</button>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
@@ -42,18 +56,18 @@
         <div class="hero-text">
             <div class="hero-tag">
                 <span class="live-dot"></span>
-                <span>j2st.icu — Live Platform</span>
+                <span data-i18n="hero_tag">j2st.icu — Live Platform</span>
             </div>
-            <h1 class="hero-h1">
+            <h1 class="hero-h1" data-i18n="hero_h1">
                 Your <span class="iridescent-text">Digital</span><br>
                 Identity, Perfected.
             </h1>
-            <p class="hero-p">
+            <p class="hero-p" data-i18n="hero_p">
                 One sleek page to showcase everything — your links, sound, badges, and personality. Built for gamers who want to stand out.
             </p>
             <div class="hero-btns">
-                <a href="/register" class="btn-primary large">Get Started</a>
-                <a href="/dashboard" class="btn-ghost large">Customize</a>
+                <a href="/register" class="btn-primary large" data-i18n="hero_get_started">Get Started</a>
+                <a href="/dashboard" class="btn-ghost large" data-i18n="hero_customize">Customize</a>
             </div>
 
             <!-- Mini stats -->
@@ -109,8 +123,8 @@
 
     <!-- ====== FEATURES ====== -->
     <section class="features" id="features">
-        <div class="features-label">WHAT YOU GET</div>
-        <h2 class="features-title">Everything in <span class="iridescent-text">one place</span></h2>
+        <div class="features-label" data-i18n="feat_label">WHAT YOU GET</div>
+        <h2 class="features-title" data-i18n="feat_title">Everything in <span class="iridescent-text">one place</span></h2>
 
         <div class="feat-grid">
             <a href="/" class="feat-card glass-card" id="feat-profile-link">
@@ -118,8 +132,8 @@
                     <span class="feat-icon"><img src="/assets/icons/dragon.png" alt="profile"></span>
                     <span class="feat-arrow">↗</span>
                 </div>
-                <h3>Profile Page</h3>
-                <p>Your public face — dragon avatar, bio, links, and badges all in one stunning page.</p>
+                <h3 data-i18n="feat1_title">Profile Page</h3>
+                <p data-i18n="feat1_p">Your public face — dragon avatar, bio, links, and badges all in one stunning page.</p>
                 <div class="feat-bar"></div>
             </a>
             <a href="/dashboard" class="feat-card glass-card">
@@ -127,8 +141,8 @@
                     <span class="feat-icon"><img src="/assets/icons/gear.png" alt="dashboard"></span>
                     <span class="feat-arrow">↗</span>
                 </div>
-                <h3>Dashboard</h3>
-                <p>Upload PPs, banners, sounds, and manage all your profile content in real-time.</p>
+                <h3 data-i18n="feat2_title">Dashboard</h3>
+                <p data-i18n="feat2_p">Upload PPs, banners, sounds, and manage all your profile content in real-time.</p>
                 <div class="feat-bar"></div>
             </a>
             <a href="/admin" class="feat-card glass-card">
@@ -136,8 +150,8 @@
                     <span class="feat-icon"><img src="/assets/icons/shield.png" alt="admin"></span>
                     <span class="feat-arrow">↗</span>
                 </div>
-                <h3>Admin Panel</h3>
-                <p>Control users, toggle global badges, and manage the platform from one panel.</p>
+                <h3 data-i18n="feat3_title">Admin Panel</h3>
+                <p data-i18n="feat3_p">Control users, toggle global badges, and manage the platform from one panel.</p>
                 <div class="feat-bar"></div>
             </a>
         </div>
@@ -168,10 +182,10 @@
         <div class="cta-inner glass-card">
             <img src="/assets/icons/user_dragon.png" class="cta-dragon" alt="dragon">
             <div class="cta-text">
-                <h2>Start now. <span class="iridescent-text">It's free.</span></h2>
-                <p>Join the j2st.icu community and own your digital identity.</p>
+                <h2 data-i18n="cta_title">Start now. <span class="iridescent-text">It's free.</span></h2>
+                <p data-i18n="cta_p">Join the j2st.icu community and own your digital identity.</p>
             </div>
-            <a href="/register" class="btn-primary large">Get Started →</a>
+            <a href="/register" class="btn-primary large" data-i18n="cta_btn">Get Started →</a>
         </div>
     </section>
 
@@ -183,6 +197,7 @@
 
     <!-- (Floating Profile Button removed per request, now only accessible from dashboard) -->
 
+    <script src="/system/i18n.js"></script>
     <script src="/home.js"></script>
     <!-- Twemoji: high-quality emoji rendering -->
     <script src="https://cdn.jsdelivr.net/npm/@twemoji/api@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>

@@ -115,8 +115,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         renderLinks(targetUser.links || "[]", targetUser.accent_color);
 
         // Views count
-        const vCount = document.getElementById('views-el')?.querySelector('span');
-        if (vCount) vCount.textContent = `${targetUser.views || 0} VIEWS`;
+        const vCountSpan = document.getElementById('views-el')?.querySelector('span');
+        if (vCountSpan) {
+            const currentLang = localStorage.getItem('j2st_lang') || 'en';
+            const label = (window.i18n_dict && i18n_dict[currentLang]) ? i18n_dict[currentLang].prof_views : 'VIEWS';
+            vCountSpan.textContent = `${targetUser.views || 0} ${label}`;
+        }
 
         // Interaction Hints
         // 8. CUSTOM CURSOR

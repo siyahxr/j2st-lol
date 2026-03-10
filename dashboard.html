@@ -40,44 +40,44 @@
             </div>
 
             <nav class="nav-group">
-                <p class="nav-label">Main</p>
+                <p class="nav-label" data-i18n="dash_main">Main</p>
                 <a href="#overview" class="nav-item active" onclick="switchTab(this, 'overview')">
                     <i><img src="/assets/icons/stats.png" alt="overview"></i>
-                    <span>Overview</span>
+                    <span data-i18n="dash_overview">Overview</span>
                 </a>
                 <a href="#profile" class="nav-item" onclick="switchTab(this, 'profile')">
                     <i><img src="/assets/icons/dragon.png" alt="profile"></i>
-                    <span>Profile Editor</span>
+                    <span data-i18n="dash_profile">Profile Editor</span>
                 </a>
                 <a href="#links" class="nav-item" onclick="switchTab(this, 'links')">
                     <i><img src="/assets/icons/link.png" alt="links"></i>
-                    <span>Manage Links</span>
+                    <span data-i18n="dash_links">Manage Links</span>
                 </a>
 
-                <p class="nav-label">Media</p>
+                <p class="nav-label" data-i18n="dash_media_label">Media</p>
                 <a href="#media" class="nav-item" onclick="switchTab(this, 'media')">
                     <i><img src="/assets/icons/music.png" alt="sound"></i>
-                    <span>Sound & Files</span>
+                    <span data-i18n="dash_media">Sound & Files</span>
                 </a>
                 <a href="#badges" class="nav-item" onclick="switchTab(this, 'badges')">
                     <i><img src="/assets/icons/badge.png" alt="badges"></i>
-                    <span>Your Badges</span>
+                    <span data-i18n="dash_badges">Your Badges</span>
                 </a>
                 <a href="#settings" class="nav-item" onclick="switchTab(this, 'settings')">
                     <i><img src="/assets/icons/gear.png" alt="settings"></i>
-                    <span>Settings</span>
+                    <span data-i18n="dash_settings">Settings</span>
                 </a>
 
-                <p class="nav-label" id="admin-sec-label">Admin</p>
+                <p class="nav-label" id="admin-sec-label" data-i18n="dash_admin_label">Admin</p>
                 <a href="/admin" class="nav-item danger" id="admin-nav-link">
                     <i><img src="/assets/icons/shield.png" alt="admin"></i>
-                    <span>Admin Panel</span>
+                    <span data-i18n="dash_admin">Admin Panel</span>
                 </a>
             </nav>
 
             <div class="sidebar-footer">
                 <a href="/" class="footer-btn">
-                    <span>← Back to Home</span>
+                    <span data-i18n="dash_back">← Back to Home</span>
                 </a>
             </div>
         </aside>
@@ -610,7 +610,8 @@
     </div>
 
     <!-- SCRIPTS -->
-    <script type="module" src="/dashboard.js?v=3.1"></script>
+    <script src="/system/i18n.js"></script>
+    <script type="module" src="/dashboard.js?v=3.2"></script>
     <!-- ICONS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </body>
