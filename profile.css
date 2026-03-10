@@ -307,26 +307,14 @@ body {
     96% { filter: hue-rotate(-90deg) contrast(2); transform: translate(-2px, 0); }
 }
 
-/* Loading State Override */
+/* Loading State Overlay */
 #loading {
-    background: #000;
-}
-
-.dragon-glow-ring {
-    width: 60px;
-    height: 60px;
-    border: 2px solid rgba(255,255,255,0.1);
-    border-top-color: #fff;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
+    background: #000 !important;
+    z-index: 999999 !important;
 }
 
 /* Responsive adjustments */
 @media (max-width: 480px) {
-    .profile-card { padding: 40px 25px; border-radius: 30px; }
-    .profile-name { font-size: 28px; }
+    .profile-card, .phone-content { padding: 40px 25px; border-radius: 30px; }
+    .profile-name, .phone-name { font-size: 28px; }
 }

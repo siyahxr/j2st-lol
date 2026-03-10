@@ -19,8 +19,11 @@ async function initProfile() {
         }
 
         renderProfile(data);
-        if (loadingEl) loadingEl.style.fadeOut = "all 0.5s";
-        setTimeout(() => { if (loadingEl) loadingEl.style.display = 'none'; }, 500);
+        if (loadingEl) {
+            loadingEl.style.opacity = "0";
+            loadingEl.style.transition = "opacity 0.5s ease";
+            setTimeout(() => { loadingEl.style.display = 'none'; }, 500);
+        }
 
     } catch (e) {
         console.error("Profile Failed:", e);
@@ -106,7 +109,9 @@ function setup3DTilt(el) {
     document.addEventListener("mousemove", (e) => {
         const x = (e.clientX / window.innerWidth) - 0.5;
         const y = (e.clientY / window.innerHeight) - 0.5;
-        el.style.transform = `rotateX(${y * -20}deg) rotateY(${x * 20}deg) translateZ(10px)`;
+        
+        // PHYSICAL WEIGHT: Higher gravity feel
+        el.style.transform = `rotateX(${y * -35}deg) rotateY(${x * 35}deg) translateZ(15px)`;
 
         // Aura tracking
         const aura = document.querySelector('.dynamic-aura');

@@ -60,6 +60,7 @@ async function init() {
         setupControls();
         setupLivePreview();
         setupUploaders();
+        setupTiltPreview();
     } catch (e) {
         console.error("Init failed:", e);
     }
@@ -189,6 +190,23 @@ function updatePreview() {
     }
     if (aura) {
         aura.style.background = accent;
+    }
+}
+
+function setupTiltPreview() {
+    const ph = document.querySelector('.phone');
+    if (ph) {
+        ph.style.transformStyle = "preserve-3d";
+        ph.parentElement.style.perspective = "1000px";
+        document.addEventListener("mousemove", (e) => {
+            if (document.getElementById('tab-profile').classList.contains('active')) {
+                const rect = ph.getBoundingClientRect();
+                const x = ((e.clientX - rect.left) / rect.width) - 0.5;
+                const y = ((e.clientY - rect.top) / rect.height) - 0.5;
+                // PHYSICAL WEIGHT: positive X -> rotateY pos (right goes back)
+                ph.style.transform = `rotateX(${y * -25}deg) rotateY(${x * 25}deg)`;
+            }
+        });
     }
 }
 
