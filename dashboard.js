@@ -22,6 +22,24 @@ let bannerBase64 = null;
 let musicBase64 = null;
 let cursorBase64 = null;
 
+function hexToRgba(hex, opacity) {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+}
+
+function parseRgba(rgba) {
+    if (!rgba) return { hex: '#000000', opacity: 1 };
+    if (!rgba.startsWith('rgba')) return { hex: rgba, opacity: 1 };
+    const parts = rgba.match(/[\d.]+/g);
+    if (!parts || parts.length < 4) return { hex: '#000000', opacity: 1 };
+    const r = parseInt(parts[0]).toString(16).padStart(2, '0');
+    const g = parseInt(parts[1]).toString(16).padStart(2, '0');
+    const b = parseInt(parts[2]).toString(16).padStart(2, '0');
+    return { hex: `#${r}${g}${b}`, opacity: parseFloat(parts[3]) };
+}
+
 // --- TAB SYSTEM ---
 window.switchTab = (el, tabName) => {
     if (el) {
@@ -84,7 +102,10 @@ function syncUI() {
     // Colors
     syncColor('accent', userDataState.accent_color || '#FFFFFF');
     syncColor('icon', userDataState.icon_color || '#A1A1AA');
-    syncColor('avatar-frame', userDataState.avatar_frame_color || '#000000');
+    
+    const frameData = parseRgba(userDataState.avatar_frame_color || '#000000');
+    syncColor('avatar-frame', frameData.hex);
+    document.getElementById('avatar-frame-opacity').value = frameData.opacity;
     
     document.getElementById('badge-bg-color').value = userDataState.badge_bg_color || "rgba(255,255,255,0.05)";
     
@@ -139,6 +160,7 @@ function setupControls() {
             };
         }
     });
+    document.getElementById('avatar-frame-opacity').oninput = updatePreview;
 
     // Color pickers for fonts
     ['name-font-color'].forEach(id => {
@@ -150,7 +172,8 @@ function setupControls() {
 function setupLivePreview() {
     const ids = [
         'profile-display-name', 'profile-bio', 'name-font', 'bio-font', 
-        'bio-font-color', 'banner-url-direct', 'glitch-avatar', 'card-style'
+        'bio-font-color', 'banner-url-direct', 'glitch-avatar', 'card-style',
+        'avatar-frame-opacity'
     ];
     ids.forEach(id => {
         const el = document.getElementById(id);
@@ -174,6 +197,14 @@ function updatePreview() {
         bio.textContent = document.getElementById('profile-bio').value || "Bio stream...";
         bio.style.fontFamily = document.getElementById('bio-font').value;
         bio.style.color = document.getElementById('bio-font-color').value;
+    }
+
+    // Avatar Frame Preview
+    const avPreview = document.getElementById('preview-avatar');
+    if (avPreview) {
+        const fHex = document.getElementById('avatar-frame-hex').value;
+        const fOp = document.getElementById('avatar-frame-opacity').value;
+        avPreview.style.borderColor = hexToRgba(fHex, fOp);
     }
 
     const bUrl = bannerBase64 || document.getElementById('banner-url-direct').value || userDataState.banner_url;
@@ -203,8 +234,8 @@ function setupTiltPreview() {
                 const rect = ph.getBoundingClientRect();
                 const x = ((e.clientX - rect.left) / rect.width) - 0.5;
                 const y = ((e.clientY - rect.top) / rect.height) - 0.5;
-                // PHYSICAL WEIGHT: positive X -> rotateY pos (right goes back)
-                ph.style.transform = `rotateX(${y * -25}deg) rotateY(${x * 25}deg)`;
+                // NATURAL WEIGHT: Right side away (neg Y), Bottom side away (pos X)
+                ph.style.transform = `rotateX(${y * 25}deg) rotateY(${x * -25}deg)`;
             }
         });
     }
@@ -263,7 +294,7 @@ window.saveProfileChanges = async () => {
         banner_url: bannerBase64 || document.getElementById('banner-url-direct')?.value || userDataState?.banner_url || null,
         accent_color: document.getElementById('accent-hex')?.value || "#FFFFFF",
         icon_color: document.getElementById('icon-hex')?.value || "#A1A1AA",
-        avatar_frame_color: document.getElementById('avatar-frame-hex')?.value || "#000000",
+        avatar_frame_color: hexToRgba(document.getElementById('avatar-frame-hex')?.value || "#000000", document.getElementById('avatar-frame-opacity')?.value || "1"),
         badge_bg_color: document.getElementById('badge-bg-color')?.value || "rgba(255,255,255,0.05)",
         name_font: document.getElementById('name-font')?.value || "Outfit",
         name_font_color: document.getElementById('name-font-color')?.value || "#FFFFFF",

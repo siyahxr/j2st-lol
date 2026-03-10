@@ -68,15 +68,35 @@ function renderProfile(user) {
         container.className = 'profile-card ' + user.card_style + '-style';
     }
     
-    // 4. Links & Badges
+    // 4. Badges & Links
+    const badgesEl = document.getElementById('badges-el');
+    if (badgesEl && user.badges) {
+        // Badges can be a JSON string or an array depending on DB driver
+        let bList = user.badges;
+        if (typeof bList === 'string') try { bList = JSON.parse(bList); } catch(e) { bList = []; }
+        
+        if (Array.isArray(bList)) {
+            badgesEl.innerHTML = bList.map(b => `
+                <div class="badge-item" title="${b.label || ''}">
+                    <i class="${b.icon || 'fa-solid fa-certificate'}"></i>
+                </div>
+            `).join('');
+        }
+    }
+
     const linksEl = document.getElementById('links-el');
     if (linksEl && user.links) {
-        linksEl.innerHTML = user.links.map(l => `
-            <a href="${l.url}" target="_blank" class="link-btn">
-                <span>${l.title}</span>
-                <i class="fa-solid fa-arrow-up-right-from-square"></i>
-            </a>
-        `).join('');
+        let lList = user.links;
+        if (typeof lList === 'string') try { lList = JSON.parse(lList); } catch(e) { lList = []; }
+
+        if (Array.isArray(lList)) {
+            linksEl.innerHTML = lList.map(l => `
+                <a href="${l.url}" target="_blank" class="link-btn">
+                    <span>${l.title}</span>
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
+            `).join('');
+        }
     }
 
     // 5. 3D Tilt (Always On)
@@ -110,8 +130,9 @@ function setup3DTilt(el) {
         const x = (e.clientX / window.innerWidth) - 0.5;
         const y = (e.clientY / window.innerHeight) - 0.5;
         
-        // PHYSICAL WEIGHT: Higher gravity feel
-        el.style.transform = `rotateX(${y * -35}deg) rotateY(${x * 35}deg) translateZ(15px)`;
+        // NATURAL WEIGHT: If mouse is right, right side goes back (negative Y rotation in CSS)
+        // If mouse is bottom, bottom side goes back (positive X rotation in CSS)
+        el.style.transform = `rotateX(${y * 35}deg) rotateY(${x * -35}deg) translateZ(15px)`;
 
         // Aura tracking
         const aura = document.querySelector('.dynamic-aura');
