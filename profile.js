@@ -129,7 +129,6 @@ function renderProfile(user) {
         const widget = document.getElementById('music-widget');
         const mName = document.getElementById('music-name');
         const embedCont = document.getElementById('music-embed-container');
-        
         const isYoutube = url.includes('youtube.com/') || url.includes('youtu.be/');
         const isSpotify = url.includes('spotify.com/');
         const isSoundCloud = url.includes('soundcloud.com/');
@@ -139,38 +138,40 @@ function renderProfile(user) {
             if (embedCont) {
                 embedCont.style.display = 'block';
                 let embedUrl = "";
+                
                 if (isYoutube) {
-                    const vid = url.split('v=')[1]?.split('&')[0] || url.split('/').pop();
+                    const match = url.match(/(?:v=|\/)([0-9A-Za-z_-]{11})(?:&|$|\?)/);
+                    const vid = match ? match[1] : "";
                     embedUrl = `https://www.youtube.com/embed/${vid}?autoplay=1&mute=0&controls=0&origin=${window.location.origin}`;
                 } else if (isSpotify) {
-                    const sid = url.split('/track/')[1]?.split('?')[0];
+                    const match = url.match(/track\/([0-9A-Za-z]{22})/);
+                    const sid = match ? match[1] : "";
                     embedUrl = `https://open.spotify.com/embed/track/${sid}?utm_source=generator&theme=0&autoplay=1`;
                 } else if (isSoundCloud) {
-                    embedUrl = `https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}&auto_play=true`;
+                    embedUrl = `https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}&auto_play=true&visual=true`;
                 }
-                embedCont.innerHTML = `<iframe src="${embedUrl}" width="100%" height="80" frameBorder="0" allow="autoplay; encrypted-media" style="border-radius:12px;"></iframe>`;
+                
+                if (embedUrl) {
+                    embedCont.innerHTML = `<iframe src="${embedUrl}" width="100%" height="80" frameBorder="0" allow="autoplay; encrypted-media; fullscreen" style="border-radius:12px;"></iframe>`;
+                }
             }
         } else if (musicPlayer) {
+            // DIRECT MP3 OR DATA URI
             musicPlayer.src = url;
-            musicPlayer.volume = 0.4;
+            musicPlayer.volume = 0.5;
             musicPlayer.loop = true;
+            if (widget) widget.style.display = 'flex';
             
-            const attemptPlay = () => {
+            const startAll = () => {
                 musicPlayer.play().then(() => {
-                    console.log("Music synced!");
-                    window.removeEventListener('pointerdown', attemptPlay);
-                    window.removeEventListener('click', attemptPlay);
-                    window.removeEventListener('touchstart', attemptPlay);
-                }).catch(e => {
-                    console.warn("Play blocked. Waiting for first interaction...");
-                });
+                    console.log("Audio live");
+                    window.removeEventListener('click', startAll);
+                    window.removeEventListener('touchstart', startAll);
+                }).catch(() => {});
             };
-
-            window.addEventListener('pointerdown', attemptPlay, { once: true });
-            window.addEventListener('click', attemptPlay, { once: true });
-            window.addEventListener('touchstart', attemptPlay, { once: true });
-            
-            attemptPlay();
+            window.addEventListener('click', startAll);
+            window.addEventListener('touchstart', startAll);
+            startAll();
         }
     }
 }

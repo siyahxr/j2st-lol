@@ -260,8 +260,11 @@ function setupEventListeners() {
         const el = document.getElementById(id);
         if (el) {
             el.addEventListener('input', (e) => {
-                // Critical fix: If typing a URL, kill the base64 buffer for that type
-                if (id === 'music-url-direct' && e.target.value) musicBase64 = null;
+                // If user starts typing a URL, we must clear the Base64 buffer for that slot
+                if (id === 'music-url-direct' && e.target.value && !e.target.value.startsWith('[FILE:')) {
+                    musicBase64 = null;
+                    document.getElementById('audio-status-text').textContent = "Link Mode Active";
+                }
                 if (id === 'banner-url-direct' && e.target.value) bannerBase64 = null;
                 if (id === 'avatar-url-direct' && e.target.value) avatarBase64 = null;
                 
@@ -285,15 +288,12 @@ function setupFilePicker(inputId, type) {
         const file = e.target.files[0];
         if (!file) return;
 
-        if (type === 'music' && !file.type.includes('audio') && !file.name.endsWith('.mp3')) {
-            return showToast("Only MP3 files allowed", "error");
-        }
+        // HARD LIMIT: Cloudflare D1 cannot store more than 1MB per column.
+        // We set limit to 750KB to account for Base64 (750KB * 1.33 = 1MB)
+        const maxSaveLimit = 750 * 1024;
         
-        // User requested 50MB limit for high quality soundtracks
-        const maxAudioBytes = 50 * 1024 * 1024; 
-        
-        if (type === 'music' && file.size > maxAudioBytes) {
-            return showToast("Audio too large (Max 50MB)", "error");
+        if (type === 'music' && file.size > maxSaveLimit) {
+            return showToast("File too big for DB (Max 750KB). For long songs, please use a YouTube/Spotify link!", "error");
         }
 
         const reader = new FileReader();
@@ -549,7 +549,6 @@ window.saveProfileChanges = async () => {
         if (el.type === 'checkbox') return el.checked ? 1 : 0;
         return (el.value || fallback).trim();
     };
-
     const musicInput = safeGet('music-url-direct');
     const bannerInput = safeGet('banner-url-direct');
     const avatarInput = safeGet('avatar-url-direct');
@@ -560,22 +559,20 @@ window.saveProfileChanges = async () => {
     if (bannerInput) bannerBase64 = null;
     if (avatarInput) avatarBase64 = null;
     if (cursorInput) cursorBase64 = null;
-
-    // Corrected Priority Logic
-    let finalMusic = safeGet('music-url-direct');
-    if (finalMusic.startsWith('[FILE:')) {
-        // If it's a file placeholder, we MUST use the buffer
-        finalMusic = musicBase64 || userDataState.profile_music_url || "";
-    } else if (!finalMusic && musicBase64) {
-        // Fallback to buffer if input is empty
+    
+    // Priority: 1. Locally uploaded Base64, 2. Manual URL Input, 3. Old State
+    let finalMusic = userDataState.profile_music_url || "";
+    if (musicBase64) {
         finalMusic = musicBase64;
+    } else if (musicInput && !musicInput.startsWith('[FILE:')) {
+        finalMusic = musicInput;
     }
 
     const payload = {
         id: String(session.id || ""),
         display_name: safeGet('profile-display-name'),
         bio: safeGet('profile-bio'),
-        avatar_url: String(avatarBase64 || userDataState.avatar_url || ""),
+        avatar_url: String(avatarBase64 || avatarInput || userDataState.avatar_url || ""),
         banner_url: String(bannerInput || bannerBase64 || userDataState.banner_url || ""),
         accent_color: safeGet('accent-hex', '#FFFFFF'),
         icon_color: safeGet('icon-hex', '#A1A1AA'),
