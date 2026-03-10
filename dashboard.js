@@ -464,21 +464,33 @@ window.updateLinkUrl = (id, val) => {
 function syncActiveLinks() {
     const container = document.getElementById('dashboard-links-list');
     if (!container) return;
+    
+    if (userDataState.links.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding: 40px; opacity:0.3; font-size:13px;">No active links. Pick a platform above to start.</div>`;
+        return;
+    }
+
     container.innerHTML = userDataState.links.map(l => {
         const isBadgeLink = l.isBadge;
-        const badgeStyle = isBadgeLink ? `background: ${l.badgeColor || '#fff'}15; border: 1px solid ${l.badgeColor || '#fff'}30;` : '';
-        const badgeIconStyle = isBadgeLink ? `color: ${l.badgeColor || '#fff'};` : '';
-
-        return `<div class="glass-card link-editor-item" style="display:flex; align-items:center; gap:15px; background: rgba(255,255,255,0.02); margin-bottom:10px; padding: 15px; ${badgeStyle}">
-            <i class="${l.icon}" style="font-size:20px; width:24px; text-align:center; ${badgeIconStyle}"></i>
-            <div style="flex:1">
-                <p style="font-weight:700; font-size:13px;">${l.title} ${isBadgeLink ? '<span style="font-size:9px; opacity:0.5;">(Badge Link)</span>' : ''}</p>
-                <input type="text" value="${l.url}" placeholder="${isBadgeLink ? 'Badge URL (e.g. https://...' : 'https://...'}" 
-                    class="form-input" style="padding: 6px 10px; font-size:11px; margin-top:5px; width:100%"
+        const color = l.badgeColor || 'var(--accent)';
+        
+        return `
+        <div class="link-editor-item-v2 ${isBadgeLink ? 'is-badge' : ''}" style="--item-color: ${color}">
+            <div class="link-drag-handle"><i class="fa-solid fa-grip-vertical"></i></div>
+            <div class="link-icon-circle" style="background: ${color}15; color: ${color};">
+                <i class="${l.icon}"></i>
+            </div>
+            <div class="link-content">
+                <div class="link-header">
+                    <span class="link-title">${l.title}</span>
+                    ${isBadgeLink ? '<span class="badge-tag">TOKEN LINK</span>' : ''}
+                </div>
+                <input type="text" value="${l.url}" placeholder="${isBadgeLink ? 'Redirect URL...' : 'https://...'}" 
+                    class="link-url-input"
                     oninput="updateLinkUrl(${l.id}, this.value)">
             </div>
-            <button class="form-input" style="padding: 8px; border-color:rgba(255,77,77,0.2); cursor:pointer;" onclick="removeLink(${l.id})">
-                <i class="fa-solid fa-trash" style="color:#ff4d4d"></i>
+            <button class="link-delete-btn" onclick="removeLink(${l.id})">
+                <i class="fa-solid fa-xmark"></i>
             </button>
         </div>`;
     }).join('');

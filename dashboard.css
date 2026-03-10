@@ -482,9 +482,134 @@ body {
     animation: flashNew 1.5s ease;
 }
 
+/* --- PREMIUM LINK EDITOR V2 --- */
+.link-editor-item-v2 {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.link-editor-item-v2:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    transform: translateX(4px);
+}
+
+.link-drag-handle {
+    cursor: grab;
+    opacity: 0.2;
+    font-size: 14px;
+    padding: 0 4px;
+}
+
+.link-icon-circle {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.link-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.link-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.link-title {
+    font-weight: 700;
+    font-size: 13px;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.badge-tag {
+    font-size: 9px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 800;
+    opacity: 0.6;
+}
+
+.link-url-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 12px;
+    padding: 0;
+    outline: none;
+    font-family: inherit;
+    transition: color 0.2s;
+}
+
+.link-url-input:focus {
+    color: #fff;
+}
+
+.link-delete-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: rgba(255, 77, 77, 0.1);
+    border: none;
+    color: #ff4d4d;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.link-delete-btn:hover {
+    background: #ff4d4d;
+    color: #fff;
+}
+
+/* --- PERFORMANCE TWEAKS --- */
+.glass-card, .tab-panel, .sidebar {
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Optimize grid Field for better performance */
+.grid-field {
+    pointer-events: none;
+    opacity: 0.15;
+    background-size: 50px 50px;
+    background-image: 
+        linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
+}
+
 @keyframes flashNew {
-    0% { border-color: #fff; box-shadow: 0 0 20px rgba(255,255,255,0.2); transform: scale(1.02); }
-    100% { border-color: var(--accent-border); box-shadow: none; transform: scale(1); }
+    0% { background: rgba(255,255,255,0.1); }
+    100% { background: rgba(255,255,255,0.03); }
+}
+
+.flash-item {
+    animation: flashNew 1.5s ease-out forwards;
 }
 
 @keyframes fadeIn {

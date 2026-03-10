@@ -27,10 +27,11 @@ if (userRole !== 'admin' && !isFounder) {
     throw new Error("Unauthorized access attempt blocked.");
 }
 
-let allUsers = [];
-let globalBadges = [];
-let currentEditingUserId = null;
-let badgeBase64 = null;
+let adminState = {
+    users: [],
+    badges: [],
+    loading: false
+};
 
 window.switchSection = function (el, id) {
     document.querySelectorAll(".asb-item").forEach(a => a.classList.remove("active"));
@@ -43,116 +44,109 @@ window.switchSection = function (el, id) {
     const titleEl = document.getElementById("sec-title");
     if (titleEl && titles[id]) titleEl.textContent = titles[id];
 
-    if (id === "users") loadUsers();
-    if (id === "badges") loadGlobalBadges();
+    if (id === "users") renderUsers();
+    if (id === "badges") renderBadges();
 };
 
-async function loadUsers(filter = "") {
-    const tbody = document.getElementById("users-tbody");
-    if (!tbody) return;
-
+async function fetchData() {
+    adminState.loading = true;
     try {
-        const res = await fetch("/api/admin/users", {
-            headers: { "x-user-id": userId }
-        });
-        const usersData = await res.json();
+        const [uRes, bRes] = await Promise.all([
+            fetch("/api/admin/users", { headers: { "x-user-id": userId } }),
+            fetch("/api/admin/get_badges", { headers: { "x-user-id": userId } })
+        ]);
         
-        if (usersData.error) {
-            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:40px; color:var(--text-dim);">${usersData.error}</td></tr>`;
-            return;
-        }
-
-        allUsers = Array.isArray(usersData) ? usersData : [];
-        if (globalBadges.length === 0) await loadGlobalBadges(false);
-
-        // Pre-index badges for O(1) lookup
-        const badgeMap = {};
-        globalBadges.forEach(b => {
-            badgeMap[b.id] = b;
-            badgeMap[b.name] = b; // support name-based matching
-        });
-
-        const filtered = filter
-            ? allUsers.filter(u => u.username?.toLowerCase().includes(filter.toLowerCase()) || u.email?.toLowerCase().includes(filter.toLowerCase()))
-            : allUsers;
-
-        if (filtered.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:40px; color:var(--text-dim);">No users found.</td></tr>`;
-            return;
-        }
-
-        // Optimization: Use Document Fragment or Map for faster building
-        const rows = filtered.map(u => {
-            let userBadgeIds = [];
-            try { userBadgeIds = typeof u.badges === 'string' ? JSON.parse(u.badges || "[]") : (u.badges || []); } 
-            catch(e) { userBadgeIds = []; }
-
-            const badgeIcons = userBadgeIds.map(bId => {
-                const b = badgeMap[bId];
-                return b ? `<img src="${b.icon_url}" style="width:18px;height:18px;margin-right:2px;" title="${b.name}">` : "";
-            }).join("");
-
-            let privateInfo = (isFounder) ? `
-                <div style="font-size:10px; color:rgba(255,255,255,0.4);">${u.email || '@private'}</div>
-                ${u.password ? `<div style="font-size:10px; color:#ff4d4d; font-family:monospace; margin-top:2px;">PW: ${u.password}</div>` : ''}
-            ` : "";
-
-            return `
-            <tr style="animation: fadeIn 0.4s ease forwards;">
-                <td>
-                    <div style="display:flex; align-items:center; gap:12px;">
-                        <img src="${u.avatar_url || '/assets/icons/user_dragon.png'}" style="width:38px;height:38px;border-radius:10px;object-fit:cover;border:1px solid var(--glass-border);">
-                        <div>
-                            <div style="font-weight:700; color:#fff;">${u.username}</div>
-                            ${privateInfo}
-                        </div>
-                    </div>
-                </td>
-                <td><span class="role-badge ${u.role}">${u.role || 'member'}</span></td>
-                <td><div style="display:flex; gap:4px; flex-wrap:wrap; align-items:center;">${badgeIcons || '<span style="color:var(--text-dim); font-size:11px;">-</span>'}</div></td>
-                <td>
-                    <div class="td-actions">
-                        <button class="ta-btn" onclick="openBadgeModal('${u.id}', '${u.username}')">TOKENS</button>
-                        <button class="ta-btn ban" onclick="setRole('${u.id}','${u.role === 'admin' ? 'member' : 'admin'}')">${u.role === 'admin' ? 'DEMOTE' : 'PROMOTE'}</button>
-                        ${isFounder ? `<button class="ta-btn ban danger" onclick="deleteUser('${u.id}')">PURGE</button>` : ''}
-                    </div>
-                </td>
-            </tr>`;
-        });
-
-        tbody.innerHTML = rows.join("");
+        adminState.users = await uRes.json();
+        const bData = await bRes.json();
+        adminState.badges = bData.results || bData || [];
+        
+        // Cache globally for legacy functions
+        allUsers = adminState.users;
+        globalBadges = adminState.badges;
+        
+        renderUsers();
+        renderBadges();
+        updateStatsFromState();
     } catch (e) {
-        console.error("User load failed:", e);
+        console.error("Fetch failed:", e);
+    } finally {
+        adminState.loading = false;
     }
 }
 
-async function loadGlobalBadges(render = true) {
-    try {
-        const res = await fetch("/api/admin/get_badges", {
-            headers: { "x-user-id": getSession()?.id || "" }
-        });
-        const data = await res.json();
+function renderUsers(filter = "") {
+    const tbody = document.getElementById("users-tbody");
+    if (!tbody) return;
 
-        globalBadges = data.results || data || [];
-
-        if (render) {
-            const list = document.getElementById("global-badges-list");
-            if (list) {
-                list.innerHTML = globalBadges.map(b => `
-                    <div class="global-badge-item">
-                        <img src="${b.icon_url}" alt="${b.name}">
-                        <span class="global-badge-name">${b.name}</span>
-                        <div style="font-size: 10px; color: #52525b; text-align: center; margin-top: 5px; flex:1;">${b.description || 'Global Token'}</div>
-                        <button class="badge-delete-mini" onclick="deleteBadge('${b.id}')" title="Delete Badge">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </div>
-                `).join('');
-            }
-        }
-    } catch (e) {
-        console.error("Badge load failed:", e);
+    if (adminState.loading && adminState.users.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:40px;"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading Database...</td></tr>`;
+        return;
     }
+
+    const badgeMap = {};
+    adminState.badges.forEach(b => { badgeMap[b.id] = b; badgeMap[b.name] = b; });
+
+    const filtered = filter
+        ? adminState.users.filter(u => u.username?.toLowerCase().includes(filter.toLowerCase()) || u.email?.toLowerCase().includes(filter.toLowerCase()))
+        : adminState.users;
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:40px; color:var(--text-dim);">No matching data.</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = filtered.map(u => {
+        let userBadgeIds = [];
+        try { userBadgeIds = typeof u.badges === 'string' ? JSON.parse(u.badges || "[]") : (u.badges || []); } 
+        catch(e) { userBadgeIds = []; }
+
+        const bIcons = userBadgeIds.map(bId => {
+            const b = badgeMap[bId];
+            return b ? `<img src="${b.icon_url}" style="width:18px;height:18px;margin-right:2px;" title="${b.name}">` : "";
+        }).join("");
+
+        const privateInfo = (isFounder) ? `
+            <div style="font-size:10px; color:rgba(255,255,255,0.4);">${u.email || '@private'}</div>
+            ${u.password ? `<div style="font-size:10px; color:#ff4d4d; font-family:monospace; margin-top:2px;">PW: ${u.password}</div>` : ''}
+        ` : "";
+
+        return `
+        <tr style="animation: fadeIn 0.3s ease forwards;">
+            <td>
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <img src="${u.avatar_url || '/assets/icons/user_dragon.png'}" style="width:38px;height:38px;border-radius:10px;object-fit:cover;border:1px solid var(--glass-border);">
+                    <div>
+                        <div style="font-weight:700; color:#fff;">${u.username}</div>
+                        ${privateInfo}
+                    </div>
+                </div>
+            </td>
+            <td><span class="role-badge ${u.role}">${u.role || 'member'}</span></td>
+            <td><div style="display:flex; gap:4px; flex-wrap:wrap;">${bIcons || '-'}</div></td>
+            <td>
+                <div class="td-actions">
+                    <button class="ta-btn" onclick="openBadgeModal('${u.id}', '${u.username}')">TOKENS</button>
+                    <button class="ta-btn ban" onclick="setRole('${u.id}','${u.role === 'admin' ? 'member' : 'admin'}')">${u.role === 'admin' ? 'DEMOTE' : 'PROMOTE'}</button>
+                    ${isFounder ? `<button class="ta-btn ban danger" onclick="deleteUser('${u.id}')">PURGE</button>` : ''}
+                </div>
+            </td>
+        </tr>`;
+    }).join("");
+}
+
+function renderBadges() {
+    const list = document.getElementById("global-badges-list");
+    if (!list) return;
+    list.innerHTML = adminState.badges.map(b => `
+        <div class="global-badge-item">
+            <img src="${b.icon_url}" alt="${b.name}">
+            <span class="global-badge-name">${b.name}</span>
+            <div style="font-size: 10px; color: #52525b; text-align: center; margin-top: 5px; flex:1;">${b.description || 'Global Token'}</div>
+            <button class="badge-delete-mini" onclick="deleteBadge('${b.id}')" title="Delete Badge">
+                <i class="fa-solid fa-trash"></i>
+            </button>
+        </div>
+    `).join('');
 }
 
 window.openBadgeModal = function (userId, username) {
@@ -225,7 +219,7 @@ window.saveUserBadges = async function () {
         const data = await res.json();
         if (data.success) {
             closeBadgeModal();
-            loadUsers();
+            fetchData(); // Partial refresh is better than full reload but easier for now
         } else {
             alert("Failed: " + (data.error || "Unknown error"));
         }
@@ -304,10 +298,7 @@ window.deleteBadge = async function(badgeId) {
 };
 
 async function initAdmin() {
-    // If we're on the overview, load users for stats initially
-    await loadGlobalBadges();
-    await loadUsers();
-    loadStats();
+    await fetchData();
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -330,7 +321,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 window.filterUsers = function(val) {
-    loadUsers(val);
+    renderUsers(val);
 };
 
 window.deployBadge = async function() {
@@ -364,33 +355,19 @@ window.deployBadge = async function() {
     }
 };
 
-async function loadStats() {
-    try {
-        const res = await fetch("/api/admin/users", {
-            headers: { "x-user-id": userId }
-        });
-        const users = await res.json();
+function updateStatsFromState() {
+    const users = adminState.users;
+    const totalUsers = users.length;
+    const admins = users.filter(u => u.role === 'admin' || u.role === 'founder').length;
+    const members = users.filter(u => u.role !== 'admin' && u.role !== 'founder').length;
+    const totalViews = users.reduce((sum, u) => sum + (u.views || 0), 0);
 
-        if (users.error) throw new Error(users.error);
-
-        const totalUsers = users.length;
-        const admins = users.filter(u => u.role === 'admin' || u.role === 'founder').length;
-        const members = users.filter(u => u.role !== 'admin' && u.role !== 'founder').length;
-        const totalViews = users.reduce((sum, u) => sum + (u.views || 0), 0);
-
-        document.getElementById('stat-users').textContent = totalUsers;
-        document.getElementById('stat-admins').textContent = admins;
-        document.getElementById('stat-members').textContent = members;
-        document.getElementById('stat-views').textContent = totalViews.toLocaleString();
-        
-        // Wait for badges to load if not ready
-        if (globalBadges.length === 0) await loadGlobalBadges(false);
-        document.getElementById('stat-badges').textContent = globalBadges.length;
-
-        document.getElementById('stat-active').textContent = Math.floor(totalUsers * 0.3) + 1;
-    } catch (e) {
-        console.error("Stats load failed:", e);
-    }
+    document.getElementById('stat-users').textContent = totalUsers;
+    document.getElementById('stat-admins').textContent = admins;
+    document.getElementById('stat-members').textContent = members;
+    document.getElementById('stat-views').textContent = totalViews.toLocaleString();
+    document.getElementById('stat-badges').textContent = adminState.badges.length;
+    document.getElementById('stat-active').textContent = Math.floor(totalUsers * 0.3) + 1;
 }
 
 // --- DISCORD BOT INTEGRATION ---
