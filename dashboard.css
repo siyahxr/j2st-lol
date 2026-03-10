@@ -314,6 +314,38 @@ body {
     color: #000;
 }
 
+/* BADGE COLLECTION STYLES */
+.badge-collect-item {
+    border: 1px solid var(--accent-border);
+    background: rgba(255, 255, 255, 0.02);
+    position: relative;
+    overflow: hidden;
+}
+
+.badge-collect-item.locked {
+    opacity: 0.6;
+    border-style: dashed;
+}
+
+.badge-collect-item.owned {
+    opacity: 1;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.badge-collect-item.owned:hover {
+    transform: translateY(-5px);
+    border-color: #fff;
+    box-shadow: 0 10px 30px rgba(255,255,255,0.05);
+}
+
+.badge-status-icon {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 @media (max-width: 1024px) {
     .sidebar { width: 80px; }
     .brand-name, .nav-label, .nav-item span { display: none; }

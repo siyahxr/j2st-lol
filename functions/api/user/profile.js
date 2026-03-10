@@ -28,18 +28,16 @@ export async function onRequestGet({ request, env }) {
 
     // --- RESOLVE BADGES ---
     let resolvedBadges = [];
+    let globalList = [];
     try {
+      const allGlobal = await env.j2st_db.prepare("SELECT * FROM global_badges").all();
+      globalList = allGlobal.results || [];
+
       const badgeIds = JSON.parse(user.badges || "[]");
-      if (badgeIds.length > 0) {
-        // Fetch global badges
-        const allGlobal = await env.j2st_db.prepare("SELECT id, name, icon_url FROM global_badges").all();
-        const globalList = allGlobal.results || [];
-        
-        resolvedBadges = badgeIds.map(bId => {
-          const found = globalList.find(gb => gb.id == bId || gb.name == bId);
-          return found ? { label: found.name, icon_url: found.icon_url } : null;
-        }).filter(b => b !== null);
-      }
+      resolvedBadges = badgeIds.map(bId => {
+        const found = globalList.find(gb => gb.id == bId || gb.name == bId);
+        return found ? { id: found.id, label: found.name, icon_url: found.icon_url } : null;
+      }).filter(b => b !== null);
     } catch (e) {
       console.error("Badge resolution failed:", e);
     }
@@ -55,7 +53,12 @@ export async function onRequestGet({ request, env }) {
       updatedViews++;
     }
 
-    const responseData = { ...user, views: updatedViews, badges: resolvedBadges };
+    const responseData = { 
+      ...user, 
+      views: updatedViews, 
+      badges: resolvedBadges,
+      available_badges: globalList 
+    };
 
     return new Response(JSON.stringify(responseData), {
       headers: { 

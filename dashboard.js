@@ -190,9 +190,34 @@ function syncActiveLinks() {
     `).join('');
 }
 
+function syncBadgesCollection() {
+    const container = document.getElementById('dashboard-badges-grid');
+    if (!container || !userDataState.available_badges) return;
+
+    const userBadgeIds = (userDataState.badges || []).map(b => b.id);
+    const all = userDataState.available_badges;
+
+    container.innerHTML = all.map(b => {
+        const isOwned = userBadgeIds.includes(b.id);
+        const desc = b.description || "Kurucu tarafından verilir.";
+        
+        return `
+            <div class="glass-card badge-collect-item ${isOwned ? 'owned' : 'locked'}" style="text-align:center; padding: 20px; transition: 0.3s;">
+                <div class="badge-status-icon">
+                    ${isOwned ? `<img src="${b.icon_url}" style="width:48px; height:48px; object-fit:contain;">` : `<i class="fa-solid fa-lock" style="font-size:32px; opacity:0.3;"></i>`}
+                </div>
+                <p style="font-weight:800; margin-top:12px;">${b.name}</p>
+                <span style="font-size:11px; color:var(--text-muted); display:block; margin-top:5px;">${desc}</span>
+                ${isOwned ? '<span style="font-size:10px; color:#fff; background:rgba(255,255,255,0.1); padding:2px 8px; border-radius:10px; margin-top:8px; display:inline-block;">OWNED</span>' : ''}
+            </div>
+        `;
+    }).join('');
+}
+
 function syncUI() {
     if (!userDataState) return;
     syncActiveLinks();
+    syncBadgesCollection();
 
     // Header & Info
     document.querySelectorAll('.chip-img, #preview-avatar-img, #preview-avatar').forEach(img => {
