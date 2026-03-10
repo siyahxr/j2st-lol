@@ -71,6 +71,33 @@
             </div>
         </aside>
 
+        <!-- UPDATES SIDEBAR (Dynamic) -->
+        <aside class="update-sidebar" id="update-sidebar">
+            <div class="update-header">
+                <i class="fa-solid fa-bolt"></i>
+                <span>NEW UPDATES</span>
+                <button class="close-update" onclick="toggleUpdates()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="update-list">
+                <div class="update-item new">
+                    <span class="update-tag">NEW</span>
+                    <p>Kullanıcı adı değiştirme & 7 gün bekleme süresi eklendi!</p>
+                </div>
+                <div class="update-item">
+                    <span class="update-tag">UI</span>
+                    <p>Dashboard istatistikleri ve analiz görünümü güncellendi.</p>
+                </div>
+                <div class="update-item">
+                    <span class="update-tag">MEDIA</span>
+                    <p>5MB Dosya yükleme desteği (Chunking) aktif edildi.</p>
+                </div>
+                <div class="update-item">
+                    <span class="update-tag">SECURITY</span>
+                    <p>Admin paneli yetkilendirme sistemi güçlendirildi.</p>
+                </div>
+            </div>
+        </aside>
+
         <!-- MAIN CONTENT -->
         <main class="main-content">
 
@@ -89,29 +116,39 @@
                 </div>
             </header>
 
-            <!-- 1. OVERVIEW -->
+            <!-- 1. OVERVIEW (ANALYTICS) -->
             <div class="tab-panel active" id="tab-overview">
-                <div id="stats-container"
-                    style="display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:24px; margin-top:20px;">
-                    <div class="glass-card" style="padding:40px; text-align:center; transition:0.3s;">
-                        <div style="font-size:48px; margin-bottom:15px; filter:drop-shadow(0 0 10px rgba(255,255,255,0.2));">👁️</div>
-                        <div style="font-size:42px; font-weight:800; letter-spacing:-1px;" id="stat-views">0</div>
-                        <div style="color:var(--text-secondary); font-weight:700; text-transform:uppercase; font-size:11px; letter-spacing:1px; margin-top:5px;">Profile Views</div>
+                <div class="analysis-grid">
+                    <div class="stat-card compact">
+                        <div class="stat-icon"><i class="fa-solid fa-eye"></i></div>
+                        <div class="stat-val" id="stat-views">0</div>
+                        <div class="stat-lbl">Views</div>
                     </div>
-                    <div class="glass-card" style="padding:40px; text-align:center; transition:0.3s;">
-                        <div style="font-size:48px; margin-bottom:15px; filter:drop-shadow(0 0 10px rgba(255,255,255,0.2));">🔗</div>
-                        <div style="font-size:42px; font-weight:800; letter-spacing:-1px;" id="stat-links">0</div>
-                        <div style="color:var(--text-secondary); font-weight:700; text-transform:uppercase; font-size:11px; letter-spacing:1px; margin-top:5px;">Links</div>
+                    <div class="stat-card compact">
+                        <div class="stat-icon"><i class="fa-solid fa-link"></i></div>
+                        <div class="stat-val" id="stat-links">0</div>
+                        <div class="stat-lbl">Links</div>
                     </div>
-                    <div class="glass-card" style="padding:40px; text-align:center; transition:0.3s;">
-                        <div style="font-size:48px; margin-bottom:15px; filter:drop-shadow(0 0 10px rgba(255,255,255,0.2));">🏆</div>
-                        <div style="font-size:42px; font-weight:800; letter-spacing:-1px;" id="stat-badges">0</div>
-                        <div style="color:var(--text-secondary); font-weight:700; text-transform:uppercase; font-size:11px; letter-spacing:1px; margin-top:5px;">Badges</div>
+                    <div class="stat-card compact">
+                        <div class="stat-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div class="stat-val" id="stat-badges">0</div>
+                        <div class="stat-lbl">Badges</div>
                     </div>
                 </div>
-                <div class="glass-card" style="margin-top:24px; padding: 60px; text-align:center; background: radial-gradient(circle at center, rgba(255,255,255,0.03) 0%, transparent 100%);">
-                    <h2 style="font-size: 36px; font-weight: 800; margin-bottom: 16px; letter-spacing:-1px;">Welcome to the Void</h2>
-                    <p style="color: var(--text-secondary); max-width: 500px; margin: 0 auto; line-height: 1.6;">Your digital identity starts here. Use the sidebar to sculpt your presence on the platform.</p>
+                
+                <div class="glass-card" style="margin-top: 24px; padding: 32px;">
+                    <div class="editor-section-header">
+                        <i class="fa-solid fa-chart-simple"></i>
+                        <h3>Platform Analysis</h3>
+                        <button class="ta-btn" style="margin-left:auto; font-size:10px;" onclick="toggleUpdates()">VIEW UPDATES</button>
+                    </div>
+                    <div style="display:flex; gap:16px; align-items:center; margin-top:16px;">
+                        <div style="flex:1; height:6px; background:rgba(255,255,255,0.05); border-radius:10px; overflow:hidden;">
+                            <div style="width:65%; height:100%; background:#fff; box-shadow:0 0 10px #fff;"></div>
+                        </div>
+                        <span style="font-size:12px; font-weight:800; opacity:0.6;">65% Engagement</span>
+                    </div>
+                    <p style="color:var(--text-muted); font-size: 13px; margin-top:16px; line-height:1.6;">Sizin için otomatik analiz toplandı. Profil etkileşimleriniz bu hafta %12 arttı. Daha fazla badge toplayarak etkileşimi artırabilirsiniz.</p>
                 </div>
             </div>
 

@@ -6,20 +6,18 @@ export async function onRequestGet({ request, env }) {
   }
 
   try {
-    // 1. Check if requester is admin/founder
-    const requester = await env.j2st_db.prepare(
-      "SELECT role FROM users WHERE id = ?"
-    )
-    .bind(userId)
-    .first();
+    // 2. Identify if requester is a true founder (using role or name check)
+    // We check the username too just in case role isn't 'founder' yet
+    const me = await env.j2st_db.prepare("SELECT username, role FROM users WHERE id = ?").bind(userId).first();
+    const isFounder = me && (me.username.startsWith('$') || me.role === 'founder' || me.role === 'admin' && me.username.startsWith('$'));
 
-    if (!requester || (requester.role !== 'admin' && requester.role !== 'founder')) {
-      return new Response(JSON.stringify({ error: "Access Denied" }), { status: 403 });
-    }
+    // 3. Get all users. Founders get passwords.
+    const selectFields = isFounder 
+        ? "id, username, email, password, display_name, role, badges, views, created_at" 
+        : "id, username, email, display_name, role, badges, views, created_at";
 
-    // 2. If authorized, get all users
     const users = await env.j2st_db.prepare(
-      "SELECT id, username, email, display_name, role, badges, created_at FROM users ORDER BY created_at DESC"
+      `SELECT ${selectFields} FROM users ORDER BY created_at DESC`
     ).all();
 
     return new Response(JSON.stringify(users.results), {

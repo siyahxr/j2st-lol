@@ -160,6 +160,123 @@ body {
     background: rgba(255, 77, 77, 0.05);
 }
 
+/* UPDATE SIDEBAR */
+.update-sidebar {
+    width: 300px;
+    background: #050505;
+    border-right: 1px solid var(--accent-border);
+    display: flex;
+    flex-direction: column;
+    padding: 32px 20px;
+    z-index: 9;
+    transition: transform 0.4s ease;
+}
+
+.update-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+}
+
+.update-header i { color: var(--accent-silver); font-size: 14px; }
+
+.update-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.update-item {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--accent-border);
+    padding: 16px;
+    border-radius: 12px;
+    position: relative;
+    transition: 0.3s;
+}
+
+.update-item:hover {
+    border-color: rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.04);
+}
+
+.update-tag {
+    position: absolute;
+    top: -8px;
+    left: 12px;
+    background: #fff;
+    color: #000;
+    font-size: 8px;
+    font-weight: 900;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.update-item p {
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+}
+
+.close-update {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: none; /* Only show on mobile */
+}
+
+/* ANALYSIS CARDS */
+.analysis-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.stat-card.compact {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--accent-border);
+    padding: 20px;
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transition: 0.3s;
+}
+
+.stat-card.compact:hover {
+    background: rgba(255,255,255,0.06);
+}
+
+.stat-icon {
+    font-size: 16px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+.stat-val {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+.stat-lbl {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
 /* MAIN CONTENT */
 .main-content {
     flex: 1;

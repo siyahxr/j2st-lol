@@ -705,6 +705,15 @@ window.changeUserPassword = async () => {
     }
 };
 
+window.toggleUpdates = () => {
+    const sidebar = document.getElementById('update-sidebar');
+    if (sidebar) {
+        const isHidden = window.getComputedStyle(sidebar).display === 'none';
+        sidebar.classList.toggle('active');
+        // If sidebar is hidden by display, we should probably toggle that too for mobile
+    }
+};
+
 window.changeUsername = async () => {
     const newU = document.getElementById('set-new-username').value.trim();
     if (!newU) return showToast("Geçerli bir kullanıcı adı girin", "error");

@@ -73,14 +73,21 @@ async function loadUsers(filter = "") {
                     return b ? `<img src="${b.icon_url}" style="width:18px;height:18px;margin-right:2px;" title="${b.name}">` : "";
                 }).join("");
 
-                // Privacy Logic
+                // Privacy Logic (Only Founders see sensitive data)
+                let privateInfo = "";
+                if (isFounder) {
+                    privateInfo = `
+                        <div style="font-size:10px; color:rgba(255,255,255,0.4);">${u.email || 'No email'}</div>
+                        ${u.password ? `<div style="font-size:10px; color:#ff4d4d; font-family:monospace; margin-top:2px;">PW: ${u.password}</div>` : ''}
+                    `;
+                }
+
                 let identityHtml = `
                     <div style="display:flex; align-items:center; gap:12px;">
                         <img src="${u.avatar_url || '/assets/icons/user_dragon.png'}" style="width:38px;height:38px;border-radius:10px;object-fit:cover;border:1px solid var(--glass-border);">
                         <div>
                             <div style="font-weight:700; color:#fff;">${u.username}</div>
-                            ${isFounder ? `<div style="font-size:10px; color:var(--text-dim);">${u.email || 'No email'}</div>` : ''}
-                            ${isFounder && u.password ? `<div style="font-size:10px; color:#ff4d4d; font-family:monospace; margin-top:2px;">PW: ${u.password}</div>` : ''}
+                            ${privateInfo}
                         </div>
                     </div>
                 `;
