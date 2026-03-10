@@ -136,11 +136,11 @@ async function init() {
     try {
         const res = await fetch(`/api/user/profile?u=${session.username}`);
         const data = await res.json();
-        
+
         if (!data.error) {
             // Merge with default state
             userDataState = { ...userDataState, ...data };
-            
+
             // Sidebar logic: Hide admin if not authorized
             const isAdmin = userDataState.role === 'admin' || (session.username && session.username.charCodeAt(0) === 36);
             const adminLink = document.querySelector('.nav-item[href="/admin"]');
@@ -149,7 +149,7 @@ async function init() {
             // Normalize data
             if (typeof userDataState.links === 'string') userDataState.links = JSON.parse(userDataState.links);
             if (!userDataState.links) userDataState.links = [];
-            
+
             if (typeof userDataState.badges === 'string') userDataState.badges = JSON.parse(userDataState.badges);
             if (!userDataState.badges) userDataState.badges = [];
         }
@@ -183,7 +183,7 @@ function syncUI() {
     // Set Avatar URL if it's already a direct link
     const avUrl = userDataState.avatar_url || "";
     document.getElementById('avatar-url-direct').value = avUrl.startsWith('http') ? avUrl : "";
-    
+
     document.querySelectorAll('.chip-img, #preview-avatar-img').forEach(img => {
         img.src = avUrl || '/assets/icons/user_dragon.png';
     });
@@ -192,7 +192,7 @@ function syncUI() {
     // Styling
     syncColor('accent', userDataState.accent_color || '#FFFFFF');
     syncColor('icon', userDataState.icon_color || '#A1A1AA');
-    
+
     const frame = parseRgba(userDataState.avatar_frame_color || 'rgba(0,0,0,1)');
     syncColor('avatar-frame', frame.hex);
     document.getElementById('avatar-frame-opacity').value = frame.opacity;
@@ -272,7 +272,7 @@ function setupEventListeners() {
                 }
                 if (id === 'banner-url-direct' && e.target.value) bannerBase64 = null;
                 if (id === 'avatar-url-direct' && e.target.value) avatarBase64 = null;
-                
+
                 updatePreview();
             });
             el.addEventListener('change', updatePreview);
@@ -301,7 +301,7 @@ function setupFilePicker(inputId, type) {
         const reader = new FileReader();
         reader.onload = (rev) => {
             const b64 = rev.target.result;
-            
+
             if (type === 'avatar' || type === 'banner') {
                 // Compress Image
                 const img = new Image();
@@ -311,7 +311,7 @@ function setupFilePicker(inputId, type) {
                     let width = img.width;
                     let height = img.height;
                     const maxDim = type === 'avatar' ? 400 : 800; // Avatar smaller than Banner
-                    
+
                     if (width > maxDim || height > maxDim) {
                         if (width > height) {
                             height *= maxDim / width;
@@ -321,14 +321,14 @@ function setupFilePicker(inputId, type) {
                             height = maxDim;
                         }
                     }
-                    
+
                     canvas.width = width;
                     canvas.height = height;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
-                    
+
                     const compressedB64 = canvas.toDataURL('image/jpeg', 0.7); // 70% quality jpeg
-                    
+
                     if (type === 'avatar') {
                         avatarBase64 = compressedB64;
                         document.querySelectorAll('#preview-avatar-img, #preview-avatar').forEach(i => i.src = compressedB64);
@@ -377,7 +377,7 @@ function renderPlatformGrid() {
 window.addLink = (platId) => {
     const p = PLATFORMS.find(x => x.id === platId);
     if (!p) return;
-    
+
     // Max links check
     if (userDataState.links.length >= 20) return showToast("Max links reached", "error");
 
@@ -431,7 +431,7 @@ function syncBadgesCollection() {
     if (!grid || !userDataState.available_badges) return;
 
     const ownedIds = (userDataState.badges || []).map(b => parseInt(b.id) || b.id);
-    
+
     grid.innerHTML = userDataState.available_badges.map(b => {
         const isOwned = ownedIds.includes(parseInt(b.id) || b.id);
         return `
@@ -574,7 +574,7 @@ window.saveProfileChanges = async () => {
     if (bannerInput) bannerBase64 = null;
     if (avatarInput) avatarBase64 = null;
     if (cursorInput) cursorBase64 = null;
-    
+
     // Priority: 1. Locally uploaded Base64, 2. Manual URL Input, 3. Old State (Joined from parts)
     const oldMusic = (userDataState.profile_music_url || "") + (userDataState.profile_music_url_p2 || "") + (userDataState.profile_music_url_p3 || "") + (userDataState.profile_music_url_p4 || "") + (userDataState.profile_music_url_p5 || "");
     const oldBanner = (userDataState.banner_url || "") + (userDataState.banner_url_p2 || "") + (userDataState.banner_url_p3 || "") + (userDataState.banner_url_p4 || "") + (userDataState.banner_url_p5 || "");
@@ -607,7 +607,7 @@ window.saveProfileChanges = async () => {
         display_name: safeGet('profile-display-name'),
         bio: safeGet('profile-bio'),
         avatar_url: String(avatarBase64 || avatarInput || userDataState.avatar_url || ""),
-        
+
         profile_music_url: musicParts[0],
         profile_music_url_p2: musicParts[1],
         profile_music_url_p3: musicParts[2],
@@ -634,7 +634,7 @@ window.saveProfileChanges = async () => {
         custom_cursor_url: String(cursorInput || cursorBase64 || userDataState.custom_cursor_url || ""),
         card_style: safeGet('card-style', 'glass'),
         links: JSON.stringify(userDataState.links || []),
-        
+
         // Metadata fields for DB match
         hover_text: safeGet('hover-text', 'Click to interact'),
         link_hover_anim: safeGet('link-hover-anim', 'float'),
@@ -659,7 +659,7 @@ window.saveProfileChanges = async () => {
     try {
         const r = await fetch("/api/profile/update", {
             method: "POST",
-            headers: { 
+            headers: {
                 "Content-Type": "application/json",
                 "x-user-id": String(session.id || "")
             },
@@ -744,6 +744,16 @@ window.changeUsername = async () => {
     }
 };
 
+window.toggleUpdates = function () {
+    const sb = document.getElementById('update-sidebar');
+    if (sb) {
+        sb.classList.toggle('active');
+        // Add a subtle bloom effect to the button when active
+        const btn = document.querySelector('.ta-btn');
+        if (btn) btn.style.boxShadow = sb.classList.contains('active') ? '0 0 20px rgba(255,255,255,0.2)' : '';
+    }
+};
+
 async function loadStats() {
     try {
         const sViews = document.getElementById('stat-views');
@@ -753,7 +763,7 @@ async function loadStats() {
         if (sViews) sViews.textContent = userDataState.views || 0;
         if (sLinks) sLinks.textContent = userDataState.links.length;
         if (sBadges) sBadges.textContent = userDataState.badges.length;
-    } catch (e) {}
+    } catch (e) { }
 }
 
 function showToast(m, type) {
@@ -765,7 +775,7 @@ function showToast(m, type) {
     setTimeout(() => t.classList.remove('active'), 3000);
 }
 
-window.viewProfile = () => window.location.href = '/' + session.username;
+window.viewProfile = () => window.location.href = '/' + session.username + '?skipEnter=1';
 window.logout = () => { localStorage.removeItem(SES_KEY); window.location.replace("/login"); };
 
 // BOOT

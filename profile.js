@@ -8,6 +8,18 @@ async function initProfile() {
     const container = document.getElementById('profile-container');
     const loadingEl = document.getElementById('loading');
 
+    // Check if we should skip enter overlay (from dashboard viewProfile)
+    const urlParams = new URLSearchParams(window.location.search);
+    const skipEnter = urlParams.get('skipEnter') === '1';
+
+    // Also check sessionStorage for skip flag
+    const sessionSkip = sessionStorage.getItem('skipEnterOverlay') === 'true';
+
+    // Clear the session flag after reading
+    if (sessionSkip) {
+        sessionStorage.removeItem('skipEnterOverlay');
+    }
+
     try {
         const res = await fetch(`/api/user/profile?u=${username}`);
         const data = await res.json();
@@ -21,7 +33,7 @@ async function initProfile() {
         // Show profile first, then render
         if (container) container.style.display = '';
 
-        renderProfile(data);
+        renderProfile(data, skipEnter || sessionSkip);
         if (loadingEl) {
             loadingEl.style.opacity = "0";
             loadingEl.style.transition = "opacity 0.5s ease";
@@ -33,7 +45,7 @@ async function initProfile() {
     }
 }
 
-function renderProfile(user) {
+function renderProfile(user, skipEnter = false) {
     // 1. Identity
     const avatar = document.getElementById('avatar-el');
     const name = document.getElementById('name-el');
@@ -207,6 +219,26 @@ function renderProfile(user) {
     } else {
         // Fallback for missing overlay
         ["click", "touchstart", "mousedown"].forEach(ev => window.addEventListener(ev, enterAction, { once: true }));
+    }
+
+    // If skipEnter is true (from dashboard), immediately show the profile without overlay
+    if (typeof skipEnter !== 'undefined' && skipEnter) {
+        if (overlay && overlay.remove) {
+            overlay.remove();
+        }
+        document.body.classList.add('profile-entered');
+
+        // Start music and video
+        if (musicPlayer && fullMusicUrl) {
+            musicPlayer.play().catch(err => console.error("Music failed", err));
+        }
+        if (bannerVideo && hasVideo) {
+            bannerVideo.muted = false;
+            bannerVideo.play().catch(err => {
+                bannerVideo.muted = true;
+                bannerVideo.play();
+            });
+        }
     }
 }
 
