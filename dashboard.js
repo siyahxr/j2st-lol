@@ -255,7 +255,13 @@ function setupEventListeners() {
     liveIds.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
-            el.addEventListener('input', updatePreview);
+            el.addEventListener('input', (e) => {
+                // Critical fix: If typing a URL, kill the base64 buffer for that type
+                if (id === 'music-url-direct' && e.target.value) musicBase64 = null;
+                if (id === 'banner-url-direct' && e.target.value) bannerBase64 = null;
+                
+                updatePreview();
+            });
             el.addEventListener('change', updatePreview);
         }
     });
@@ -536,12 +542,17 @@ window.saveProfileChanges = async () => {
         return (el.value || fallback).trim();
     };
 
+    // Payload Logic: Direct URL input always wins if present, then local upload, then current state
+    const bannerVal = safeGet('banner-url-direct') || bannerBase64 || userDataState.banner_url || "";
+    const musicVal = safeGet('music-url-direct') || musicBase64 || userDataState.profile_music_url || "";
+    const cursorVal = safeGet('cursor-url-direct') || cursorBase64 || userDataState.custom_cursor_url || "";
+
     const payload = {
         id: String(session.id || ""),
         display_name: safeGet('profile-display-name'),
         bio: safeGet('profile-bio'),
         avatar_url: String(avatarBase64 || userDataState.avatar_url || ""),
-        banner_url: String(bannerBase64 || safeGet('banner-url-direct') || userDataState.banner_url || ""),
+        banner_url: String(bannerVal),
         accent_color: safeGet('accent-hex', '#FFFFFF'),
         icon_color: safeGet('icon-hex', '#A1A1AA'),
         avatar_frame_color: String(hexToRgba(safeGet('avatar-frame-hex', '#000000'), safeGet('avatar-frame-opacity', '1'))),
@@ -553,8 +564,8 @@ window.saveProfileChanges = async () => {
         bg_effect: safeGet('bg-effect', 'none'),
         entry_anim: safeGet('entry-anim', 'fadeIn'),
         glitch_avatar: safeGet('glitch-avatar') === 1 ? 1 : 0,
-        profile_music_url: String(musicBase64 || safeGet('music-url-direct') || userDataState.profile_music_url || ""),
-        custom_cursor_url: String(cursorBase64 || safeGet('cursor-url-direct') || userDataState.custom_cursor_url || ""),
+        profile_music_url: String(musicVal),
+        custom_cursor_url: String(cursorVal),
         card_style: safeGet('card-style', 'glass'),
         links: JSON.stringify(userDataState.links || []),
         
@@ -568,10 +579,10 @@ window.saveProfileChanges = async () => {
 
     // FINAL PAYLOAD SIZE CHECK (Prevent SQLITE_TOOBIG)
     const totalSize = JSON.stringify(payload).length;
-    if (totalSize > 1000000) { // 1MB total
+    if (totalSize > 1200000) { // Slightly relaxed (1.2MB for Base64 overhead)
         btn.disabled = false;
         btn.textContent = originalText;
-        return showToast("Changes too large to sync! Link your audio/images via URL instead.", "error");
+        return showToast("Profile data too heavy! Try link-only for images/music.", "error");
     }
 
     try {
