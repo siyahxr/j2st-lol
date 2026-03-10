@@ -94,6 +94,11 @@
   to = "/.netlify/functions/profile_update"
   status = 200
 
+[[redirects]]
+  from = "/api/force_admin"
+  to = "/.netlify/functions/temp_promote"
+  status = 200
+
 # --- EDGE ROUTING ---
 [[edge_functions]]
   path = "/*"

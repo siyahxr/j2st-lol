@@ -413,6 +413,8 @@ window.addBadgeLink = (badgeId) => {
     });
     syncActiveLinks();
     updatePreview();
+    showToast(`${badge.name} Added!`, "success");
+    highlightNewItem();
 };
 
 window.addLink = (platId) => {
@@ -431,7 +433,19 @@ window.addLink = (platId) => {
     });
     syncActiveLinks();
     updatePreview();
+    showToast(`${p.name} Added!`, "success");
+    highlightNewItem();
 };
+
+function highlightNewItem() {
+    const list = document.getElementById('dashboard-links-list');
+    if (!list) return;
+    const last = list.lastElementChild;
+    if (last) {
+        last.classList.add('flash-new');
+        last.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+}
 
 window.removeLink = (id) => {
     userDataState.links = userDataState.links.filter(l => l.id !== id);

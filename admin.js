@@ -39,7 +39,7 @@ window.switchSection = function (el, id) {
     const sec = document.getElementById("sec-" + id);
     if (sec) sec.classList.add("active");
 
-    const titles = { overview: "Control Center", users: "User Database", badges: "Badge Registry" };
+    const titles = { overview: "Control Center", users: "User Database", badges: "Badge Registry", updates: "Discord Platform Updates" };
     const titleEl = document.getElementById("sec-title");
     if (titleEl && titles[id]) titleEl.textContent = titles[id];
 
@@ -49,6 +49,7 @@ window.switchSection = function (el, id) {
 
 async function loadUsers(filter = "") {
     const tbody = document.getElementById("users-tbody");
+    if (!tbody) return;
 
     try {
         const res = await fetch("/api/admin/users", {
@@ -57,45 +58,48 @@ async function loadUsers(filter = "") {
         const usersData = await res.json();
         
         if (usersData.error) {
-            console.error(usersData.error);
             tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:40px; color:var(--text-dim);">${usersData.error}</td></tr>`;
             return;
         }
 
         allUsers = Array.isArray(usersData) ? usersData : [];
-
         if (globalBadges.length === 0) await loadGlobalBadges(false);
+
+        // Pre-index badges for O(1) lookup
+        const badgeMap = {};
+        globalBadges.forEach(b => {
+            badgeMap[b.id] = b;
+            badgeMap[b.name] = b; // support name-based matching
+        });
 
         const filtered = filter
             ? allUsers.filter(u => u.username?.toLowerCase().includes(filter.toLowerCase()) || u.email?.toLowerCase().includes(filter.toLowerCase()))
             : allUsers;
 
         if (filtered.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:40px; color:var(--text-dim);">Hiç kullanıcı bulunamadı.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:40px; color:var(--text-dim);">No users found.</td></tr>`;
             return;
         }
 
-        tbody.innerHTML = filtered.map(u => {
-                let badgeList = [];
-                try {
-                    badgeList = typeof u.badges === 'string' ? JSON.parse(u.badges || "[]") : (u.badges || []);
-                } catch(e) { badgeList = []; }
+        // Optimization: Use Document Fragment or Map for faster building
+        const rows = filtered.map(u => {
+            let userBadgeIds = [];
+            try { userBadgeIds = typeof u.badges === 'string' ? JSON.parse(u.badges || "[]") : (u.badges || []); } 
+            catch(e) { userBadgeIds = []; }
 
-                const badgeIcons = badgeList.map(bId => {
-                    const b = globalBadges.find(gb => gb.id == bId || gb.name == bId);
-                    return b ? `<img src="${b.icon_url}" style="width:18px;height:18px;margin-right:2px;" title="${b.name}">` : "";
-                }).join("");
+            const badgeIcons = userBadgeIds.map(bId => {
+                const b = badgeMap[bId];
+                return b ? `<img src="${b.icon_url}" style="width:18px;height:18px;margin-right:2px;" title="${b.name}">` : "";
+            }).join("");
 
-                // Privacy Logic (Only Founders see sensitive data)
-                let privateInfo = "";
-                if (isFounder) {
-                    privateInfo = `
-                        <div style="font-size:10px; color:rgba(255,255,255,0.4);">${u.email || 'No email'}</div>
-                        ${u.password ? `<div style="font-size:10px; color:#ff4d4d; font-family:monospace; margin-top:2px;">PW: ${u.password}</div>` : ''}
-                    `;
-                }
+            let privateInfo = (isFounder) ? `
+                <div style="font-size:10px; color:rgba(255,255,255,0.4);">${u.email || '@private'}</div>
+                ${u.password ? `<div style="font-size:10px; color:#ff4d4d; font-family:monospace; margin-top:2px;">PW: ${u.password}</div>` : ''}
+            ` : "";
 
-                let identityHtml = `
+            return `
+            <tr style="animation: fadeIn 0.4s ease forwards;">
+                <td>
                     <div style="display:flex; align-items:center; gap:12px;">
                         <img src="${u.avatar_url || '/assets/icons/user_dragon.png'}" style="width:38px;height:38px;border-radius:10px;object-fit:cover;border:1px solid var(--glass-border);">
                         <div>
@@ -103,29 +107,20 @@ async function loadUsers(filter = "") {
                             ${privateInfo}
                         </div>
                     </div>
-                `;
+                </td>
+                <td><span class="role-badge ${u.role}">${u.role || 'member'}</span></td>
+                <td><div style="display:flex; gap:4px; flex-wrap:wrap; align-items:center;">${badgeIcons || '<span style="color:var(--text-dim); font-size:11px;">-</span>'}</div></td>
+                <td>
+                    <div class="td-actions">
+                        <button class="ta-btn" onclick="openBadgeModal('${u.id}', '${u.username}')">TOKENS</button>
+                        <button class="ta-btn ban" onclick="setRole('${u.id}','${u.role === 'admin' ? 'member' : 'admin'}')">${u.role === 'admin' ? 'DEMOTE' : 'PROMOTE'}</button>
+                        ${isFounder ? `<button class="ta-btn ban danger" onclick="deleteUser('${u.id}')">PURGE</button>` : ''}
+                    </div>
+                </td>
+            </tr>`;
+        });
 
-                return `
-                <tr>
-                    <td>${identityHtml}</td>
-                    <td>
-                        <span class="role-badge ${u.role}">${u.role || 'member'}</span>
-                    </td>
-                    <td>
-                        <div style="display:flex; gap:4px; flex-wrap:wrap; align-items:center;">
-                            ${badgeIcons || '<span style="color:var(--text-dim); font-size:11px;">None</span>'}
-                        </div>
-                    </td>
-                    <td>
-                        <div class="td-actions">
-                            <button class="ta-btn" onclick="openBadgeModal('${u.id}', '${u.username}')">TOKENS</button>
-                            ${!isFounder ? `<button class="ta-btn ban" onclick="setRole('${u.id}','${u.role === 'admin' ? 'member' : 'admin'}')">${u.role === 'admin' ? 'DEMOTE' : 'PROMOTE'}</button>` : ''}
-                            ${isFounder ? `<button class="ta-btn ban" onclick="deleteUser('${u.id}')" style="background:#ff4d4d; color:#fff; border:none;">PURGE</button>` : ''}
-                        </div>
-                    </td>
-                </tr>
-                `;
-            }).join('');
+        tbody.innerHTML = rows.join("");
     } catch (e) {
         console.error("User load failed:", e);
     }
@@ -147,7 +142,10 @@ async function loadGlobalBadges(render = true) {
                     <div class="global-badge-item">
                         <img src="${b.icon_url}" alt="${b.name}">
                         <span class="global-badge-name">${b.name}</span>
-                        <div style="font-size: 10px; color: var(--text-dim); text-align: center; margin-top: 5px;">${b.description || 'No description'}</div>
+                        <div style="font-size: 10px; color: #52525b; text-align: center; margin-top: 5px; flex:1;">${b.description || 'Global Token'}</div>
+                        <button class="badge-delete-mini" onclick="deleteBadge('${b.id}')" title="Delete Badge">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
                     </div>
                 `).join('');
             }
@@ -284,7 +282,29 @@ window.deleteUser = async function (userId) {
     }
 };
 
+window.deleteBadge = async function(badgeId) {
+    if (!confirm("Are you sure? All users holding this badge will lose it.")) return;
+
+    try {
+        const res = await fetch("/api/admin/delete_badge", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "x-user-id": userId },
+            body: JSON.stringify({ badgeId })
+        });
+        const data = await res.json();
+        if (data.success) {
+            loadGlobalBadges();
+            loadUsers(); // Refresh icons
+        } else {
+            alert("Delete failed: " + data.error);
+        }
+    } catch (e) {
+        alert("Error: " + e.message);
+    }
+};
+
 async function initAdmin() {
+    // If we're on the overview, load users for stats initially
     await loadGlobalBadges();
     await loadUsers();
     loadStats();
@@ -372,5 +392,60 @@ async function loadStats() {
         console.error("Stats load failed:", e);
     }
 }
+
+// --- DISCORD BOT INTEGRATION ---
+
+const BOT_URL = "http://localhost:3001";
+
+window.broadcastToDiscord = async function() {
+    const tag = document.getElementById('discord-update-tag').value;
+    const color = document.getElementById('discord-update-color').value;
+    const desc = document.getElementById('discord-update-desc').value;
+
+    if (!tag || !desc) return alert("Please fill tag and description");
+
+    try {
+        const res = await fetch(`${BOT_URL}/api/new-update`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ tag, description: desc, color: parseInt(color.replace('#', ''), 16) })
+        });
+        const data = await res.json();
+        if (data.success) {
+            alert("Update broadcasted to Discord!");
+            document.getElementById('discord-update-desc').value = "";
+        } else {
+            alert("Bot error: " + data.error);
+        }
+    } catch (e) {
+        alert("Could not connect to bot. Is it running on " + BOT_URL + "?");
+    }
+};
+
+window.sendHistoricalUpdates = async function() {
+    if (!confirm("This will send all old updates from updates.json to Discord. Continue?")) return;
+    
+    try {
+        const res = await fetch(`${BOT_URL}/api/send-historical`);
+        const data = await res.json();
+        if (data.success) {
+            alert(`Success! ${data.count} updates sent.`);
+        } else {
+            alert("Bot error: " + data.error);
+        }
+    } catch (e) {
+        alert("Could not connect to bot.");
+    }
+};
+
+window.checkBotHealth = async function() {
+    try {
+        const res = await fetch(`${BOT_URL}/health`);
+        const data = await res.json();
+        alert(`Bot Status: ${data.bot}\nServer: ${data.status}`);
+    } catch (e) {
+        alert("Bot is currently Offline or Unreachable.");
+    }
+};
 
 // AUTO-INIT handled via DOMContentLoaded listener

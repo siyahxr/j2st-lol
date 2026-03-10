@@ -473,6 +473,25 @@ body {
     color: #000;
 }
 
+.social-platform-item:active {
+    transform: scale(0.9);
+}
+
+/* NEW LINK ANIMATION */
+.flash-new {
+    animation: flashNew 1.5s ease;
+}
+
+@keyframes flashNew {
+    0% { border-color: #fff; box-shadow: 0 0 20px rgba(255,255,255,0.2); transform: scale(1.02); }
+    100% { border-color: var(--accent-border); box-shadow: none; transform: scale(1); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 /* BADGE COLLECTION STYLES */
 .badge-collect-item {
     border: 1px solid var(--accent-border);
