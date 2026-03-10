@@ -175,8 +175,12 @@ function syncUI() {
     // Identity
     document.getElementById('profile-display-name').value = userDataState.display_name || "";
     document.getElementById('profile-bio').value = userDataState.bio || "";
+    // Set Avatar URL if it's already a direct link
+    const avUrl = userDataState.avatar_url || "";
+    document.getElementById('avatar-url-direct').value = avUrl.startsWith('http') ? avUrl : "";
+    
     document.querySelectorAll('.chip-img, #preview-avatar-img').forEach(img => {
-        img.src = userDataState.avatar_url || '/assets/icons/user_dragon.png';
+        img.src = avUrl || '/assets/icons/user_dragon.png';
     });
     document.querySelectorAll('.chip-name').forEach(el => el.textContent = userDataState.display_name || userDataState.username);
 
@@ -250,7 +254,7 @@ function setupEventListeners() {
         'bio-font', 'bio-font-color', 'avatar-frame-opacity', 'card-style',
         'bg-effect', 'entry-anim', 'glitch-avatar', 'banner-url-direct',
         'badge-bg-color', 'accent-hex', 'icon-hex', 'avatar-frame-hex',
-        'music-url-direct'
+        'music-url-direct', 'avatar-url-direct'
     ];
     liveIds.forEach(id => {
         const el = document.getElementById(id);
@@ -259,6 +263,7 @@ function setupEventListeners() {
                 // Critical fix: If typing a URL, kill the base64 buffer for that type
                 if (id === 'music-url-direct' && e.target.value) musicBase64 = null;
                 if (id === 'banner-url-direct' && e.target.value) bannerBase64 = null;
+                if (id === 'avatar-url-direct' && e.target.value) avatarBase64 = null;
                 
                 updatePreview();
             });
@@ -464,7 +469,7 @@ function updatePreview() {
     }
 
     if (avatar) {
-        avatar.src = avatarBase64 || d.avatar_url || '/assets/icons/user_dragon.png';
+        avatar.src = avatarBase64 || document.getElementById('avatar-url-direct')?.value || d.avatar_url || '/assets/icons/user_dragon.png';
         const fHex = document.getElementById('avatar-frame-hex')?.value || "#000000";
         const fOp = document.getElementById('avatar-frame-opacity')?.value || "1";
         const frameColor = hexToRgba(fHex, fOp);
@@ -544,17 +549,19 @@ window.saveProfileChanges = async () => {
 
     const musicInput = safeGet('music-url-direct');
     const bannerInput = safeGet('banner-url-direct');
+    const avatarInput = safeGet('avatar-url-direct');
     const cursorInput = safeGet('cursor-url-direct');
 
     // Forced cleanup: If Link is provided, kill the local base64 buffer for that slot
     if (musicInput) musicBase64 = null;
     if (bannerInput) bannerBase64 = null;
+    if (avatarInput) avatarBase64 = null;
     if (cursorInput) cursorBase64 = null;
 
     const bannerVal = bannerInput || bannerBase64 || userDataState.banner_url || "";
     const musicVal = musicInput || musicBase64 || userDataState.profile_music_url || "";
+    const avatarVal = avatarInput || avatarBase64 || userDataState.avatar_url || "";
     const cursorVal = cursorInput || cursorBase64 || userDataState.custom_cursor_url || "";
-    const avatarVal = avatarBase64 || userDataState.avatar_url || "";
 
     const payload = {
         id: String(session.id || ""),
