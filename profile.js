@@ -125,23 +125,25 @@ function renderProfile(user) {
     // 9. Profile Music - Auto Play
     if (user.profile_music_url) {
         const musicPlayer = document.getElementById('profile-music-player');
+        const widget = document.getElementById('music-widget');
+        const mName = document.getElementById('music-name');
+        
         if (musicPlayer) {
             musicPlayer.src = user.profile_music_url;
             musicPlayer.volume = 0.3;
             musicPlayer.loop = true;
             
+            if (widget) widget.style.display = 'flex';
+            if (mName) mName.textContent = user.profile_music_url.startsWith('data:') ? "User Soundtrack" : "Soundtrack Playing";
+            
             const startPlay = () => {
                 musicPlayer.play().then(() => {
-                    // Success, remove listeners
                     document.removeEventListener('click', startPlay);
                     document.removeEventListener('touchstart', startPlay);
-                }).catch(e => console.log("Play failed, waiting for interaction..."));
+                }).catch(e => {});
             };
 
-            // Try immediately
             startPlay();
-            
-            // Interaction fallback (Browsers block autoplay)
             document.addEventListener('click', startPlay);
             document.addEventListener('touchstart', startPlay);
         }

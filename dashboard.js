@@ -249,7 +249,8 @@ function setupEventListeners() {
         'profile-display-name', 'profile-bio', 'name-font', 'name-font-color',
         'bio-font', 'bio-font-color', 'avatar-frame-opacity', 'card-style',
         'bg-effect', 'entry-anim', 'glitch-avatar', 'banner-url-direct',
-        'badge-bg-color', 'accent-hex', 'icon-hex', 'avatar-frame-hex'
+        'badge-bg-color', 'accent-hex', 'icon-hex', 'avatar-frame-hex',
+        'music-url-direct'
     ];
     liveIds.forEach(id => {
         const el = document.getElementById(id);
@@ -498,6 +499,23 @@ function updatePreview() {
                 <i class="${l.icon}" style="font-size:14px; color:var(--accent);"></i>
             </div>
         `).join('');
+    }
+
+    // Music Bar Preview
+    const musicBar = document.getElementById('preview-music-bar');
+    const musicTitle = document.getElementById('preview-music-title');
+    const musicUrl = musicBase64 || document.getElementById('music-url-direct')?.value || d.profile_music_url || "";
+
+    if (musicBar) {
+        if (musicUrl) {
+            musicBar.style.display = 'flex';
+            if (musicTitle) {
+                const fileName = document.getElementById('audio-upload-btn')?.files[0]?.name || "Soundtrack Loaded";
+                musicTitle.textContent = musicUrl.startsWith('data:') ? fileName : "Remote Streaming...";
+            }
+        } else {
+            musicBar.style.display = 'none';
+        }
     }
 }
 
