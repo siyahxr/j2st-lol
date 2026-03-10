@@ -97,6 +97,7 @@ function syncUI() {
     document.getElementById('bg-effect').value = userDataState.bg_effect || "none";
     document.getElementById('entry-anim').value = userDataState.entry_anim || "fadeIn";
     document.getElementById('glitch-avatar').checked = !!userDataState.glitch_avatar;
+    document.getElementById('card-style').value = userDataState.card_style || "glass";
 
     // Media
     document.getElementById('banner-url-direct').value = userDataState.banner_url || "";
@@ -148,7 +149,7 @@ function setupControls() {
 function setupLivePreview() {
     const ids = [
         'profile-display-name', 'profile-bio', 'name-font', 'bio-font', 
-        'bio-font-color', 'banner-url-direct', 'glitch-avatar'
+        'bio-font-color', 'banner-url-direct', 'glitch-avatar', 'card-style'
     ];
     ids.forEach(id => {
         const el = document.getElementById(id);
@@ -176,6 +177,12 @@ function updatePreview() {
 
     const bUrl = bannerBase64 || document.getElementById('banner-url-direct').value || userDataState.banner_url;
     if (banner && bUrl) banner.style.backgroundImage = `url(${bUrl})`;
+
+    const phone = document.querySelector('.phone-content');
+    const cStyle = document.getElementById('card-style').value;
+    if (phone) {
+        phone.className = 'phone-content ' + cStyle + '-style';
+    }
 }
 
 function setupUploaders() {
@@ -244,7 +251,7 @@ window.saveProfileChanges = async () => {
         custom_cursor_url: cursorBase64 || document.getElementById('cursor-url-direct')?.value || userDataState?.custom_cursor_url || null,
         base_font: userDataState?.base_font || "Inter",
         base_font_color: userDataState?.base_font_color || "#FFFFFF",
-        card_style: userDataState?.card_style || "glass",
+        card_style: document.getElementById('card-style')?.value || "glass",
         hover_text: userDataState?.hover_text || "Void Entity",
         link_hover_anim: userDataState?.link_hover_anim || "float",
         tilt_3d: userDataState?.tilt_3d ?? 1

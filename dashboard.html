@@ -6,9 +6,9 @@
     <title>j2st.icu | Void Dashboard</title>
     
     <!-- STYLES -->
-    <link rel="stylesheet" href="/index.css">
-    <link rel="stylesheet" href="/dashboard.css">
-    <link rel="stylesheet" href="/css/dashboard/profile.css">
+    <link rel="stylesheet" href="/index.css?v=4.2">
+    <link rel="stylesheet" href="/dashboard.css?v=4.2">
+    <link rel="stylesheet" href="/css/dashboard/profile.css?v=4.2">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
@@ -134,31 +134,40 @@
                             <div class="form-grid">
                                 <div class="form-field">
                                     <label class="form-label" data-i18n="dash_lbl_accent">Accent Color</label>
-                                    <div class="color-picker-suite" style="position: relative;">
+                                    <div class="color-picker-suite" style="position: relative; background: #050505;">
                                         <div class="color-preview-box" id="accent-prev"></div>
-                                        <input type="text" id="accent-hex" class="hex-inp" value="#FFFFFF">
+                                        <input type="text" id="accent-hex" class="hex-inp" value="#FFFFFF" style="background: transparent;">
                                         <input type="color" id="accent-color" style="position: absolute; left: 12px; width: 30px; height: 30px; opacity: 0; cursor: pointer;">
                                     </div>
                                 </div>
                                 <div class="form-field">
                                     <label class="form-label" data-i18n="dash_lbl_icon_color">Icon Color</label>
-                                    <div class="color-picker-suite" style="position: relative;">
+                                    <div class="color-picker-suite" style="position: relative; background: #050505;">
                                         <div class="color-preview-box" id="icon-prev"></div>
-                                        <input type="text" id="icon-hex" class="hex-inp" value="#A1A1AA">
+                                        <input type="text" id="icon-hex" class="hex-inp" value="#A1A1AA" style="background: transparent;">
                                         <input type="color" id="icon-color" style="position: absolute; left: 12px; width: 30px; height: 30px; opacity: 0; cursor: pointer;">
                                     </div>
                                 </div>
                                 <div class="form-field">
                                     <label class="form-label" data-i18n="dash_lbl_avatar_frame">Avatar Frame</label>
-                                    <div class="color-picker-suite" style="position: relative;">
+                                    <div class="color-picker-suite" style="position: relative; background: #050505;">
                                         <div class="color-preview-box" id="avatar-frame-prev"></div>
-                                        <input type="text" id="avatar-frame-hex" class="hex-inp" value="#000000">
+                                        <input type="text" id="avatar-frame-hex" class="hex-inp" value="#000000" style="background: transparent;">
                                         <input type="color" id="avatar-frame-color" style="position: absolute; left: 12px; width: 30px; height: 30px; opacity: 0; cursor: pointer;">
                                     </div>
                                 </div>
                                 <div class="form-field">
                                     <label class="form-label" data-i18n="dash_lbl_badge_bg">Badge Background</label>
                                     <input type="text" id="badge-bg-color" class="form-input" placeholder="rgba(255,255,255,0.05)">
+                                </div>
+                                <div class="form-field">
+                                    <label class="form-label">Profile Card Style</label>
+                                    <select id="card-style" class="form-input">
+                                        <option value="glass">Premium Glass</option>
+                                        <option value="solid">Deep Black</option>
+                                        <option value="gradient">Noir Gradient</option>
+                                        <option value="border">Transparent Border</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -375,7 +384,7 @@
         <span id="toast-msg"></span>
     </div>
 
-    <script src="/system/i18n.js"></script>
-    <script type="module" src="/dashboard.js?v=4.0"></script>
+    <script src="/system/i18n.js?v=4.2"></script>
+    <script type="module" src="/dashboard.js?v=4.2"></script>
 </body>
 </html>

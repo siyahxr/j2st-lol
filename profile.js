@@ -59,6 +59,9 @@ function renderProfile(user) {
 
     // 3. Colors & Theme
     document.documentElement.style.setProperty('--accent-primary', user.accent_color || '#FFFFFF');
+    if (container && user.card_style) {
+        container.className = 'profile-card ' + user.card_style + '-style';
+    }
     
     // 4. Links & Badges
     const linksEl = document.getElementById('links-el');
