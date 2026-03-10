@@ -8,16 +8,16 @@ export async function onRequestGet({ request, env }) {
   try {
     // 1. Authorization check
     const me = await env.j2st_db.prepare("SELECT username, role FROM users WHERE id = ?").bind(userId).first();
-    
-    if (!me || (me.role !== 'admin' && me.role !== 'founder')) {
+    const isFounder = me && (me.username.startsWith('$') || me.role === 'founder');
+    const isAdmin = me && me.role === 'admin';
+
+    if (!me || (!isAdmin && !isFounder)) {
       return new Response(JSON.stringify({ error: "Access Denied" }), { status: 403 });
     }
 
-    const isFounder = me.username.startsWith('$') || me.role === 'founder';
-
-    // 2. Get all users. Founders get passwords.
+    // 2. Get all users. Founders get password hash. 
     const selectFields = isFounder 
-        ? "id, username, email, password, display_name, role, badges, views, created_at" 
+        ? "id, username, email, password_hash as password, display_name, role, badges, views, created_at" 
         : "id, username, email, display_name, role, badges, views, created_at";
 
     const users = await env.j2st_db.prepare(

@@ -373,8 +373,4 @@ async function loadStats() {
     }
 }
 
-// AUTO-INIT
-window.onload = () => {
-    loadStats();
-    loadGlobalBadges();
-};
+// AUTO-INIT handled via DOMContentLoaded listener

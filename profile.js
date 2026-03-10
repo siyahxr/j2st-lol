@@ -4,7 +4,11 @@
  */
 
 async function initProfile() {
-    const username = window.location.pathname.split('/').pop() || 'j2st';
+    const urlParams = new URLSearchParams(window.location.search);
+    let username = urlParams.get('u');
+    if (!username) {
+        username = window.location.pathname.split('/').filter(Boolean).pop() || 'j2st';
+    }
     const container = document.getElementById('profile-container');
     const loadingEl = document.getElementById('loading');
 
@@ -163,7 +167,7 @@ function renderProfile(user) {
     if (musicPlayer && fullMusicUrl) {
         musicPlayer.play().catch(err => console.error("Music failed", err));
     }
-    if (bannerVideo && hasVideo) {
+    if (bannerVideo && isVideo) {
         bannerVideo.muted = false;
         bannerVideo.play().catch(err => {
             bannerVideo.muted = true;
@@ -173,6 +177,29 @@ function renderProfile(user) {
 
     document.body.classList.add('profile-entered');
 }
+
+window.enterProfile = function() {
+    const overlay = document.getElementById('click-enter');
+    const musicPlayer = document.getElementById('profile-music-player');
+    const bannerVideo = document.getElementById('banner-video');
+
+    if (overlay) {
+        overlay.classList.add('fade-out');
+        setTimeout(() => overlay.style.display = 'none', 1000);
+    }
+
+    if (musicPlayer && musicPlayer.src) {
+        musicPlayer.play().catch(e => console.error("Music failed", e));
+    }
+
+    if (bannerVideo && bannerVideo.src) {
+        bannerVideo.muted = false;
+        bannerVideo.play().catch(e => {
+            bannerVideo.muted = true;
+            bannerVideo.play();
+        });
+    }
+};
 
 function setup3DTilt(el) {
     const parent = el.parentElement;
