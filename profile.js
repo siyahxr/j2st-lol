@@ -58,6 +58,8 @@ function renderProfile(user) {
     }
 
     // 3. Colors & Theme
+    const container = document.getElementById('profile-container');
+    document.documentElement.style.setProperty('--accent', user.accent_color || '#FFFFFF');
     document.documentElement.style.setProperty('--accent-primary', user.accent_color || '#FFFFFF');
     if (container && user.card_style) {
         container.className = 'profile-card ' + user.card_style + '-style';
@@ -105,6 +107,13 @@ function setup3DTilt(el) {
         const x = (e.clientX / window.innerWidth) - 0.5;
         const y = (e.clientY / window.innerHeight) - 0.5;
         el.style.transform = `rotateX(${y * -20}deg) rotateY(${x * 20}deg) translateZ(10px)`;
+
+        // Aura tracking
+        const aura = document.querySelector('.dynamic-aura');
+        if (aura) {
+            aura.style.left = `${e.clientX - 200}px`;
+            aura.style.top = `${e.clientY - 200}px`;
+        }
     });
 }
 

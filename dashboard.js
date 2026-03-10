@@ -179,9 +179,16 @@ function updatePreview() {
     if (banner && bUrl) banner.style.backgroundImage = `url(${bUrl})`;
 
     const phone = document.querySelector('.phone-content');
+    const aura = document.querySelector('.phone-content .dynamic-aura');
     const cStyle = document.getElementById('card-style').value;
+    const accent = document.getElementById('accent-hex').value;
+
     if (phone) {
         phone.className = 'phone-content ' + cStyle + '-style';
+        phone.style.setProperty('--accent', accent);
+    }
+    if (aura) {
+        aura.style.background = accent;
     }
 }
 
