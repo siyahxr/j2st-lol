@@ -1,31 +1,20 @@
 /**
- * J2ST.ICU — VOID DASHBOARD LOGIC
- * Refined and Modularized for 2026
+ * J2ST.ICU — VOID DASHBOARD LOGIC (v4.0)
+ * Redesigned for Absolute Performance & Reliability
  */
 
 // --- SESSION CHECK ---
 const sessionStr = localStorage.getItem("j2st_session_v2");
-if (!sessionStr) {
-    window.location.replace("/login");
-}
-let session = null;
-try {
-    session = JSON.parse(sessionStr);
-    // More flexible check - accept any valid user object
-    if (!session || (!session.username && !session.id && !session.user)) {
-        throw new Error("Invalid session");
-    }
-    // Normalize session data
-    if (!session.username && session.user && session.user.username) {
-        session.username = session.user.username;
-    }
-    if (!session.id && session.user && session.user.id) {
-        session.id = session.user.id;
-    }
-} catch (e) {
+if (!sessionStr) window.location.replace("/login");
+
+let session = JSON.parse(sessionStr);
+if (!session?.username && !session?.id && !session?.user) {
     localStorage.removeItem("j2st_session_v2");
     window.location.replace("/login");
 }
+// Normalize
+if (!session.id && session.user?.id) session.id = session.user.id;
+if (!session.username && session.user?.username) session.username = session.user.username;
 
 let userDataState = null;
 let avatarBase64 = null;
@@ -33,295 +22,204 @@ let bannerBase64 = null;
 let musicBase64 = null;
 let cursorBase64 = null;
 
-// --- TAB SWITCHING SYSTEM ---
-window.switchTab = function (el, tabName) {
-    // UI Update - Navigation
+// --- TAB SYSTEM ---
+window.switchTab = (el, tabName) => {
     if (el) {
-        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
         el.classList.add('active');
     }
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('tab-' + tabName)?.classList.add('active');
 
-    // UI Update - Panels
-    document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
-    const targetPanel = document.getElementById('tab-' + tabName);
-    if (targetPanel) {
-        targetPanel.classList.add('active');
-        // Reset scroll position
-        targetPanel.scrollTop = 0;
-    }
-
-    // Header Updates
-    const titlesMap = {
-        overview: ['Overview', 'Your bio dashboard at a glance.'],
-        profile: ['Profile Editor', 'Manage your public identity and branding.'],
-        links: ['Manage Links', 'Your personalized link gallery.'],
-        media: ['Sound & Files', 'Upload custom audio and shareable content.'],
-        badges: ['Your Badges', 'Showcase your achievements on the void.'],
-        settings: ['Account Settings', 'Manage your security and session.']
+    const titles = {
+        overview: ['dash_title_overview', 'Overview essence'],
+        profile: ['dash_title_profile', 'Customize your presence'],
+        links: ['dash_title_links', 'Manage your connectivity'],
+        media: ['dash_title_media', 'Upload atmosphere assets'],
+        badges: ['dash_title_badges', 'Showcase achievements'],
+        settings: ['dash_title_settings', 'Account core management']
     };
 
-    const titleEl = document.getElementById('tab-title');
-    const subEl = document.getElementById('tab-sub');
-
-    if (titlesMap[tabName] && titleEl && subEl) {
-        titleEl.textContent = titlesMap[tabName][0];
-        subEl.textContent = titlesMap[tabName][1];
+    const t = document.getElementById('tab-title');
+    const s = document.getElementById('tab-sub');
+    if (t && titles[tabName]) {
+        t.setAttribute('data-i18n', titles[tabName][0]);
+        s.textContent = titles[tabName][1];
+        if (window.applyLanguage) applyLanguage();
     }
 };
 
 // --- INITIALIZATION ---
-async function initDashboard() {
+async function init() {
     try {
         const res = await fetch(`/api/user/profile?u=${session.username}`);
-        const data = await res.json();
+        userDataState = await res.json();
+        if (userDataState.error) throw new Error(userDataState.error);
 
-        if (data.error) throw new Error(data.error);
-        userDataState = data;
-
-        // Apply Data to UI
-        updateUI();
-        initLivePreview();
-        initUploader();
-        initStatCounters(); 
-        initPremiumControls(); // New premium logic
-
-    } catch (err) {
-        console.error("Dashboard Load Error:", err);
+        syncUI();
+        setupControls();
+        setupLivePreview();
+        setupUploaders();
+    } catch (e) {
+        console.error("Init failed:", e);
     }
 }
 
-// --- UI UPDATER ---
-function updateUI() {
+function syncUI() {
     if (!userDataState) return;
 
-    // Basic Info
-    const chips = document.querySelectorAll('.chip-img, #preview-avatar-img');
-    chips.forEach(img => {
-        if (userDataState.avatar_url) img.src = userDataState.avatar_url;
-        else img.src = '/assets/icons/user_dragon.png';
+    // Header & Info
+    document.querySelectorAll('.chip-img, #preview-avatar-img, #preview-avatar').forEach(img => {
+        img.src = userDataState.avatar_url || '/assets/icons/user_dragon.png';
     });
-
-    const nameEls = document.querySelectorAll('.chip-name, #preview-name');
-    nameEls.forEach(el => {
+    document.querySelectorAll('.chip-name, #preview-name').forEach(el => {
         el.textContent = userDataState.display_name || userDataState.username;
     });
 
-    // Inputs Sync
+    // Profile Fields
     document.getElementById('profile-display-name').value = userDataState.display_name || "";
     document.getElementById('profile-bio').value = userDataState.bio || "";
     
-    // Colors & Fonts
-    syncColorInput('avatar-frame-color', 'avatar-frame-hex', userDataState.avatar_frame_color);
-    syncColorInput('icon-color', 'icon-color-hex', userDataState.icon_color);
-    document.getElementById('badge-bg-color').value = userDataState.badge_bg_color || "rgba(255,255,255,0.04)";
-    syncColorInput('accent-color', 'accent-color-hex', userDataState.accent_color);
+    // Colors
+    syncColor('accent', userDataState.accent_color || '#FFFFFF');
+    syncColor('icon', userDataState.icon_color || '#A1A1AA');
+    syncColor('avatar-frame', userDataState.avatar_frame_color || '#000000');
     
-    document.getElementById('base-font').value = userDataState.base_font || "Outfit";
-    document.getElementById('base-font-color').value = userDataState.base_font_color || "#ffffff";
+    document.getElementById('badge-bg-color').value = userDataState.badge_bg_color || "rgba(255,255,255,0.05)";
+    
+    // Fonts
     document.getElementById('name-font').value = userDataState.name_font || "Outfit";
-    document.getElementById('name-font-color').value = userDataState.name_font_color || "#ffffff";
+    document.getElementById('name-font-color').value = userDataState.name_font_color || "#FFFFFF";
     document.getElementById('bio-font').value = userDataState.bio_font || "Outfit";
-    document.getElementById('bio-font-color').value = userDataState.bio_font_color || "rgba(255,255,255,0.7)";
-
-    // Card & Interaction
-    const styles = document.querySelectorAll('.style-opt-btn');
-    styles.forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.dataset.style === (userDataState.card_style || 'glass')) btn.classList.add('active');
-    });
-    document.getElementById('hover-text').value = userDataState.hover_text || "";
-    document.getElementById('link-hover-anim').value = userDataState.link_hover_anim || "none";
-    document.getElementById('glitch-avatar').checked = !!userDataState.glitch_avatar;
+    document.getElementById('bio-font-color').value = userDataState.bio_font_color || "#FFFFFF";
 
     // Effects
     document.getElementById('bg-effect').value = userDataState.bg_effect || "none";
     document.getElementById('entry-anim').value = userDataState.entry_anim || "fadeIn";
-    document.getElementById('tilt-3d').checked = !!userDataState.tilt_3d;
-    
-    // Media URLs
+    document.getElementById('glitch-avatar').checked = !!userDataState.glitch_avatar;
+
+    // Media
     document.getElementById('banner-url-direct').value = userDataState.banner_url || "";
     document.getElementById('music-url-direct').value = userDataState.profile_music_url || "";
-    const directCursor = document.getElementById('cursor-url-direct'); 
-    if (directCursor) directCursor.value = userDataState.custom_cursor_url || "";
+    document.getElementById('cursor-url-direct').value = userDataState.custom_cursor_url || "";
 
-    updatePreviewLayer();
+    updatePreview();
 }
 
-function syncColorInput(pickerId, hexId, value) {
-    const picker = document.getElementById(pickerId);
-    const hex = document.getElementById(hexId);
-    const prev = document.getElementById(pickerId + '-prev');
-    if (!value || value === 'none') {
-        value = '#ffffff';
-    }
-    if (picker) picker.value = value;
-    if (hex) hex.value = value;
-    if (prev) prev.style.background = value;
+function syncColor(id, val) {
+    const hex = document.getElementById(id + '-hex');
+    const pick = document.getElementById(id + '-color');
+    const prev = document.getElementById(id + '-prev');
+    if (hex) hex.value = val;
+    if (pick) pick.value = val;
+    if (prev) prev.style.background = val;
 }
 
-// --- PREMIUM LOGIC (Color Pickers, Style Buttons) ---
-function initPremiumControls() {
-    // 1. Color Pickers Sync
-    ['avatar-frame', 'icon', 'accent'].forEach(prefix => {
-        const picker = document.getElementById(prefix + '-color');
-        const hex = document.getElementById(prefix + '-hex');
-        const prev = document.getElementById(prefix + '-prev');
+function setupControls() {
+    ['accent', 'icon', 'avatar-frame'].forEach(id => {
+        const hex = document.getElementById(id + '-hex');
+        const pick = document.getElementById(id + '-color');
+        const prev = document.getElementById(id + '-prev');
 
-        if (prev && picker) prev.onclick = () => picker.click();
-        
-        if (picker && hex) {
-            picker.oninput = () => {
-                hex.value = picker.value;
-                if (prev) prev.style.background = picker.value;
-                updatePreviewLayer();
+        if (prev && pick) prev.onclick = () => pick.click();
+        if (pick && hex) {
+            pick.oninput = () => {
+                hex.value = pick.value;
+                if (prev) prev.style.background = pick.value;
+                updatePreview();
             };
             hex.oninput = () => {
-                if (hex.value.startsWith('#') && hex.value.length === 7) {
-                    picker.value = hex.value;
+                if (hex.value.match(/^#[0-9A-F]{6}$/i)) {
+                    pick.value = hex.value;
                     if (prev) prev.style.background = hex.value;
-                    updatePreviewLayer();
+                    updatePreview();
                 }
             };
         }
     });
 
-    // 2. Card Style Buttons
-    document.querySelectorAll('.style-opt-btn').forEach(btn => {
-        btn.onclick = () => {
-            document.querySelectorAll('.style-opt-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            updatePreviewLayer();
-        };
+    // Color pickers for fonts
+    ['name-font-color'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.oninput = updatePreview;
     });
 }
 
-// --- LIVE PREVIEW ENGINE ---
-function initLivePreview() {
+function setupLivePreview() {
     const ids = [
-        'profile-display-name', 'profile-bio', 'badge-bg-color', 'base-font', 
-        'base-font-color', 'name-font', 'name-font-color', 'bio-font', 
-        'bio-font-color', 'hover-text', 'link-hover-anim', 'glitch-avatar',
-        'bg-effect', 'entry-anim', 'tilt-3d', 'banner-url-direct', 'music-url-direct', 'cursor-url-direct'
+        'profile-display-name', 'profile-bio', 'name-font', 'bio-font', 
+        'bio-font-color', 'banner-url-direct', 'glitch-avatar'
     ];
-
     ids.forEach(id => {
         const el = document.getElementById(id);
-        if (el) el.oninput = updatePreviewLayer;
+        if (el) el.oninput = updatePreview;
     });
 }
 
-function updatePreviewLayer() {
+function updatePreview() {
     if (!userDataState) return;
-
-    const previewName = document.getElementById('preview-name');
-    const previewBio = document.getElementById('preview-bio');
-    const previewHandle = document.getElementById('preview-handle');
-    const previewBadges = document.getElementById('preview-badges');
-    const previewLinks = document.getElementById('preview-links');
-    const previewBanner = document.getElementById('preview-banner');
-    const phoneBody = document.querySelector('.phone-body');
-
-    // Values
-    const nameVal = document.getElementById('profile-display-name').value;
-    const bioVal = document.getElementById('profile-bio').value;
-    const accentVal = document.getElementById('accent-color').value;
-    const styleVal = document.querySelector('.style-opt-btn.active')?.dataset.style || 'glass';
-
-    if (previewName) {
-        previewName.textContent = nameVal || "Your Name";
-        previewName.style.fontFamily = document.getElementById('name-font').value;
-        previewName.style.color = document.getElementById('name-font-color').value;
-    }
-    if (previewBio) {
-        previewBio.textContent = bioVal || "Bio teaser...";
-        previewBio.style.fontFamily = document.getElementById('bio-font').value;
-        previewBio.style.color = document.getElementById('bio-font-color').value;
-    }
-    if (previewHandle) previewHandle.textContent = `@${userDataState.username}`;
     
-    // Background / Banner
-    const directUrl = document.getElementById('banner-url-direct').value;
-    if (bannerBase64) {
-        previewBanner.style.backgroundImage = `url(${bannerBase64})`;
-    } else if (directUrl) {
-        previewBanner.style.backgroundImage = `url(${directUrl})`;
-    } else if (userDataState.banner_url) {
-        previewBanner.style.backgroundImage = `url(${userDataState.banner_url})`;
+    const name = document.getElementById('preview-name');
+    const bio = document.getElementById('preview-bio');
+    const banner = document.getElementById('preview-banner');
+    
+    if (name) {
+        name.textContent = document.getElementById('profile-display-name').value || userDataState.username;
+        name.style.fontFamily = document.getElementById('name-font').value;
+        name.style.color = document.getElementById('name-font-color').value;
+    }
+    if (bio) {
+        bio.textContent = document.getElementById('profile-bio').value || "Bio stream...";
+        bio.style.fontFamily = document.getElementById('bio-font').value;
+        bio.style.color = document.getElementById('bio-font-color').value;
     }
 
-    // Mock Badges
-    if (previewBadges) {
-        let bHtml = `<i class="fa-solid fa-shield-halved" style="color:${accentVal}; font-size:12px;"></i>`;
-        bHtml += `<i class="fa-solid fa-circle-check" style="color:${accentVal}; font-size:12px; opacity:0.6;"></i>`;
-        previewBadges.innerHTML = bHtml;
-    }
-
-    // Mock Links
-    if (previewLinks) {
-        previewLinks.innerHTML = `
-            <div class="link-mock" style="border-color:${accentVal}33">Discord</div>
-            <div class="link-mock" style="border-color:${accentVal}33">Twitter</div>
-        `;
-    }
+    const bUrl = bannerBase64 || document.getElementById('banner-url-direct').value || userDataState.banner_url;
+    if (banner && bUrl) banner.style.backgroundImage = `url(${bUrl})`;
 }
 
-// --- IMAGE UPLOADERS (MAX 50MB) ---
-function initUploader() {
-    const avatarInp = document.getElementById('avatar-upload');
-    const bannerInp = document.getElementById('banner-upload');
-    const audioInp = document.getElementById('audio-upload-btn');
-    const cursorInp = document.getElementById('cursor-upload');
-
-    const handleFile = async (e, type) => {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        if (file.size > 50 * 1024 * 1024) {
-            alert("File too large! (Limit: 50MB)");
-            return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-            const result = ev.target.result;
-            if (type === 'avatar') {
-                avatarBase64 = result;
-                document.getElementById('preview-avatar-img').src = result;
-                document.getElementById('preview-avatar').src = result;
-            } else if (type === 'banner') {
-                bannerBase64 = result;
-                if (file.type.startsWith('image/')) {
-                    document.getElementById('banner-selector').style.backgroundImage = `url(${result})`;
-                    document.getElementById('preview-banner').style.backgroundImage = `url(${result})`;
-                } else {
-                    document.getElementById('banner-selector').querySelector('span').textContent = "Video selected!";
-                }
-            } else if (type === 'audio') {
-                musicBase64 = result;
-                const audioLabel = document.getElementById('audio-upload-btn').parentElement.querySelector('span');
-                if (audioLabel) audioLabel.textContent = `SELECTED: ${file.name}`;
-            } else if (type === 'cursor') {
-                cursorBase64 = result;
-                const cursorLabel = document.getElementById('cursor-upload').parentElement.querySelector('span');
-                if (cursorLabel) cursorLabel.textContent = `SELECTED: ${file.name}`;
-            }
-        };
-        reader.readAsDataURL(file);
+function setupUploaders() {
+    const map = {
+        'avatar-upload': 'avatar',
+        'banner-upload': 'banner',
+        'audio-upload-btn': 'music',
+        'cursor-upload': 'cursor'
     };
 
-    if (avatarInp) avatarInp.onchange = (e) => handleFile(e, 'avatar');
-    if (bannerInp) bannerInp.onchange = (e) => handleFile(e, 'banner');
-    if (audioInp) audioInp.onchange = (e) => handleFile(e, 'audio');
-    if (cursorInp) cursorInp.onchange = (e) => handleFile(e, 'cursor');
+    Object.keys(map).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.onchange = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    const res = ev.target.result;
+                    if (id === 'avatar-upload') {
+                        avatarBase64 = res;
+                        document.getElementById('preview-avatar-img').src = res;
+                        document.getElementById('preview-avatar').src = res;
+                    } else if (id === 'banner-upload') {
+                        bannerBase64 = res;
+                        document.getElementById('preview-banner').style.backgroundImage = `url(${res})`;
+                    } else if (id === 'audio-upload-btn') {
+                        musicBase64 = res;
+                    } else if (id === 'cursor-upload') {
+                        cursorBase64 = res;
+                    }
+                };
+                reader.readAsDataURL(file);
+            };
+        }
+    });
 }
 
-// --- SAVE PROFILE ---
-async function saveProfileChanges() {
+window.saveProfileChanges = async () => {
     const btn = document.querySelector('.save-btn');
     const msg = document.getElementById('save-msg');
-    const orig = btn.textContent;
     
-    btn.textContent = "INJECTING DATA...";
+    const lang = localStorage.getItem('j2st_lang') || 'en';
+    btn.textContent = i18n_dict[lang]?.dash_btn_saving || "SAVING...";
     btn.disabled = true;
 
     const payload = {
@@ -330,162 +228,49 @@ async function saveProfileChanges() {
         bio: document.getElementById('profile-bio').value,
         avatar_url: avatarBase64 || userDataState.avatar_url,
         banner_url: bannerBase64 || document.getElementById('banner-url-direct').value || userDataState.banner_url,
-        
-        // Premium Fields
+        accent_color: document.getElementById('accent-hex').value,
+        icon_color: document.getElementById('icon-hex').value,
         avatar_frame_color: document.getElementById('avatar-frame-hex').value,
-        icon_color: document.getElementById('icon-color-hex').value,
         badge_bg_color: document.getElementById('badge-bg-color').value,
-        accent_color: document.getElementById('accent-color-hex').value,
-        
-        base_font: document.getElementById('base-font').value,
-        base_font_color: document.getElementById('base-font-color').value,
         name_font: document.getElementById('name-font').value,
         name_font_color: document.getElementById('name-font-color').value,
         bio_font: document.getElementById('bio-font').value,
         bio_font_color: document.getElementById('bio-font-color').value,
-        
-        card_style: document.querySelector('.style-opt-btn.active')?.dataset.style || 'glass',
-        hover_text: document.getElementById('hover-text').value,
-        link_hover_anim: document.getElementById('link-hover-anim').value,
-        glitch_avatar: document.getElementById('glitch-avatar').checked ? 1 : 0,
-        
-        profile_music_url: musicBase64 || document.getElementById('music-url-direct').value || userDataState.profile_music_url,
         bg_effect: document.getElementById('bg-effect').value,
         entry_anim: document.getElementById('entry-anim').value,
-        tilt_3d: document.getElementById('tilt-3d').checked ? 1 : 0,
-        custom_cursor_url: cursorBase64 || userDataState.custom_cursor_url
+        glitch_avatar: document.getElementById('glitch-avatar').checked ? 1 : 0,
+        profile_music_url: musicBase64 || document.getElementById('music-url-direct').value || userDataState.profile_music_url,
+        custom_cursor_url: cursorBase64 || document.getElementById('cursor-url-direct').value || userDataState.custom_cursor_url
     };
 
     try {
-        const res = await fetch("/api/profile/update", {
+        const r = await fetch("/api/profile/update", {
             method: "POST",
             headers: { "Content-Type": "application/json", "x-user-id": session.id },
             body: JSON.stringify(payload)
         });
-
-        if (res.ok) {
-            // Update local state so consecutive saves work
+        if (r.ok) {
             userDataState = { ...userDataState, ...payload };
-            // Clear temp base64 cache
-            avatarBase64 = bannerBase64 = musicBase64 = cursorBase64 = null;
-
-            showToast("PROFILE UPDATED SUCCESSFULLY", "success");
-            
-            setTimeout(() => {
-                btn.textContent = orig;
-                btn.disabled = false;
-            }, 2000);
-        } else {
-            const errData = await res.json().catch(() => ({}));
-            throw new Error(errData.error || "API_ERROR");
-        }
-    } catch (err) {
-        showToast(err.message === "API_ERROR" ? "FAILED TO SAVE PROFILE" : err.message, "error");
+            showToast(i18n_dict[lang]?.dash_toast_saved || "Saved!", "success");
+        } else throw new Error();
+    } catch (e) {
+        showToast(i18n_dict[lang]?.dash_toast_error || "Error", "error");
+    } finally {
+        btn.textContent = i18n_dict[lang]?.dash_save_btn || "SAVE CHANGES";
         btn.disabled = false;
-        btn.textContent = orig;
-    }
-}
-
-// --- NOTIFICATIONS ---
-function showToast(message, type = "success") {
-    const toast = document.getElementById('toast');
-    const msg = document.getElementById('toast-msg');
-    const icon = toast.querySelector('i');
-
-    if (!toast || !msg) return;
-
-    msg.textContent = message;
-    toast.classList.remove('active', 'error');
-    if (type === 'error') {
-        toast.classList.add('error');
-        icon.className = "fa-solid fa-triangle-exclamation";
-    } else {
-        icon.className = "fa-solid fa-circle-check";
-    }
-
-    // Trigger reflow for animation
-    void toast.offsetWidth;
-    toast.classList.add('active');
-
-    setTimeout(() => {
-        toast.classList.remove('active');
-    }, 4000);
-}
-
-// --- OTHERS & UTILS ---
-function initStatCounters() {
-    const counters = document.querySelectorAll('.stat-value');
-    counters.forEach(counter => {
-        const targetStr = counter.getAttribute('data-target');
-        const target = targetStr ? +targetStr.replace(/[^0-9]/g, '') : 0;
-        if (!target) return;
-
-        let count = 0;
-        const inc = target / 50; 
-        const updateCount = () => {
-            if (count < target) {
-                count += inc;
-                counter.innerText = Math.ceil(count).toLocaleString();
-                setTimeout(updateCount, 20);
-            } else {
-                counter.innerText = target.toLocaleString();
-            }
-        };
-        updateCount();
-    });
-}
-
-window.logout = function () {
-    localStorage.removeItem("j2st_session_v2");
-    window.location.replace("/login");
-};
-
-window.viewProfile = function () {
-    if (userDataState && userDataState.username) {
-        window.location.href = '/' + userDataState.username;
-    } else if (session && session.username) {
-        window.location.href = '/' + session.username;
-    } else {
-        window.location.href = '/';
     }
 };
 
-window.changeUserPassword = async function () {
-    const oldPass = document.getElementById('set-old-pass').value;
-    const newPass = document.getElementById('set-new-pass').value;
-    const newPass2 = document.getElementById('set-new-pass2').value;
-    const msgEl = document.getElementById('pw-change-msg');
-
-    if (!oldPass || !newPass || !newPass2) return showMsg(msgEl, "Please fill all fields.", "error");
-    if (newPass !== newPass2) return showMsg(msgEl, "New passwords do not match.", "error");
-    if (newPass.length < 8) return showMsg(msgEl, "Password must be at least 8 characters.", "error");
-
-    showMsg(msgEl, "Processing...", "");
-
-    try {
-        const res = await fetch("/api/profile/change-password", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id: session.id, oldPassword: oldPass, newPassword: newPass })
-        });
-        const data = await res.json();
-        if (data.success) {
-            showMsg(msgEl, "Password updated!", "success");
-            document.querySelectorAll('.settings-input').forEach(i => i.value = "");
-        } else {
-            showMsg(msgEl, data.error || "Failed.", "error");
-        }
-    } catch (err) {
-        showMsg(msgEl, "Error.", "error");
-    }
-};
-
-function showMsg(el, text, type) {
-    if (!el) return;
-    el.textContent = text;
-    el.className = "pw-change-msg " + type;
-    setTimeout(() => { el.className = "pw-change-msg"; }, 4000);
+function showToast(m, type) {
+    const t = document.getElementById('toast');
+    const tm = document.getElementById('toast-msg');
+    if (!t || !tm) return;
+    tm.textContent = m;
+    t.className = "toast-notif active " + (type === 'error' ? 'error' : '');
+    setTimeout(() => t.classList.remove('active'), 3000);
 }
 
-// --- START ---
-initDashboard();
+window.viewProfile = () => window.location.href = '/' + (userDataState?.username || session.username);
+window.logout = () => { localStorage.removeItem("j2st_session_v2"); window.location.replace("/login"); };
+
+init();
