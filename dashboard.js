@@ -117,8 +117,37 @@ async function init() {
         setupUploaders();
         setupTiltPreview();
         renderPlatformGrid();
+        loadDashboardStats();
     } catch (e) {
         console.error("Init failed:", e);
+    }
+}
+
+// --- DASHBOARD STATS ---
+async function loadDashboardStats() {
+    try {
+        const res = await fetch(`/api/user/profile?u=${session.username}`);
+        const data = await res.json();
+
+        // Views
+        const viewsEl = document.getElementById('stat-views');
+        if (viewsEl) viewsEl.textContent = data.views || 0;
+
+        // Links count
+        const linksEl = document.getElementById('stat-links');
+        if (linksEl) {
+            const links = data.links || [];
+            linksEl.textContent = links.length;
+        }
+
+        // Badges count
+        const badgesEl = document.getElementById('stat-badges');
+        if (badgesEl) {
+            const badges = data.badges || [];
+            badgesEl.textContent = badges.length;
+        }
+    } catch (e) {
+        console.error("Failed to load dashboard stats:", e);
     }
 }
 
@@ -516,8 +545,6 @@ window.viewProfile = () => window.location.href = '/' + (userDataState?.username
 window.logout = () => { localStorage.removeItem("j2st_session_v2"); window.location.replace("/login"); };
 
 init();
-) ?'flex' : 'none';
-}
 
 syncActiveLinks();
 syncBadgesCollection();
