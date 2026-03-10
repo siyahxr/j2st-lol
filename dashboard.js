@@ -469,7 +469,7 @@ window.saveProfileChanges = async () => {
         display_name: (document.getElementById('profile-display-name')?.value || "").trim(),
         bio: (document.getElementById('profile-bio')?.value || "").trim(),
         avatar_url: avatarBase64 || userDataState.avatar_url || "",
-        banner_url: bannerBase64 || document.getElementById('banner-url-direct')?.value || "",
+        banner_url: bannerBase64 || document.getElementById('banner-url-direct')?.value || userDataState.banner_url || "",
         accent_color: document.getElementById('accent-hex')?.value || "#FFFFFF",
         icon_color: document.getElementById('icon-hex')?.value || "#A1A1AA",
         avatar_frame_color: hexToRgba(document.getElementById('avatar-frame-hex')?.value || "#000000", document.getElementById('avatar-frame-opacity')?.value || "1"),
@@ -481,10 +481,17 @@ window.saveProfileChanges = async () => {
         bg_effect: document.getElementById('bg-effect')?.value || "none",
         entry_anim: document.getElementById('entry-anim')?.value || "fadeIn",
         glitch_avatar: document.getElementById('glitch-avatar')?.checked ? 1 : 0,
-        profile_music_url: musicBase64 || document.getElementById('music-url-direct')?.value || "",
-        custom_cursor_url: cursorBase64 || document.getElementById('cursor-url-direct')?.value || "",
+        profile_music_url: musicBase64 || document.getElementById('music-url-direct')?.value || userDataState.profile_music_url || "",
+        custom_cursor_url: cursorBase64 || document.getElementById('cursor-url-direct')?.value || userDataState.custom_cursor_url || "",
         card_style: document.getElementById('card-style')?.value || "glass",
-        links: JSON.stringify(userDataState.links || [])
+        links: JSON.stringify(userDataState.links || []),
+        
+        // Missing database fields handled here to prevent D1 errors
+        hover_text: document.getElementById('hover-text')?.value || "Click to interact",
+        link_hover_anim: document.getElementById('link-hover-anim')?.value || "float",
+        tilt_3d: document.getElementById('tilt-3d')?.checked ? 1 : 0,
+        base_font: document.getElementById('base-font')?.value || "Outfit",
+        base_font_color: document.getElementById('base-font-color')?.value || "#FFFFFF"
     };
 
     try {

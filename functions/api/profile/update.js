@@ -21,7 +21,7 @@ export async function onRequestPost({ request, env }) {
     query += fields.map(f => `${f} = ?`).join(", ");
     query += " WHERE id = ?";
 
-    const values = fields.map(f => data[f]);
+    const values = fields.map(f => data[f] ?? null);
     values.push(id);
 
     await env.j2st_db.prepare(query).bind(...values).run();
