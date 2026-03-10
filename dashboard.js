@@ -215,9 +215,10 @@ function setupUploaders() {
 }
 
 window.saveProfileChanges = async () => {
-    const btn = document.querySelector('.save-btn');
+    const btn = document.getElementById('main-save-btn');
     const msg = document.getElementById('save-msg');
     
+    if (!btn) return;
     const lang = localStorage.getItem('j2st_lang') || 'en';
     btn.textContent = i18n_dict[lang]?.dash_btn_saving || "SAVING...";
     btn.disabled = true;
@@ -240,7 +241,14 @@ window.saveProfileChanges = async () => {
         entry_anim: document.getElementById('entry-anim').value,
         glitch_avatar: document.getElementById('glitch-avatar').checked ? 1 : 0,
         profile_music_url: musicBase64 || document.getElementById('music-url-direct').value || userDataState.profile_music_url,
-        custom_cursor_url: cursorBase64 || document.getElementById('cursor-url-direct').value || userDataState.custom_cursor_url
+        custom_cursor_url: cursorBase64 || document.getElementById('cursor-url-direct').value || userDataState.custom_cursor_url,
+        // Missing fields to satisfy update.js
+        base_font: "Inter",
+        base_font_color: "#FFFFFF",
+        card_style: "glass",
+        hover_text: "Void Entity",
+        link_hover_anim: "float",
+        tilt_3d: 1
     };
 
     try {
@@ -249,12 +257,20 @@ window.saveProfileChanges = async () => {
             headers: { "Content-Type": "application/json", "x-user-id": session.id },
             body: JSON.stringify(payload)
         });
-        if (r.ok) {
+        
+        const result = await r.json();
+
+        if (r.ok && result.success) {
             userDataState = { ...userDataState, ...payload };
             showToast(i18n_dict[lang]?.dash_toast_saved || "Saved!", "success");
-        } else throw new Error();
+            if (msg) msg.textContent = "CHANGES SECURED.";
+        } else {
+            throw new Error(result.error || "Save failed");
+        }
     } catch (e) {
+        console.error("Save Error:", e);
         showToast(i18n_dict[lang]?.dash_toast_error || "Error", "error");
+        if (msg) msg.textContent = "SAVE FAILED: " + e.message;
     } finally {
         btn.textContent = i18n_dict[lang]?.dash_save_btn || "SAVE CHANGES";
         btn.disabled = false;
