@@ -378,6 +378,35 @@ body {
     transform: translateY(-1px); 
 }
 
+/* ===== NOTIFICATION TOAST ===== */
+.toast-notif {
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    background: #fff;
+    color: #000;
+    padding: 16px 32px;
+    border-radius: 16px;
+    font-size: 14px;
+    font-weight: 850;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    z-index: 9999;
+    transform: translateX(200%);
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.toast-notif.active {
+    transform: translateX(0);
+}
+
+.toast-notif.error {
+    background: var(--danger);
+    color: #fff;
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 1024px) {
     .dash-container {

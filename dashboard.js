@@ -369,23 +369,47 @@ async function saveProfileChanges() {
             // Clear temp base64 cache
             avatarBase64 = bannerBase64 = musicBase64 = cursorBase64 = null;
 
-            msg.textContent = "> SYSTEM_SYNC_SUCCESSFUL";
-            msg.style.color = "#00e676";
+            showToast("PROFILE UPDATED SUCCESSFULLY", "success");
+            
             setTimeout(() => {
                 btn.textContent = orig;
                 btn.disabled = false;
-                msg.textContent = "";
             }, 2000);
         } else {
             const errData = await res.json().catch(() => ({}));
             throw new Error(errData.error || "API_ERROR");
         }
     } catch (err) {
-        msg.textContent = "> ERR_INJECTION_FAILED";
-        msg.style.color = "#ff4d4d";
+        showToast(err.message === "API_ERROR" ? "FAILED TO SAVE PROFILE" : err.message, "error");
         btn.disabled = false;
         btn.textContent = orig;
     }
+}
+
+// --- NOTIFICATIONS ---
+function showToast(message, type = "success") {
+    const toast = document.getElementById('toast');
+    const msg = document.getElementById('toast-msg');
+    const icon = toast.querySelector('i');
+
+    if (!toast || !msg) return;
+
+    msg.textContent = message;
+    toast.classList.remove('active', 'error');
+    if (type === 'error') {
+        toast.classList.add('error');
+        icon.className = "fa-solid fa-triangle-exclamation";
+    } else {
+        icon.className = "fa-solid fa-circle-check";
+    }
+
+    // Trigger reflow for animation
+    void toast.offsetWidth;
+    toast.classList.add('active');
+
+    setTimeout(() => {
+        toast.classList.remove('active');
+    }, 4000);
 }
 
 // --- OTHERS & UTILS ---
