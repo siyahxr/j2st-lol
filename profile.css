@@ -1,57 +1,215 @@
 /* ============================================================
-   J2ST.ICU — HYPER-OBSIDIAN ULTIMATE REDESIGN (v5.0)
+   J2ST.ICU — HYPER-OBSIDIAN ULTIMATE REDESIGN (v5.1)
    Designed by Antigravity — Future of Presence
+   Click Enter Effect Enhanced
    ============================================================ */
 
 .enter-overlay {
     position: fixed;
     inset: 0;
     z-index: 999999;
-    background: #000;
-    backdrop-filter: blur(25px);
+    background: radial-gradient(circle at center, #0a0a0a 0%, #000 100%);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     cursor: pointer;
-    transition: 1s cubic-bezier(0.19, 1, 0.22, 1);
+    transition: 1.2s cubic-bezier(0.19, 1, 0.22, 1);
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* Full screen clickable area - enhanced */
+.enter-overlay::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+}
+
+.enter-overlay::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: url('/assets/noise.png');
+    opacity: 0.05;
+    pointer-events: none;
 }
 
 .enter-overlay.fade-out {
     opacity: 0;
     pointer-events: none;
-    transform: scale(2);
+    transform: scale(1.1) translateY(-20px);
+}
+
+/* CLICK EFFECT - Ripple Animation */
+.enter-overlay.clicked .enter-btn {
+    animation: clickPulse 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.enter-overlay.clicked .enter-icon-wrapper {
+    animation: iconBurst 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    background: #fff !important;
+    color: #000 !important;
+    box-shadow: 0 0 80px rgba(255, 255, 255, 0.6) !important;
+}
+
+.enter-overlay.clicked .enter-icon-wrapper i {
+    transform: scale(1.3);
+    filter: drop-shadow(0 0 20px rgba(0, 0, 0, 0.8)) !important;
+}
+
+.enter-overlay.clicked .enter-btn span {
+    letter-spacing: 8px !important;
+    color: #fff !important;
+}
+
+@keyframes clickPulse {
+    0% {
+        transform: scale(1);
+    }
+
+    30% {
+        transform: scale(0.92);
+    }
+
+    60% {
+        transform: scale(1.08);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 0;
+    }
+}
+
+@keyframes iconBurst {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.4);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 0;
+    }
 }
 
 .enter-btn {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 15px;
+    gap: 24px;
     color: #fff;
-    opacity: 0.6;
-    transition: 0.3s;
+    transition: var(--transition-smooth);
+    z-index: 10;
+    padding: 60px 80px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.enter-overlay:hover .enter-btn {
-    opacity: 1;
-    transform: rotate(2deg);
+.enter-icon-wrapper {
+    width: 100px;
+    height: 100px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
 }
 
 .enter-btn i {
-    font-size: 32px;
+    font-size: 28px;
+    margin-left: 6px;
+    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.5));
+    transition: all 0.3s ease;
+}
+
+.enter-icon-wrapper::before {
+    content: "";
+    position: absolute;
+    inset: -20px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+    animation: pulse 3s infinite ease-out;
+}
+
+.enter-icon-wrapper::after {
+    content: "";
+    position: absolute;
+    inset: -40px;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    border-radius: 50%;
+    animation: pulse 3s infinite ease-out 0.5s;
 }
 
 .enter-btn span {
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 2px;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 5px;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Hover Effects - Enhanced */
+.enter-overlay:hover .enter-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-5px);
+}
+
+.enter-overlay:hover .enter-icon-wrapper {
+    transform: scale(1.15);
+    background: #fff;
+    color: #000;
+    box-shadow: 0 0 60px rgba(255, 255, 255, 0.3);
+    border-color: #fff;
+}
+
+.enter-overlay:hover .enter-btn i {
+    transform: scale(1.2);
+    filter: drop-shadow(0 0 25px rgba(0, 0, 0, 0.5));
+}
+
+.enter-overlay:hover .enter-btn span {
+    color: #fff;
+    letter-spacing: 7px;
+}
+
+/* Active/Click state */
+.enter-overlay:active .enter-btn {
+    transform: scale(0.95);
+}
+
+.enter-overlay:active .enter-icon-wrapper {
+    transform: scale(0.9);
 }
 
 @keyframes pulse {
-    0% { transform: scale(1); opacity: 0.3; }
-    50% { transform: scale(1.1); opacity: 1; }
-    100% { transform: scale(1); opacity: 0.3; }
+    0% {
+        transform: scale(1);
+        opacity: 0.3;
+    }
+
+    50% {
+        transform: scale(1.15);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 0.3;
+    }
 }
 
 #profile-container {
@@ -128,7 +286,7 @@ body {
     position: fixed;
     inset: 0;
     z-index: -2;
-    background: radial-gradient(circle at center, transparent 20%, rgba(0,0,0,0.9) 100%);
+    background: radial-gradient(circle at center, transparent 20%, rgba(0, 0, 0, 0.9) 100%);
     pointer-events: none;
 }
 
@@ -148,12 +306,18 @@ body {
 }
 
 @keyframes aura-float {
-    0% { transform: scale(1) translate(0, 0); }
-    100% { transform: scale(1.2) translate(20px, 20px); }
+    0% {
+        transform: scale(1) translate(0, 0);
+    }
+
+    100% {
+        transform: scale(1.2) translate(20px, 20px);
+    }
 }
 
 /* ── PROFILE CARD CORE ──────────────────────────────────────── */
-.profile-card, .phone-content {
+.profile-card,
+.phone-content {
     position: relative;
     width: 100%;
     max-width: 440px;
@@ -166,29 +330,34 @@ body {
     text-align: center;
     z-index: 10;
     transition: var(--transition-smooth);
-    overflow: hidden; /* For aura containment in phone */
+    overflow: hidden;
+    /* For aura containment in phone */
 }
 
 /* CARD STYLES */
-.profile-card.glass-style, .phone-content.glass-style {
+.profile-card.glass-style,
+.phone-content.glass-style {
     background: var(--glass-bg);
     backdrop-filter: blur(30px) saturate(200%);
     border: 1px solid var(--glass-border);
-    box-shadow: 0 40px 80px rgba(0,0,0,0.6);
+    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
 }
 
-.profile-card.solid-style, .phone-content.solid-style {
+.profile-card.solid-style,
+.phone-content.solid-style {
     background: #000;
     border: 1px solid #111;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
 }
 
-.profile-card.gradient-style, .phone-content.gradient-style {
+.profile-card.gradient-style,
+.phone-content.gradient-style {
     background: linear-gradient(165deg, #0a0a0a 0%, #000000 100%);
-    border: 1px solid rgba(255,255,255,0.04);
+    border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
-.profile-card.border-style, .phone-content.border-style {
+.profile-card.border-style,
+.phone-content.border-style {
     background: transparent;
     border: 2px solid var(--accent);
     backdrop-filter: blur(10px);
@@ -238,7 +407,8 @@ body {
     z-index: 5;
 }
 
-.profile-name, .phone-name {
+.profile-name,
+.phone-name {
     font-family: 'Space Grotesk', 'Outfit', sans-serif;
     font-size: 34px;
     font-weight: 800;
@@ -246,7 +416,8 @@ body {
     margin-bottom: 2px;
 }
 
-.profile-handle, .phone-handle {
+.profile-handle,
+.phone-handle {
     font-size: 14px;
     font-weight: 700;
     color: var(--text-secondary);
@@ -281,7 +452,7 @@ body {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    filter: drop-shadow(0 0 8px rgba(255,255,255,0.1));
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.1));
 }
 
 .badge-item:hover {
@@ -311,7 +482,7 @@ body {
     visibility: hidden;
     transition: var(--transition-smooth);
     border: 1px solid var(--glass-border);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
     pointer-events: none;
     z-index: 100;
 }
@@ -323,7 +494,7 @@ body {
     left: 50%;
     transform: translateX(-50%) translateY(10px);
     border: 6px solid transparent;
-    border-top-color: rgba(255,255,255,0.06);
+    border-top-color: rgba(255, 255, 255, 0.06);
     opacity: 0;
     visibility: hidden;
     transition: var(--transition-smooth);
@@ -338,10 +509,11 @@ body {
 }
 
 /* ── BIO ────────────────────────────────────────────────────── */
-.profile-bio, .phone-bio {
+.profile-bio,
+.phone-bio {
     font-size: 15px;
     line-height: 1.6;
-    color: rgba(255,255,255,0.8);
+    color: rgba(255, 255, 255, 0.8);
     margin-bottom: 35px;
     max-width: 90%;
     font-weight: 400;
@@ -365,7 +537,8 @@ body {
     gap: 14px;
 }
 
-.music-player-widget, #music-embed-container {
+.music-player-widget,
+#music-embed-container {
     position: absolute;
     left: -1000px;
     top: -1000px;
@@ -377,8 +550,15 @@ body {
 }
 
 @keyframes bounce-subtle {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-3px); }
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-3px);
+    }
 }
 
 .music-info {
@@ -401,7 +581,7 @@ body {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    color: rgba(255,255,255,0.7);
+    color: rgba(255, 255, 255, 0.7);
 }
 
 .link-btn {
@@ -410,7 +590,7 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: 16px 24px;
-    background: rgba(255,255,255,0.03);
+    background: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--glass-border);
     border-radius: 18px;
     text-decoration: none;
@@ -422,8 +602,8 @@ body {
 }
 
 .link-btn:hover {
-    background: rgba(255,255,255,0.08);
-    border-color: rgba(255,255,255,0.2);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
     transform: translateX(5px);
 }
 
@@ -453,20 +633,22 @@ body {
     display: flex;
     align-items: center;
     gap: 6px;
-    background: rgba(255,255,255,0.02);
+    background: rgba(255, 255, 255, 0.02);
     padding: 6px 14px;
     border-radius: 100px;
     border: 1px solid var(--glass-border);
 }
 
-.view-count i { color: var(--accent); }
+.view-count i {
+    color: var(--accent);
+}
 
 .j2st-watermark {
     font-size: 10px;
     font-weight: 900;
     text-transform: uppercase;
     letter-spacing: 1.5px;
-    color: rgba(255,255,255,0.2);
+    color: rgba(255, 255, 255, 0.2);
     text-decoration: none;
     transition: var(--transition-smooth);
 }
@@ -481,10 +663,25 @@ body {
 }
 
 @keyframes av-glitch {
-    0%, 100% { filter: none; }
-    92% { filter: none; }
-    94% { filter: hue-rotate(90deg) contrast(1.5); transform: translate(2px, 0); }
-    96% { filter: hue-rotate(-90deg) contrast(2); transform: translate(-2px, 0); }
+
+    0%,
+    100% {
+        filter: none;
+    }
+
+    92% {
+        filter: none;
+    }
+
+    94% {
+        filter: hue-rotate(90deg) contrast(1.5);
+        transform: translate(2px, 0);
+    }
+
+    96% {
+        filter: hue-rotate(-90deg) contrast(2);
+        transform: translate(-2px, 0);
+    }
 }
 
 /* Loading State Overlay */
@@ -495,6 +692,15 @@ body {
 
 /* Responsive adjustments */
 @media (max-width: 480px) {
-    .profile-card, .phone-content { padding: 40px 25px; border-radius: 30px; }
-    .profile-name, .phone-name { font-size: 28px; }
+
+    .profile-card,
+    .phone-content {
+        padding: 40px 25px;
+        border-radius: 30px;
+    }
+
+    .profile-name,
+    .phone-name {
+        font-size: 28px;
+    }
 }

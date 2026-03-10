@@ -113,11 +113,11 @@ function renderProfile(user) {
     // 6. Effects & Banners
     const bannerVideo = document.getElementById('banner-video');
     const fullBg = document.getElementById('full-bg');
-    
+
     if (fullBannerUrl) {
         // Detect Video Type
         const isVideo = fullBannerUrl.includes('video/') || fullBannerUrl.endsWith('.mp4') || fullBannerUrl.endsWith('.webm') || fullBannerUrl.startsWith('data:video/');
-        
+
         if (isVideo && bannerVideo) {
             bannerVideo.src = fullBannerUrl;
             bannerVideo.style.display = 'block';
@@ -151,7 +151,7 @@ function renderProfile(user) {
     // 9. Profile Music & Entry Overlay
     const musicPlayer = document.getElementById('profile-music-player');
     const overlay = document.getElementById('enter-overlay');
-    
+
     const hasVideo = fullBannerUrl && (fullBannerUrl.includes('video/') || fullBannerUrl.startsWith('data:video/') || fullBannerUrl.endsWith('.mp4'));
 
     if (fullMusicUrl && musicPlayer) {
@@ -160,24 +160,45 @@ function renderProfile(user) {
         musicPlayer.loop = true;
     }
 
-    const enterAction = () => {
+    const enterAction = (e) => {
+        // Prevent multiple clicks
+        if (document.body.classList.contains('profile-entered')) return;
+
+        // Add click effect class for animation
         if (overlay) {
-            overlay.classList.add('fade-out');
-            setTimeout(() => overlay.remove(), 1000);
+            overlay.classList.add('clicked');
+            overlay.style.pointerEvents = 'none';
         }
-        document.body.classList.add('profile-entered');
-        
-        // UNBLOCK EVERYTHING
-        if (musicPlayer && user.profile_music_url) {
-            musicPlayer.play().catch(e => console.error("Music failed", e));
-        }
-        if (bannerVideo && hasVideo) {
-            bannerVideo.muted = false;
-            bannerVideo.play().catch(e => {
-                bannerVideo.muted = true;
-                bannerVideo.play();
-            });
-        }
+
+        // Animate out after click effect
+        setTimeout(() => {
+            if (overlay) {
+                overlay.style.transform = 'scale(1.1)';
+                overlay.style.filter = 'blur(20px)';
+                overlay.style.opacity = '0';
+            }
+        }, 300);
+
+        // Complete removal and show profile
+        setTimeout(() => {
+            document.body.classList.add('profile-entered');
+            if (overlay) overlay.remove();
+
+            // UNBLOCK EVERYTHING
+            if (musicPlayer && fullMusicUrl) {
+                musicPlayer.play().catch(e => console.error("Music failed", e));
+            }
+            if (bannerVideo && hasVideo) {
+                bannerVideo.muted = false;
+                bannerVideo.play().catch(e => {
+                    bannerVideo.muted = true;
+                    bannerVideo.play();
+                });
+            }
+        }, 800);
+
+        // Remove event listeners
+        if (overlay) overlay.onclick = null;
         ["click", "touchstart", "mousedown", "wheel"].forEach(ev => window.removeEventListener(ev, enterAction));
     };
 
