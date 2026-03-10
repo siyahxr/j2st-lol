@@ -128,11 +128,22 @@ function renderProfile(user) {
         if (musicPlayer) {
             musicPlayer.src = user.profile_music_url;
             musicPlayer.volume = 0.3;
-            // Auto play - browser may block without user interaction
-            musicPlayer.play().catch(() => {
-                // Silent fail - browsers block autoplay
-                console.log('Autoplay blocked - user interaction required');
-            });
+            musicPlayer.loop = true;
+            
+            const startPlay = () => {
+                musicPlayer.play().then(() => {
+                    // Success, remove listeners
+                    document.removeEventListener('click', startPlay);
+                    document.removeEventListener('touchstart', startPlay);
+                }).catch(e => console.log("Play failed, waiting for interaction..."));
+            };
+
+            // Try immediately
+            startPlay();
+            
+            // Interaction fallback (Browsers block autoplay)
+            document.addEventListener('click', startPlay);
+            document.addEventListener('touchstart', startPlay);
         }
     }
 }

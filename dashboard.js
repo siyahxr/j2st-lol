@@ -278,10 +278,16 @@ function setupFilePicker(inputId, type) {
         }
         
         // D1 has a tight limit (usually 1MB per row/string)
-        // Let's be strict: Images max 500KB, Audio max 750KB
-        const maxBytes = type === 'music' ? 750 * 1024 : 500 * 1024;
-        if (file.size > maxBytes && type === 'music') {
-            return showToast("Audio too large for DB (Max 750KB)", "error");
+        // User requested 50MB limit for picking, but we must warn that 
+        // very large files will fail to save in the DB (limit ~1MB).
+        const maxPickerBytes = 50 * 1024 * 1024; // 50MB
+        const dbWarnBytes = 0.9 * 1024 * 1024; // ~1MB
+        
+        if (file.size > maxPickerBytes) {
+            return showToast("File too giant (Max 50MB)", "error");
+        }
+        if (file.size > dbWarnBytes) {
+            showToast("WARNING: Audio > 1MB might fail to save in DB. Use a direct URL for large files.", "neutral");
         }
 
         const reader = new FileReader();
