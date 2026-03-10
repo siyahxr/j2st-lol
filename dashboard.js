@@ -542,16 +542,25 @@ window.saveProfileChanges = async () => {
         return (el.value || fallback).trim();
     };
 
-    // Payload Logic: Direct URL input always wins if present, then local upload, then current state
-    const bannerVal = safeGet('banner-url-direct') || bannerBase64 || userDataState.banner_url || "";
-    const musicVal = safeGet('music-url-direct') || musicBase64 || userDataState.profile_music_url || "";
-    const cursorVal = safeGet('cursor-url-direct') || cursorBase64 || userDataState.custom_cursor_url || "";
+    const musicInput = safeGet('music-url-direct');
+    const bannerInput = safeGet('banner-url-direct');
+    const cursorInput = safeGet('cursor-url-direct');
+
+    // Forced cleanup: If Link is provided, kill the local base64 buffer for that slot
+    if (musicInput) musicBase64 = null;
+    if (bannerInput) bannerBase64 = null;
+    if (cursorInput) cursorBase64 = null;
+
+    const bannerVal = bannerInput || bannerBase64 || userDataState.banner_url || "";
+    const musicVal = musicInput || musicBase64 || userDataState.profile_music_url || "";
+    const cursorVal = cursorInput || cursorBase64 || userDataState.custom_cursor_url || "";
+    const avatarVal = avatarBase64 || userDataState.avatar_url || "";
 
     const payload = {
         id: String(session.id || ""),
         display_name: safeGet('profile-display-name'),
         bio: safeGet('profile-bio'),
-        avatar_url: String(avatarBase64 || userDataState.avatar_url || ""),
+        avatar_url: String(avatarVal),
         banner_url: String(bannerVal),
         accent_color: safeGet('accent-hex', '#FFFFFF'),
         icon_color: safeGet('icon-hex', '#A1A1AA'),
@@ -577,12 +586,19 @@ window.saveProfileChanges = async () => {
         base_font_color: safeGet('base-font-color', '#FFFFFF')
     };
 
-    // FINAL PAYLOAD SIZE CHECK (Prevent SQLITE_TOOBIG)
+    // CHECK WHICH ONE IS BLOATING
+    if (payload.avatar_url.length > 1000000) return failSave("Avatar Image too large (>1MB Base64)");
+    if (payload.banner_url.length > 1000000) return failSave("Banner too large (>1MB Base64)");
+    if (payload.profile_music_url.length > 1000000) return failSave("Music still too heavy for DB! Use a Spotify Link.");
+
     const totalSize = JSON.stringify(payload).length;
-    if (totalSize > 1200000) { // Slightly relaxed (1.2MB for Base64 overhead)
+    if (totalSize > 2500000) return failSave("Profile Data exceeds total limit. Remove some huge assets!");
+
+    function failSave(msg) {
         btn.disabled = false;
         btn.textContent = originalText;
-        return showToast("Profile data too heavy! Try link-only for images/music.", "error");
+        showToast(msg, "error");
+        return false;
     }
 
     try {
