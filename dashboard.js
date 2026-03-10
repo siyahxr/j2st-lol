@@ -468,7 +468,14 @@ function updatePreview() {
 
     const bUrl = bannerBase64 || document.getElementById('banner-url-direct')?.value || userDataState.banner_url;
     if (banner) {
-        banner.style.backgroundImage = bUrl ? `url("${bUrl}")` : 'none';
+        const isVideo = bUrl && (bUrl.includes('video/') || bUrl.endsWith('.mp4') || bUrl.endsWith('.webm') || bUrl.startsWith('data:video/'));
+        if (isVideo) {
+            banner.innerHTML = `<video src="${bUrl}" muted loop autoplay style="width:100%; height:100%; object-fit:cover;"></video>`;
+            banner.style.backgroundImage = 'none';
+        } else {
+            banner.innerHTML = "";
+            banner.style.backgroundImage = bUrl ? `url("${bUrl}")` : 'none';
+        }
     }
 
     if (avatar) {
@@ -598,10 +605,14 @@ window.saveProfileChanges = async () => {
         base_font_color: safeGet('base-font-color', '#FFFFFF')
     };
 
-    // User requested bypass of link-warning logic. 
-    // We increase limits for high fidelity soundtracks up to 50MB.
+    // D1 Veritabanı Limiti Kontrolü (Row limit: 1MB)
     const totalSize = JSON.stringify(payload).length;
-    if (totalSize > 80000000) return failSave("Total payload exceeds 50MB limit!");
+    
+    // 1MB sınırı Cloudflare D1 için kritiktir. 
+    // Data URL (Base64) %30 yer kaplar, yani ~700KB üstü sorun çıkarır.
+    if (totalSize > 1000000) {
+        return failSave("HATA: Dosya veritabanı için çok büyük (Max 1MB). 50MB'a kadar olan dosyalar için lütfen dış link (Discord veya Catbox gibi) kullanın!");
+    }
 
     function failSave(msg) {
         btn.disabled = false;
@@ -626,7 +637,7 @@ window.saveProfileChanges = async () => {
             // Reset base64s to save memory
             avatarBase64 = bannerBase64 = musicBase64 = cursorBase64 = null;
         } else {
-            throw new Error(res.error);
+            showToast("Error: " + res.error, "error");
         }
     } catch (e) {
         showToast("Error: " + e.message, "error");

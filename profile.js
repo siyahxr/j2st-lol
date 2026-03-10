@@ -145,35 +145,44 @@ function renderProfile(user) {
     const viewsEl = document.querySelector('#views-el span');
     if (viewsEl) viewsEl.textContent = `${user.views || 0} views`;
 
-    // 9. Profile Music
+    // 9. Profile Music & Entry Overlay
     const musicPlayer = document.getElementById('profile-music-player');
-    const widget = document.getElementById('music-widget');
+    const overlay = document.getElementById('enter-overlay');
     
-    // Rule: If video banner exists, mute the music player to avoid overlap
-    const hasVideo = user.banner_url && (user.banner_url.includes('video/') || user.banner_url.startsWith('data:video/'));
+    const hasVideo = user.banner_url && (user.banner_url.includes('video/') || user.banner_url.startsWith('data:video/') || user.banner_url.endsWith('.mp4'));
 
     if (user.profile_music_url && musicPlayer) {
         musicPlayer.src = user.profile_music_url;
-        musicPlayer.volume = hasVideo ? 0 : 0.6; // Mute if video is present
+        musicPlayer.volume = hasVideo ? 0 : 0.6;
         musicPlayer.loop = true;
-        if (widget && !hasVideo) widget.style.display = 'flex';
+    }
 
-        const startAll = () => {
-            musicPlayer.play().catch(() => {});
-            if (bannerVideo) {
-                bannerVideo.muted = false;
-                bannerVideo.play().catch(() => {});
-            }
-            console.log("Audio Unlocked");
-            ["click", "touchstart", "mousedown", "wheel"].forEach(ev => window.removeEventListener(ev, startAll));
-        };
-
-        ["click", "touchstart", "mousedown", "wheel"].forEach(ev => {
-            window.addEventListener(ev, startAll, { once: true });
-        });
+    const enterAction = () => {
+        if (overlay) {
+            overlay.classList.add('fade-out');
+            setTimeout(() => overlay.remove(), 1000);
+        }
+        document.body.classList.add('profile-entered');
         
-        // Initial attempt
-        startAll();
+        // UNBLOCK EVERYTHING
+        if (musicPlayer && user.profile_music_url) {
+            musicPlayer.play().catch(e => console.error("Music failed", e));
+        }
+        if (bannerVideo && hasVideo) {
+            bannerVideo.muted = false;
+            bannerVideo.play().catch(e => {
+                bannerVideo.muted = true;
+                bannerVideo.play();
+            });
+        }
+        ["click", "touchstart", "mousedown", "wheel"].forEach(ev => window.removeEventListener(ev, enterAction));
+    };
+
+    if (overlay) {
+        overlay.onclick = enterAction;
+    } else {
+        // Fallback for missing overlay
+        ["click", "touchstart", "mousedown"].forEach(ev => window.addEventListener(ev, enterAction, { once: true }));
     }
 }
 

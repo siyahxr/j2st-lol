@@ -3,6 +3,68 @@
    Designed by Antigravity — Future of Presence
    ============================================================ */
 
+.enter-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 999999;
+    background: #000;
+    backdrop-filter: blur(25px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    cursor: pointer;
+    transition: 1s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.enter-overlay.fade-out {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(2);
+}
+
+.enter-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    color: #fff;
+    opacity: 0.6;
+    transition: 0.3s;
+}
+
+.enter-overlay:hover .enter-btn {
+    opacity: 1;
+    transform: rotate(2deg);
+}
+
+.enter-btn i {
+    font-size: 32px;
+}
+
+.enter-btn span {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 0.3; }
+    50% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.3; }
+}
+
+#profile-container {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: 1s ease 0.5s;
+}
+
+body.profile-entered #profile-container {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 :root {
     --accent: #ffffff;
     --accent-glow: rgba(255, 255, 255, 0.1);
