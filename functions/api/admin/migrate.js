@@ -39,6 +39,7 @@ export async function onRequestGet({ request, env }) {
       "bg_effect TEXT DEFAULT 'none'",
       "entry_anim TEXT DEFAULT 'fadeIn'",
       "custom_cursor_url TEXT DEFAULT ''",
+      "last_username_change TEXT DEFAULT ''",
       "views INTEGER DEFAULT 0"
     ];
 

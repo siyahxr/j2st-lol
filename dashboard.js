@@ -141,6 +141,11 @@ async function init() {
             // Merge with default state
             userDataState = { ...userDataState, ...data };
             
+            // Sidebar logic: Hide admin if not authorized
+            const isAdmin = userDataState.role === 'admin' || (session.username && session.username.charCodeAt(0) === 36);
+            const adminLink = document.querySelector('.nav-item[href="/admin"]');
+            if (adminLink && !isAdmin) adminLink.style.display = 'none';
+
             // Normalize data
             if (typeof userDataState.links === 'string') userDataState.links = JSON.parse(userDataState.links);
             if (!userDataState.links) userDataState.links = [];
@@ -697,6 +702,36 @@ window.changeUserPassword = async () => {
         }
     } catch (e) {
         showToast("Server error", "error");
+    }
+};
+
+window.changeUsername = async () => {
+    const newU = document.getElementById('set-new-username').value.trim();
+    if (!newU) return showToast("Geçerli bir kullanıcı adı girin", "error");
+
+    const btn = document.querySelector('[onclick="changeUsername()"]');
+    btn.disabled = true;
+
+    try {
+        const r = await fetch("/api/user/change-username", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "x-user-id": session.id },
+            body: JSON.stringify({ newUsername: newU })
+        });
+        const res = await r.json();
+        if (res.success) {
+            showToast("Kullanıcı adı başarıyla güncellendi!", "success");
+            // Update session and redirect
+            session.username = newU;
+            localStorage.setItem("j2st_session_v2", JSON.stringify(session));
+            setTimeout(() => window.location.href = "/dashboard", 1500);
+        } else {
+            showToast(res.error, "error");
+        }
+    } catch (e) {
+        showToast("Sunucu hatası", "error");
+    } finally {
+        btn.disabled = false;
     }
 };
 

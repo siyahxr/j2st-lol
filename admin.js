@@ -11,13 +11,18 @@ const userName = session?.username || session?.user?.username;
 const isFounder = userName && userName.charCodeAt(0) === 36;
 
 if (userRole !== 'admin' && !isFounder) {
-    document.body.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;background:#0a0a0a;color:#fff;font-family:sans-serif;">
-        <i class="fa-solid fa-lock" style="font-size:64px;margin-bottom:20px;opacity:0.5;"></i>
-        <h1 style="font-size:24px;margin-bottom:10px;">Access Denied</h1>
-        <p style="color:#888;">This area is restricted to administrators only.</p>
-        <a href="/dashboard" style="margin-top:20px;color:#fff;text-decoration:underline;">Return to Dashboard</a>
+    document.body.innerHTML = `
+    <div style="height: 100vh; background: #070710; display: flex; align-items: center; justify-content: center; font-family: 'Outfit', sans-serif;">
+        <div style="text-align: center; background: rgba(255,255,255,0.03); padding: 60px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(20px); max-width: 400px;">
+            <div style="width: 80px; height: 80px; background: rgba(255,77,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px;">
+                <i class="fa-solid fa-lock" style="font-size: 32px; color: #ff21ff;"></i>
+            </div>
+            <h1 style="color: #fff; font-size: 28px; margin-bottom: 12px; font-weight: 800; letter-spacing: -0.5px;">Erişim Reddedildi</h1>
+            <p style="color: rgba(255,255,255,0.5); font-size: 14px; line-height: 1.6; margin-bottom: 32px;">Bu bölge sadece yetkili personeller içindir. Giriş izniniz bulunmamaktadır.</p>
+            <a href="/dashboard" style="display: block; padding: 14px 34px; background: #fff; color: #000; text-decoration: none; border-radius: 12px; font-weight: 800; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; transform: scale(1);">Dashboard'a Dön</a>
+        </div>
     </div>`;
-    throw new Error("Access denied");
+    throw new Error("Unauthorized access attempt blocked.");
 }
 
 let allUsers = [];
