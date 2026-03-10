@@ -8,7 +8,9 @@ function getSession() {
 // Check admin access on load
 const session = getSession();
 const userRole = session?.role || session?.user?.role;
-if (userRole !== 'admin') {
+const userName = session?.username || session?.user?.username;
+const isFounder = userName === '$';
+if (userRole !== 'admin' && !isFounder) {
     document.body.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;background:#0a0a0a;color:#fff;font-family:sans-serif;">
         <i class="fa-solid fa-lock" style="font-size:64px;margin-bottom:20px;opacity:0.5;"></i>
         <h1 style="font-size:24px;margin-bottom:10px;">Access Denied</h1>
@@ -61,92 +63,63 @@ async function loadUsers(filter = "") {
                 const badgeList = JSON.parse(u.badges || "[]");
                 const badgeIcons = badgeList.map(bId => {
                     const b = globalBadges.find(gb => gb.id == bId || gb.name == bId);
-                    return b ? `<img src="${b.icon_url}" style="width:18px; height:18px; filter:none; margin:0 2px;">` : "";
+                    return b ? `<img src="${b.icon_url}" style="width:18px;height:18px;margin-right:2px;" title="${b.name}">` : "";
                 }).join("");
 
-                const isFounder = u.role === 'founder';
-
-                return `<tr>
+                return `
+                <tr>
+                    <td><img src="${u.avatar_url || '/assets/icons/user_dragon.png'}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;"></td>
+                    <td style="font-weight:600;">${u.username}</td>
+                    <td style="color:var(--text-dim);font-size:13px;">${u.email}</td>
                     <td>
-                        <div class="td-user">
-                            <span style="color:${isFounder ? 'red' : 'white'}">${u.username}</span>
+                        <div style="display:flex;gap:2px;align-items:center;">
+                            ${badgeIcons}
                         </div>
                     </td>
-                    <td><span class="role-tag ${u.role}">${u.role.toUpperCase()}</span></td>
-                    <td>${badgeIcons || "—"}</td>
+                    <td>
+                        <span class="role-badge ${u.role}">${u.role || 'member'}</span>
+                    </td>
                     <td>
                         <div class="td-actions">
                             <button class="ta-btn" onclick="openBadgeModal('${u.id}', '${u.username}')">MOD_TOKENS</button>
                             ${!isFounder ? `<button class="ta-btn ban" onclick="setRole('${u.id}','${u.role === 'admin' ? 'member' : 'admin'}')">${u.role === 'admin' ? 'DEMOTE' : 'PROMOTE'}</button>` : ''}
+                            ${userName === '$' || currentSession?.role === 'admin' ? `<button class="ta-btn ban" onclick="deleteUser('${u.id}')" style="background:#ff4d4d;color:#fff;border:none;">DELETE</button>` : ''}
                         </div>
                     </td>
-                </tr>`;
-            }).join("");
+                </tr>
+                `;
+            }).join('');
         }
     } catch (e) {
-        console.error("> ERR_DATA_CORRUPTION:", e);
+        console.error("User load failed:", e);
     }
 }
 
-// --- GLOBAL BADGE MANAGEMENT ---
 async function loadGlobalBadges(render = true) {
-    const currentSession = getSession();
     try {
         const res = await fetch("/api/admin/get_badges", {
-            headers: { "x-user-id": currentSession?.id || "" }
+            headers: { "x-user-id": getSession()?.id || "" }
         });
-        globalBadges = await res.json();
+        const data = await res.json();
+
+        globalBadges = data.results || data || [];
 
         if (render) {
             const list = document.getElementById("global-badges-list");
             if (list) {
                 list.innerHTML = globalBadges.map(b => `
-                    <div class="global-badge-item">
-                        <img src="${b.icon_url}" alt="${b.name}">
-                        <p class="global-badge-name">${b.name}</p>
+                    <div class="badge-row">
+                        <img src="${b.icon_url}" class="badge-icon-preview">
+                        <span>${b.name}</span>
+                        <span style="color:var(--text-dim);font-size:12px;">${b.description || ''}</span>
                     </div>
-                `).join("");
+                `).join('');
             }
         }
-    } catch (e) { console.error(e); }
-}
-
-// Handle Badge Icon Upload
-document.addEventListener('change', (e) => {
-    if (e.target && e.target.id === 'badge-icon-file') {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-            badgeBase64 = ev.target.result;
-            document.getElementById('badge-upload-status').textContent = file.name + " (READY)";
-        };
-        reader.readAsDataURL(file);
+    } catch (e) {
+        console.error("Badge load failed:", e);
     }
-});
-
-window.deployBadge = async function () {
-    const name = document.getElementById("new-badge-name").value;
-    if (!name || !badgeBase64) return alert("MISSING_DATA");
-
-    const currentSession = getSession();
-    try {
-        const res = await fetch("/api/admin/create_badge", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "x-user-id": currentSession?.id || ""
-            },
-            body: JSON.stringify({ name, icon_url: badgeBase64 })
-        });
-        if (res.ok) {
-            document.getElementById("new-badge-name").value = "";
-            badgeBase64 = null;
-            document.getElementById('badge-upload-status').textContent = "CLICK TO UPLOAD PNG/SVG";
-            loadGlobalBadges();
-        }
-    } catch (e) { console.error(e); }
-};
+}
 
 // --- Badge Assignment Modal ---
 window.openBadgeModal = function (userId, username) {
@@ -154,63 +127,125 @@ window.openBadgeModal = function (userId, username) {
     const user = allUsers.find(u => u.id === userId);
     const existingBadges = JSON.parse(user?.badges || "[]");
 
-    document.getElementById("badge-modal").style.display = "flex";
-    document.getElementById("badge-modal-user").textContent = `TARGET_ID: ${username}`;
+    const modal = document.getElementById("badge-modal");
+    const list = document.getElementById("badge-assign-list");
+    const title = document.getElementById("badge-modal-title");
 
-    const list = document.getElementById("badge-options-list");
-    list.innerHTML = globalBadges.map(b => `
-        <div class="badge-opt ${existingBadges.includes(String(b.id)) || existingBadges.includes(b.name) ? 'selected' : ''}" data-id="${b.id}" onclick="this.classList.toggle('selected')">
-            <img src="${b.icon_url}" style="width:24px; height:24px; filter:none;"> ${b.name}
-        </div>
-    `).join("") || "<p>NO_TOKENS_FOUND</p>";
+    if (!modal || !list) return;
+
+    title.textContent = `Assign Badges to @${username}`;
+    list.innerHTML = globalBadges.map(b => {
+        const isAssigned = existingBadges.includes(b.id) || existingBadges.includes(b.name);
+        return `
+            <label class="badge-option ${isAssigned ? 'selected' : ''}">
+                <input type="checkbox" value="${b.id}" ${isAssigned ? 'checked' : ''}>
+                <img src="${b.icon_url}" style="width:24px;height:24px;">
+                <span>${b.name}</span>
+            </label>
+        `;
+    }).join('');
+
+    modal.style.display = "flex";
 };
 
 window.closeBadgeModal = function () {
-    document.getElementById("badge-modal").style.display = "none";
+    const modal = document.getElementById("badge-modal");
+    if (modal) modal.style.display = "none";
 };
 
-window.saveUserBadges = async function () {
-    const selectedBadges = Array.from(document.querySelectorAll(".badge-opt.selected"))
-        .map(opt => opt.getAttribute("data-id"));
+window.saveBadgeAssignments = async function () {
+    const checkboxes = document.querySelectorAll("#badge-assign-list input:checked");
+    const selectedBadges = Array.from(checkboxes).map(c => c.value);
 
-    const currentSession = getSession();
     try {
         const res = await fetch("/api/admin/set_badges", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "x-user-id": currentSession?.id || ""
+                "x-user-id": getSession()?.id || ""
             },
             body: JSON.stringify({ userId: currentEditingUserId, badges: selectedBadges })
         });
 
-        if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
             closeBadgeModal();
             loadUsers();
+        } else {
+            alert("Failed: " + data.error);
         }
     } catch (e) {
-        console.error("> ERR_UPLINK:", e);
+        alert("Error: " + e.message);
     }
 };
 
+// --- Role Management ---
 window.setRole = async function (userId, newRole) {
-    if (!confirm(`CONFIRM_LEVEL_SHIFT_${newRole.toUpperCase()}?`)) return;
-    const currentSession = getSession();
+    if (!confirm(`Change user role to ${newRole}?`)) return;
+
     try {
         const res = await fetch("/api/admin/set_role", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "x-user-id": currentSession?.id || ""
+                "x-user-id": getSession()?.id || ""
             },
             body: JSON.stringify({ userId, role: newRole })
         });
-        if (res.ok) loadUsers();
-    } catch (e) { console.error(e); }
+
+        const data = await res.json();
+        if (data.success) {
+            loadUsers();
+        } else {
+            alert("Failed: " + data.error);
+        }
+    } catch (e) {
+        alert("Error: " + e.message);
+    }
 };
 
-window.filterUsers = function (val) { loadUsers(val); };
+window.deleteUser = async function (userId) {
+    if (!confirm("Are you sure? This cannot be undone.")) return;
 
-(function init() {
+    try {
+        const res = await fetch("/api/admin/delete_user", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "x-user-id": getSession()?.id || ""
+            },
+            body: JSON.stringify({ userId })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+            loadUsers();
+        } else {
+            alert("Failed: " + data.error);
+        }
+    } catch (e) {
+        alert("Error: " + e.message);
+    }
+};
+
+// --- Search ---
+document.addEventListener("DOMContentLoaded", () => {
+    const searchInput = document.getElementById("user-search");
+    if (searchInput) {
+        searchInput.addEventListener("input", (e) => {
+            loadUsers(e.target.value);
+        });
+    }
+
+    // Badge Modal Close
+    const modal = document.getElementById("badge-modal");
+    if (modal) {
+        modal.addEventListener("click", (e) => {
+            if (e.target === modal) closeBadgeModal();
+        });
+    }
+
+    // Initial load
     loadUsers();
-})();
+    loadGlobalBadges();
+});
