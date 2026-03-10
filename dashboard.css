@@ -48,6 +48,7 @@ body {
     height: 100vh;
     overflow: hidden;
     user-select: none;
+    color-scheme: dark; /* Suggests dark mode for browser UI like color pickers */
 }
 
 /* Animated Atmosphere */

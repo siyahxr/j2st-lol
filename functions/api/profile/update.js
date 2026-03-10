@@ -13,7 +13,7 @@ export async function onRequestPost({ request, env }) {
       "avatar_frame_color", "icon_color", "badge_bg_color", "accent_color",
       "base_font", "base_font_color", "name_font", "name_font_color", "bio_font", "bio_font_color",
       "card_style", "hover_text", "link_hover_anim", "glitch_avatar",
-      "profile_music_url", "bg_effect", "entry_anim", "tilt_3d"
+      "profile_music_url", "bg_effect", "entry_anim", "tilt_3d", "custom_cursor_url"
     ];
 
     let query = "UPDATE users SET ";

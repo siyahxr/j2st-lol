@@ -123,6 +123,15 @@ document.addEventListener('DOMContentLoaded', async () => {
              profileEl.setAttribute('data-hover-hint', targetUser.hover_text);
         }
 
+        // 8. CUSTOM CURSOR
+        if (targetUser.custom_cursor_url) {
+            document.body.style.cursor = `url(${targetUser.custom_cursor_url}), auto`;
+            // Apply to all interactive elements
+            const style = document.createElement('style');
+            style.innerHTML = `* { cursor: url(${targetUser.custom_cursor_url}), auto !important; }`;
+            document.head.appendChild(style);
+        }
+
     } catch (e) {
         console.error(e);
         if (loadingEl) loadingEl.style.display = 'none';

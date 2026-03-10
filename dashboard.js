@@ -27,10 +27,11 @@ try {
     window.location.replace("/login");
 }
 
-// --- GLOBAL STATE ---
 let userDataState = null;
 let avatarBase64 = null;
 let bannerBase64 = null;
+let musicBase64 = null;
+let cursorBase64 = null;
 
 // --- TAB SWITCHING SYSTEM ---
 window.switchTab = function (el, tabName) {
@@ -140,6 +141,8 @@ function updateUI() {
     // Media URLs
     document.getElementById('banner-url-direct').value = userDataState.banner_url || "";
     document.getElementById('music-url-direct').value = userDataState.profile_music_url || "";
+    const directCursor = document.getElementById('cursor-url-direct'); 
+    if (directCursor) directCursor.value = userDataState.custom_cursor_url || "";
 
     updatePreviewLayer();
 }
@@ -198,7 +201,7 @@ function initLivePreview() {
         'profile-display-name', 'profile-bio', 'badge-bg-color', 'base-font', 
         'base-font-color', 'name-font', 'name-font-color', 'bio-font', 
         'bio-font-color', 'hover-text', 'link-hover-anim', 'glitch-avatar',
-        'bg-effect', 'entry-anim', 'tilt-3d', 'banner-url-direct', 'music-url-direct'
+        'bg-effect', 'entry-anim', 'tilt-3d', 'banner-url-direct', 'music-url-direct', 'cursor-url-direct'
     ];
 
     ids.forEach(id => {
@@ -294,8 +297,13 @@ function initUploader() {
                     document.getElementById('banner-selector').querySelector('span').textContent = "Video selected!";
                 }
             } else if (type === 'audio') {
-                document.getElementById('audio-upload-btn').nextElementSibling.textContent = file.name;
-                // Store base64 or prepare for upload
+                musicBase64 = result;
+                const audioLabel = document.getElementById('audio-upload-btn').parentElement.querySelector('span');
+                if (audioLabel) audioLabel.textContent = `SELECTED: ${file.name}`;
+            } else if (type === 'cursor') {
+                cursorBase64 = result;
+                const cursorLabel = document.getElementById('cursor-upload').parentElement.querySelector('span');
+                if (cursorLabel) cursorLabel.textContent = `SELECTED: ${file.name}`;
             }
         };
         reader.readAsDataURL(file);
@@ -341,10 +349,11 @@ async function saveProfileChanges() {
         link_hover_anim: document.getElementById('link-hover-anim').value,
         glitch_avatar: document.getElementById('glitch-avatar').checked ? 1 : 0,
         
-        profile_music_url: document.getElementById('music-url-direct').value,
+        profile_music_url: musicBase64 || document.getElementById('music-url-direct').value || userDataState.profile_music_url,
         bg_effect: document.getElementById('bg-effect').value,
         entry_anim: document.getElementById('entry-anim').value,
-        tilt_3d: document.getElementById('tilt-3d').checked ? 1 : 0
+        tilt_3d: document.getElementById('tilt-3d').checked ? 1 : 0,
+        custom_cursor_url: cursorBase64 || userDataState.custom_cursor_url
     };
 
     try {
