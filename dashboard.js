@@ -395,46 +395,70 @@ function renderBadgeGrid() {
     `).join('');
 }
 
+let activeModalData = null;
+
 window.addBadgeLink = (badgeId) => {
     const badge = BADGE_PLATFORMS.find(x => x.id === badgeId);
     if (!badge) return;
-
-    // Max links check
     if (userDataState.links.length >= 20) return showToast("Max links reached", "error");
-
-    userDataState.links.push({
-        id: Date.now(),
-        type: badgeId,
-        title: badge.name,
-        icon: badge.icon,
-        url: '',
-        isBadge: true,
-        badgeColor: badge.color
-    });
-    syncActiveLinks();
-    updatePreview();
-    showToast(`${badge.name} Added!`, "success");
-    highlightNewItem();
+    openLinkModal(badge, true);
 };
 
 window.addLink = (platId) => {
     const p = PLATFORMS.find(x => x.id === platId);
     if (!p) return;
-
-    // Max links check
     if (userDataState.links.length >= 20) return showToast("Max links reached", "error");
+    openLinkModal(p, false);
+};
+
+function openLinkModal(p, isBadge) {
+    activeModalData = { ...p, isBadge };
+    const modal = document.getElementById('link-modal');
+    const platName = document.getElementById('modal-platform-name');
+    const titleInput = document.getElementById('modal-link-title');
+    const urlInput = document.getElementById('modal-link-url');
+    
+    if (!modal) return;
+    
+    platName.textContent = p.name;
+    titleInput.value = p.name;
+    urlInput.value = "";
+    modal.classList.add('active');
+    urlInput.focus();
+}
+
+window.closeLinkModal = () => {
+    const modal = document.getElementById('link-modal');
+    if (modal) modal.classList.remove('active');
+    activeModalData = null;
+};
+
+window.confirmAddLink = () => {
+    if (!activeModalData) return;
+    
+    const title = document.getElementById('modal-link-title').value.trim();
+    const url = document.getElementById('modal-link-url').value.trim();
+    
+    if (!url) {
+        showToast("Lütfen bir URL girin!", "error");
+        return;
+    }
 
     userDataState.links.push({
         id: Date.now(),
-        type: p.id,
-        title: p.name,
-        icon: p.icon,
-        url: ''
+        type: activeModalData.id,
+        title: title || activeModalData.name,
+        icon: activeModalData.icon,
+        url: url,
+        isBadge: activeModalData.isBadge,
+        badgeColor: activeModalData.color
     });
+
     syncActiveLinks();
     updatePreview();
-    showToast(`${p.name} Added!`, "success");
+    showToast(`${activeModalData.name} Added!`, "success");
     highlightNewItem();
+    closeLinkModal();
 };
 
 function highlightNewItem() {
