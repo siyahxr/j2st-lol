@@ -222,10 +222,10 @@
 .phone-content.gradient-style { background: linear-gradient(135deg, #0a0a0a 0%, #000 100%); }
 .phone-content.border-style { background: #000; }
 
-.phone-content.glass-style .phone-body { background: rgba(255,255,255,0.02); backdrop-filter: blur(10px); border-radius: 20px; margin: -30px 15px 0; padding: 20px; border: 1px solid rgba(255,255,255,0.05); }
-.phone-content.solid-style .phone-body { background: #0a0a0a; border-radius: 20px; margin: -30px 15px 0; padding: 20px; }
-.phone-content.border-style .phone-body { background: transparent; border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; margin: -30px 15px 0; padding: 20px; }
-.phone-content.gradient-style .phone-body { background: linear-gradient(180deg, rgba(20,20,20,0.8) 0%, rgba(0,0,0,0.9) 100%); border-radius: 20px; margin: -30px 15px 0; padding: 20px; }
+.phone-content.glass-style .phone-body { background: rgba(255,255,255,0.02); backdrop-filter: blur(10px); border-radius: 20px; margin: -30px 15px 0; padding: 20px; border: 1px solid var(--accent, rgba(255,255,255,0.05)); }
+.phone-content.solid-style .phone-body { background: #0a0a0a; border-radius: 20px; margin: -30px 15px 0; padding: 20px; border: 1px solid var(--accent, transparent); }
+.phone-content.border-style .phone-body { background: transparent; border: 1px solid var(--accent, rgba(255,255,255,0.1)); border-radius: 20px; margin: -30px 15px 0; padding: 20px; }
+.phone-content.gradient-style .phone-body { background: linear-gradient(180deg, rgba(20,20,20,0.8) 0%, rgba(0,0,0,0.9) 100%); border-radius: 20px; margin: -30px 15px 0; padding: 20px; border: 1px solid var(--accent, transparent); }
 
 .phone-banner {
     height: 120px;
@@ -243,9 +243,10 @@
     width: 70px;
     height: 70px;
     border-radius: 16px;
-    border: 2px solid #000;
+    border: 3px solid #000;
     margin-bottom: 12px;
     object-fit: cover;
+    box-shadow: 0 0 15px var(--avatar-glow, transparent);
 }
 
 .phone-name { font-size: 18px; font-weight: 800; }

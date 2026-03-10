@@ -459,7 +459,9 @@ function updatePreview() {
         avatar.src = avatarBase64 || d.avatar_url || '/assets/icons/user_dragon.png';
         const fHex = document.getElementById('avatar-frame-hex')?.value || "#000000";
         const fOp = document.getElementById('avatar-frame-opacity')?.value || "1";
-        avatar.style.borderColor = hexToRgba(fHex, fOp);
+        const frameColor = hexToRgba(fHex, fOp);
+        avatar.style.borderColor = frameColor;
+        avatar.style.setProperty('--avatar-glow', frameColor);
         avatar.classList.toggle('glitch', document.getElementById('glitch-avatar')?.checked || false);
     }
 
