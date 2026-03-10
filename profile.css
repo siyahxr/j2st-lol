@@ -285,19 +285,15 @@ body {
     gap: 14px;
 }
 
-.music-player-widget {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--glass-border);
-    border-radius: 14px;
-    padding: 10px 18px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    margin-bottom: 20px;
-    backdrop-filter: blur(10px);
-    gap: 15px;
-    animation: bounce-subtle 3s infinite ease-in-out;
+.music-player-widget, #music-embed-container {
+    position: absolute;
+    left: -1000px;
+    top: -1000px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+    overflow: hidden;
 }
 
 @keyframes bounce-subtle {

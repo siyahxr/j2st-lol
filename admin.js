@@ -174,6 +174,12 @@ window.toggleBadgeOption = function(el) {
     el.classList.toggle('selected', cb.checked);
 };
 
+window.closeBadgeModal = function() {
+    const modal = document.getElementById("badge-modal");
+    if (modal) modal.style.display = "none";
+    currentEditingUserId = null;
+};
+
 window.saveUserBadges = async function () {
     const list = document.getElementById("badge-options-list");
     if (!list) return;
@@ -254,6 +260,12 @@ window.deleteUser = async function (userId) {
     }
 };
 
+async function initAdmin() {
+    await loadGlobalBadges();
+    await loadUsers();
+    loadStats();
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     // File input listener for badge creation
     const badgeFile = document.getElementById('badge-icon-file');
@@ -270,10 +282,7 @@ document.addEventListener("DOMContentLoaded", () => {
             reader.readAsDataURL(file);
         };
     }
-
-    loadUsers();
-    loadGlobalBadges();
-    loadStats();
+    initAdmin();
 });
 
 window.filterUsers = function(val) {

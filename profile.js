@@ -154,21 +154,22 @@ function renderProfile(user) {
             musicPlayer.src = url;
             musicPlayer.volume = 0.4;
             musicPlayer.loop = true;
-            if (widget) widget.style.display = 'flex';
-            if (mName) mName.textContent = "Atmosphere Active";
-
+            
             const attemptPlay = () => {
                 musicPlayer.play().then(() => {
-                    console.log("Music started!");
-                    document.removeEventListener('pointerdown', attemptPlay);
+                    console.log("Music synced!");
+                    window.removeEventListener('pointerdown', attemptPlay);
+                    window.removeEventListener('click', attemptPlay);
+                    window.removeEventListener('touchstart', attemptPlay);
                 }).catch(e => {
-                    console.log("Autoplay blocked, waiting for interaction...");
+                    console.warn("Play blocked. Waiting for first interaction...");
                 });
             };
 
-            // Listen for any touch or click anywhere
-            document.addEventListener('pointerdown', attemptPlay, { once: true });
-            // Also try immediately (some browsers allow it if site interaction history exists)
+            window.addEventListener('pointerdown', attemptPlay, { once: true });
+            window.addEventListener('click', attemptPlay, { once: true });
+            window.addEventListener('touchstart', attemptPlay, { once: true });
+            
             attemptPlay();
         }
     }
