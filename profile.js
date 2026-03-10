@@ -25,6 +25,13 @@ async function initProfile() {
         // Show profile first, then render
         if (container) container.style.display = '';
 
+        // Remove enter overlay immediately and show profile
+        const overlay = document.getElementById('click-enter');
+        if (overlay) {
+            overlay.style.display = 'none';
+        }
+        document.body.classList.add('profile-entered');
+
         renderProfile(data, true);
         if (loadingEl) {
             loadingEl.style.opacity = "0";
@@ -175,10 +182,9 @@ function renderProfile(user) {
         });
     }
 
-    document.body.classList.add('profile-entered');
 }
 
-window.enterProfile = function() {
+window.enterProfile = function () {
     const overlay = document.getElementById('click-enter');
     const musicPlayer = document.getElementById('profile-music-player');
     const bannerVideo = document.getElementById('banner-video');
@@ -214,13 +220,6 @@ function setup3DTilt(el) {
         // NATURAL WEIGHT: If mouse is right, right side goes back (negative Y rotation in CSS)
         // If mouse is bottom, bottom side goes back (positive X rotation in CSS)
         el.style.transform = `rotateX(${y * 35}deg) rotateY(${x * -35}deg) translateZ(15px)`;
-
-        // Aura tracking
-        const aura = document.querySelector('.dynamic-aura');
-        if (aura) {
-            aura.style.left = `${e.clientX - 200}px`;
-            aura.style.top = `${e.clientY - 200}px`;
-        }
     });
 }
 
