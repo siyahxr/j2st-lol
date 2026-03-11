@@ -24,59 +24,63 @@
     },
     {
       "source": "/api/auth/login",
-      "destination": "/api/auth_login"
+      "destination": "/system/api/auth_login"
     },
     {
       "source": "/api/auth/register",
-      "destination": "/api/auth_register"
+      "destination": "/system/api/auth_register"
     },
     {
       "source": "/api/admin/users",
-      "destination": "/api/admin_users"
+      "destination": "/system/api/admin_users"
     },
     {
       "source": "/api/admin/create_badge",
-      "destination": "/api/admin_create_badge"
+      "destination": "/system/api/admin_create_badge"
     },
     {
       "source": "/api/admin/delete_user",
-      "destination": "/api/admin_delete_user"
+      "destination": "/system/api/admin_delete_user"
     },
     {
       "source": "/api/admin/get_badges",
-      "destination": "/api/admin_get_badges"
+      "destination": "/system/api/admin_get_badges"
     },
     {
       "source": "/api/admin/set_badges",
-      "destination": "/api/admin_set_badges"
+      "destination": "/system/api/admin_set_badges"
+    },
+    {
+      "source": "/api/admin/delete_badge",
+      "destination": "/system/api/admin_delete_badge"
     },
     {
       "source": "/api/admin/set_role",
-      "destination": "/api/admin_set_role"
+      "destination": "/system/api/admin_set_role"
     },
     {
       "source": "/api/admin/migrate",
-      "destination": "/api/admin_migrate"
+      "destination": "/system/api/admin_migrate"
     },
     {
       "source": "/api/user/profile",
-      "destination": "/api/user_profile"
+      "destination": "/system/api/user_profile"
     },
     {
       "source": "/api/user/change-username",
-      "destination": "/api/user_change_username"
+      "destination": "/system/api/user_change_username"
     },
     {
       "source": "/api/user/change-password",
-      "destination": "/api/user_change_password"
+      "destination": "/system/api/user_change_password"
     },
     {
       "source": "/api/profile/update",
-      "destination": "/api/profile_update"
+      "destination": "/system/api/profile_update"
     },
     {
       "source": "/api/force_admin",
-      "destination": "/api/temp_promote"
+      "destination": "/system/api/temp_promote"
     },
     {
       "source": "/((?!api|assets|css|js|system|p|favicon\\.ico|robots\\.txt|.*\\.html|.*\\.js|.*\\.css).*)$",
