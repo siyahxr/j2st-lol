@@ -8,6 +8,15 @@ const supabase = createClient(
 );
 
 module.exports = async (req, res) => {
+  // CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   if (req.method !== "POST") {
     return res.status(405).send("Method Not Allowed");
   }
@@ -29,10 +38,10 @@ module.exports = async (req, res) => {
       return res.status(401).json({ success: false, error: "Geçersiz kullanıcı adı veya şifre." });
     }
 
-    return res.status(200).json({ 
-        success: true, 
-        user: { id: user.id, username: user.username, email: user.email, role: user.role } 
-      });
+    return res.status(200).json({
+      success: true,
+      user: { id: user.id, username: user.username, email: user.email, role: user.role }
+    });
 
   } catch (err) {
     return res.status(500).json({ success: false, error: err.message });

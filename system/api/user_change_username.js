@@ -6,6 +6,15 @@ const supabase = createClient(
 );
 
 module.exports = async (req, res) => {
+  // CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
 
   const userId = req.headers["x-user-id"];
@@ -30,7 +39,7 @@ module.exports = async (req, res) => {
       .single();
 
     if (userError || !user) {
-        return res.status(404).json({ success: false, error: "User not found" });
+      return res.status(404).json({ success: false, error: "User not found" });
     }
 
     // 2. Check cooldown (7 days)
@@ -41,10 +50,10 @@ module.exports = async (req, res) => {
     if (now - lastChange < cooldownMs) {
       const remaining = cooldownMs - (now - lastChange);
       const days = Math.ceil(remaining / (24 * 60 * 60 * 1000));
-      return res.status(403).json({ 
-          success: false, 
-          error: `HATA: Kullanıcı adını değiştirmek için ${days} gün daha beklemelisin.` 
-        });
+      return res.status(403).json({
+        success: false,
+        error: `HATA: Kullanıcı adını değiştirmek için ${days} gün daha beklemelisin.`
+      });
     }
 
     // 3. Check if new username is taken
@@ -62,9 +71,9 @@ module.exports = async (req, res) => {
 
     // 4. Update
     const { error: updateError } = await supabase
-        .from('users')
-        .update({ username: newUsername, last_username_change: now })
-        .eq('id', userId);
+      .from('users')
+      .update({ username: newUsername, last_username_change: now })
+      .eq('id', userId);
 
     if (updateError) throw updateError;
 

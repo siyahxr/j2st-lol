@@ -6,6 +6,15 @@ const supabase = createClient(
 );
 
 module.exports = async (req, res) => {
+  // CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   if (req.method !== "GET") return res.status(405).send("Method Not Allowed");
 
   const { u: usernameParam } = req.query || {};
@@ -37,12 +46,12 @@ module.exports = async (req, res) => {
     // 3. Resolve Badges (User stores IDs in a JSONB array)
     let userBadgeIds = [];
     try {
-        userBadgeIds = Array.isArray(user.badges) ? user.badges : JSON.parse(user.badges || "[]");
-    } catch(e) { userBadgeIds = [] }
+      userBadgeIds = Array.isArray(user.badges) ? user.badges : JSON.parse(user.badges || "[]");
+    } catch (e) { userBadgeIds = [] }
 
     const resolvedBadges = userBadgeIds.map(bId => {
-        const found = globalList.find(gb => gb.id == bId || gb.name == bId);
-        return found ? { id: found.id, label: found.name, icon_url: found.icon } : null;
+      const found = globalList.find(gb => gb.id == bId || gb.name == bId);
+      return found ? { id: found.id, label: found.name, icon_url: found.icon } : null;
     }).filter(b => b !== null);
 
     // 4. View Count Logic (Throttled by cookie)
@@ -58,11 +67,11 @@ module.exports = async (req, res) => {
       setCookie = `${viewMark}=1; Max-Age=3600; Path=/; SameSite=Lax`;
     }
 
-    const responseData = { 
-      ...user, 
-      views: updatedViews, 
+    const responseData = {
+      ...user,
+      views: updatedViews,
       badges: resolvedBadges,
-      available_badges: globalList 
+      available_badges: globalList
     };
 
     // Remove sensitive data

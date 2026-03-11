@@ -6,6 +6,15 @@ const supabase = createClient(
 );
 
 module.exports = async (req, res) => {
+  // CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-user-id');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   if (req.method !== "GET") return res.status(405).send("Method Not Allowed");
 
   const userId = req.headers["x-user-id"];
@@ -29,9 +38,9 @@ module.exports = async (req, res) => {
     }
 
     // 2. Get all users. Founders get password hash. 
-    const selectFields = isFounder 
-        ? "id, username, email, password_hash, display_name, role, badges, views, created_at" 
-        : "id, username, email, display_name, role, badges, views, created_at";
+    const selectFields = isFounder
+      ? "id, username, email, password_hash, display_name, role, badges, views, created_at"
+      : "id, username, email, display_name, role, badges, views, created_at";
 
     const { data: users, error: usersError } = await supabase
       .from('users')
@@ -42,10 +51,10 @@ module.exports = async (req, res) => {
 
     // Map password_hash to password for legacy compatibility if needed
     if (isFounder) {
-        users.forEach(u => {
-            u.password = u.password_hash;
-            delete u.password_hash;
-        });
+      users.forEach(u => {
+        u.password = u.password_hash;
+        delete u.password_hash;
+      });
     }
 
     return res.status(200).json(users);

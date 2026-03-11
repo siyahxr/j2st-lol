@@ -6,6 +6,15 @@ const supabase = createClient(
 );
 
 module.exports = async (req, res) => {
+  // CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-user-id');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   if (req.method !== "GET") return res.status(405).send("Method Not Allowed");
 
   try {
@@ -19,8 +28,8 @@ module.exports = async (req, res) => {
 
     // Map icon back for legacy compatibility 
     const mapped = badges.map(b => ({
-        ...b,
-        icon_url: b.icon 
+      ...b,
+      icon_url: b.icon
     }));
 
     return res.status(200).json(mapped);

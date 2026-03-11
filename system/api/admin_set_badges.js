@@ -6,6 +6,15 @@ const supabase = createClient(
 );
 
 module.exports = async (req, res) => {
+  // CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
 
   const requesterId = req.headers["x-user-id"];
@@ -26,8 +35,8 @@ module.exports = async (req, res) => {
 
     let badgeList = badges;
     try {
-        if (typeof badges === 'string') badgeList = JSON.parse(badges);
-    } catch(e) {}
+      if (typeof badges === 'string') badgeList = JSON.parse(badges);
+    } catch (e) { }
 
     // Supabase allows JSONB column, so we can pass an object or array directly.
     const { error: updateError } = await supabase
