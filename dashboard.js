@@ -729,49 +729,11 @@ window.saveProfileChanges = async () => {
 
     // Priority: 1. Locally uploaded Base64, 2. Manual URL Input, 3. Old State (Joined from parts)
     const oldMusic = (userDataState.profile_music_url || "") + (userDataState.profile_music_url_p2 || "") + (userDataState.profile_music_url_p3 || "") + (userDataState.profile_music_url_p4 || "") + (userDataState.profile_music_url_p5 || "");
-    const oldBanner = (userDataState.banner_url || "") + (userDataState.banner_url_p2 || "") + (userDataState.banner_url_p3 || "") + (userDataState.banner_url_p4 || "") + (userDataState.banner_url_p5 || "");
-
-    let finalMusic = oldMusic;
-    if (musicBase64) {
-        finalMusic = musicBase64;
-    } else if (musicInput && !musicInput.startsWith('[FILE:')) {
-        finalMusic = musicInput;
-    }
-
-    let finalBanner = avatarInput || bannerBase64 || oldBanner || "";
-    if (bannerInput) finalBanner = bannerInput;
-
-    const chunker = (str, partSize) => {
-        if (!str) return ["", "", "", "", ""];
-        const parts = [];
-        for (let i = 0; i < 5; i++) {
-            parts.push(str.substring(i * partSize, (i + 1) * partSize));
-        }
-        return parts;
-    };
-
-    const MB = 1000000;
-    const musicParts = chunker(String(finalMusic), MB);
-    const bannerParts = chunker(String(finalBanner), MB);
-
-    const payload = {
+    const oldBanner = (userDataState.banner_url || "") + (userDataState.banner_url_p2 || "") + (userDataState.banner_url_p3 || "") + (userDataState.banner_url_p4 || "") + (userDataState.banner_url_p5 || "");    const payload = {
         id: String(session.id || ""),
         display_name: safeGet('profile-display-name'),
         bio: safeGet('profile-bio'),
-        avatar_url: String(avatarBase64 || avatarInput || userDataState.avatar_url || ""),
-
-        profile_music_url: musicParts[0],
-        profile_music_url_p2: musicParts[1],
-        profile_music_url_p3: musicParts[2],
-        profile_music_url_p4: musicParts[3],
-        profile_music_url_p5: musicParts[4],
-
-        banner_url: bannerParts[0],
-        banner_url_p2: bannerParts[1],
-        banner_url_p3: bannerParts[2],
-        banner_url_p4: bannerParts[3],
-        banner_url_p5: bannerParts[4],
-
+        
         accent_color: document.getElementById('accent-hex').value,
         icon_color: document.getElementById('icon-hex').value,
         avatar_frame_color: hexToRgba(document.getElementById('avatar-frame-hex').value, document.getElementById('avatar-frame-opacity').value),
@@ -785,18 +747,65 @@ window.saveProfileChanges = async () => {
         bio_font: safeGet('bio-font', 'Outfit'),
         bio_font_color: safeGet('bio-font-color', '#FFFFFF'),
         entry_anim: safeGet('entry-anim', 'fadeIn'),
-        glitch_avatar: safeGet('glitch-avatar') === 1 ? 1 : 0,
-        custom_cursor_url: String(cursorInput || cursorBase64 || userDataState.custom_cursor_url || ""),
-        card_style: safeGet('card-style', 'glass'),
+        glitch_avatar: document.getElementById('glitch-avatar')?.checked ? 1 : 0,
         links: JSON.stringify(userDataState.links || []),
+        badges: JSON.stringify(userDataState.badges || []), // Essential: Sync badges too!
 
-        // Metadata fields for DB match
         hover_text: safeGet('hover-text', 'Click to interact'),
         link_hover_anim: safeGet('link-hover-anim', 'float'),
-        tilt_3d: safeGet('tilt-3d') === 1 ? 1 : 0,
+        tilt_3d: document.getElementById('tilt-3d')?.checked ? 1 : 0,
         base_font: safeGet('base-font', 'Outfit'),
         base_font_color: safeGet('base-font-color', '#FFFFFF')
     };
+
+    // --- SMART MEDIA SYNC (Don't resend 5MB if not changed) ---
+    const MB = 1000000;
+    const chunker = (str, partSize) => {
+        if (!str) return ["", "", "", "", ""];
+        const parts = [];
+        for (let i = 0; i < 5; i++) parts.push(str.substring(i * partSize, (i + 1) * partSize));
+        return parts;
+    };
+
+    // Avatar
+    if (avatarBase64) {
+        payload.avatar_url = avatarBase64;
+    } else if (avatarInput) {
+        payload.avatar_url = avatarInput;
+    }
+
+    // Music
+    if (musicBase64) {
+        const parts = chunker(musicBase64, MB);
+        payload.profile_music_url = parts[0];
+        payload.profile_music_url_p2 = parts[1];
+        payload.profile_music_url_p3 = parts[2];
+        payload.profile_music_url_p4 = parts[3];
+        payload.profile_music_url_p5 = parts[4];
+    } else if (musicInput && musicInput !== oldMusic) {
+        payload.profile_music_url = musicInput;
+        payload.profile_music_url_p2 = ""; payload.profile_music_url_p3 = ""; payload.profile_music_url_p4 = ""; payload.profile_music_url_p5 = "";
+    }
+
+    // Banner
+    if (bannerBase64) {
+        const parts = chunker(bannerBase64, MB);
+        payload.banner_url = parts[0];
+        payload.banner_url_p2 = parts[1];
+        payload.banner_url_p3 = parts[2];
+        payload.banner_url_p4 = parts[3];
+        payload.banner_url_p5 = parts[4];
+    } else if (bannerInput && bannerInput !== oldBanner) {
+        payload.banner_url = bannerInput;
+        payload.banner_url_p2 = ""; payload.banner_url_p3 = ""; payload.banner_url_p4 = ""; payload.banner_url_p5 = "";
+    }
+
+    // Cursor
+    if (cursorBase64) {
+        payload.custom_cursor_url = cursorBase64;
+    } else if (cursorInput) {
+        payload.custom_cursor_url = cursorInput;
+    }
 
     // New 5MB limit check (Total ~12MB budget)
     const totalSize = JSON.stringify(payload).length;
