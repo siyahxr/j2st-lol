@@ -90,30 +90,79 @@ function renderProfile(user) {
 
     // 4. Badges & Links
     const badgesEl = document.getElementById('badges-el');
-    if (badgesEl && user.badges && Array.isArray(user.badges)) {
-        badgesEl.innerHTML = user.badges.map(b => {
-            const badgeLabel = b.label || b.name || '';
-            let iconHtml = '';
-            
-            // Special case for Founder
-            if (badgeLabel.toLowerCase() === 'founder') {
-                iconHtml = `<img src="/assets/icons/user_dragon.png" alt="Founder" class="badge-icon">`;
-            } else if (b.icon_url && b.icon_url.startsWith('fa-')) {
-                iconHtml = `<i class="${b.icon_url}" style="font-size: 20px;"></i>`;
-            } else {
-                iconHtml = `<img src="${b.icon_url}" alt="${badgeLabel}" class="badge-icon">`;
-            }
 
-            if (b.url) {
-                return `<a href="${b.url}" target="_blank" class="badge-item" data-label="${badgeLabel}">
+    // Default social media badges (always show these if user has social links)
+    const defaultBadges = [
+        { id: 'discord', label: 'Discord', icon_url: 'fa-brands fa-discord', url: 'https://discord.gg/' },
+        { id: 'twitter', label: 'Twitter/X', icon_url: 'fa-brands fa-x-twitter', url: 'https://twitter.com/' },
+        { id: 'instagram', label: 'Instagram', icon_url: 'fa-brands fa-instagram', url: 'https://instagram.com/' },
+        { id: 'youtube', label: 'YouTube', icon_url: 'fa-brands fa-youtube', url: 'https://youtube.com/' },
+        { id: 'spotify', label: 'Spotify', icon_url: 'fa-brands fa-spotify', url: 'https://spotify.com/' },
+        { id: 'twitch', label: 'Twitch', icon_url: 'fa-brands fa-twitch', url: 'https://twitch.tv/' }
+    ];
+
+    // Get user badges from database
+    let userBadges = [];
+    if (user.badges && Array.isArray(user.badges)) {
+        userBadges = user.badges;
+    }
+
+    // Combine user badges with default badges if user has social links
+    let allBadges = [...userBadges];
+
+    // Check if user has links and add relevant default badges
+    if (user.links) {
+        let lList = user.links;
+        if (typeof lList === 'string') {
+            try { lList = JSON.parse(lList); } catch (e) { lList = []; }
+        }
+        if (Array.isArray(lList)) {
+            const linkUrls = lList.map(l => l.url || '').join(' ').toLowerCase();
+            defaultBadges.forEach(db => {
+                if (linkUrls.includes(db.url.replace('https://', '').replace('http://', '').split('/')[0])) {
+                    if (!allBadges.find(b => b.id === db.id)) {
+                        allBadges.push(db);
+                    }
+                }
+            });
+        }
+    }
+
+    if (badgesEl) {
+        if (allBadges.length > 0) {
+            badgesEl.innerHTML = allBadges.map(b => {
+                const badgeLabel = b.label || b.name || '';
+                let iconHtml = '';
+
+                // Special case for Founder
+                if (badgeLabel.toLowerCase() === 'founder') {
+                    iconHtml = `<img src="/assets/icons/user_dragon.png" alt="Founder" class="badge-icon">`;
+                } else if (b.icon_url && b.icon_url.startsWith('fa-')) {
+                    iconHtml = `<i class="${b.icon_url}" style="font-size: 20px;"></i>`;
+                } else if (b.icon_url && b.icon_url.startsWith('http')) {
+                    iconHtml = `<img src="${b.icon_url}" alt="${badgeLabel}" class="badge-icon">`;
+                } else {
+                    iconHtml = `<i class="fa-solid fa-circle-question" style="font-size: 20px;"></i>`;
+                }
+
+                if (b.url) {
+                    return `<a href="${b.url}" target="_blank" class="badge-item" data-label="${badgeLabel}">
+                        ${iconHtml}
+                    </a>`;
+                }
+                return `<div class="badge-item" data-label="${badgeLabel}">
                     ${iconHtml}
+                </div>`;
+            }).join('');
+            if (window.twemoji) twemoji.parse(badgesEl);
+        } else {
+            // Show default badges even if no user badges
+            badgesEl.innerHTML = defaultBadges.map(b => {
+                return `<a href="${b.url}" target="_blank" class="badge-item" data-label="${b.label}">
+                    <i class="${b.icon_url}" style="font-size: 20px;"></i>
                 </a>`;
-            }
-            return `<div class="badge-item" data-label="${badgeLabel}">
-                ${iconHtml}
-            </div>`;
-        }).join('');
-        if (window.twemoji) twemoji.parse(badgesEl);
+            }).join('');
+        }
     }
 
     const linksEl = document.getElementById('links-el');
