@@ -161,35 +161,44 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 24px;
-    color: #fff;
-    transition: var(--transition-smooth);
-    z-index: 10;
-    padding: 60px 80px;
-    border-radius: 24px;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    justify-content: center;
+    gap: 32px;
+    color: #fff !important;
+    z-index: 1000;
+    padding: 80px;
+    border-radius: 30px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    min-width: 320px;
+}
+
+.enter-btn span {
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 6px;
+    color: #fff !important;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
 }
 
 .enter-icon-wrapper {
-    width: 100px;
-    height: 100px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 2px solid rgba(255, 255, 255, 0.15);
+    width: 120px;
+    height: 120px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 3px solid #fff;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    transition: 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-    box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+    color: #fff !important;
+    box-shadow: 0 0 40px rgba(255, 255, 255, 0.2);
 }
 
-.enter-btn i {
-    font-size: 28px;
-    margin-left: 6px;
-    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.5));
-    transition: all 0.3s ease;
+.enter-icon-wrapper i {
+    font-size: 40px;
+    filter: drop-shadow(0 0 10px #fff);
 }
 
 .enter-btn.loading .enter-icon-wrapper {

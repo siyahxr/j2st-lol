@@ -1,17 +1,50 @@
 /**
- * J2ST.ICU — VOID PROFILE RENDERER (v5.0)
- * Ultra-Premium 3D Aura & Dynamic Bio Stream
+ * J2ST.ICU — VOID PROFILE RENDERER (v5.3)
  */
+console.log("J2ST Profile Script v5.3 Loaded.");
 
+// 1. Global Entry Function (Defensive)
+window.enterProfile = function() {
+    const overlay = document.getElementById('click-enter');
+    const layoutMain = document.querySelector('.profile-layout-main');
+    const musicPlayer = document.getElementById('profile-music-player');
+    
+    if (overlay) {
+        overlay.classList.add('clicked');
+        
+        // Music Start (Try-catch for browser blocks)
+        if (musicPlayer && musicPlayer.src) {
+            musicPlayer.play().catch(e => console.log("Autoplay blocked", e));
+        }
+
+        setTimeout(() => {
+            overlay.classList.add('fade-out');
+            document.body.classList.add('profile-entered');
+            
+            // Show main layout with fade
+            if (layoutMain) {
+                layoutMain.style.display = 'flex';
+                setTimeout(() => layoutMain.style.opacity = '1', 50);
+            }
+
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 800);
+        }, 300);
+    }
+};
+
+// 2. Profile Initialization
 async function initProfile() {
     const urlParams = new URLSearchParams(window.location.search);
     let username = urlParams.get('u');
     if (!username) {
-        username = window.location.pathname.split('/').filter(Boolean).pop() || 'j2st';
+        username = window.location.pathname.split('/').filter(Boolean).pop();
     }
-    
-    // Safety check for weird paths
-    if (username === '$' || username === 'profile.html') username = 'j2st';
+    // Final fallback
+    if (!username || username === 'profile.html' || username === '$') username = 'j2st';
+
+    console.log("Initializing profile for:", username);
 
     const overlay = document.getElementById('click-enter');
     const overlayText = document.getElementById('overlay-text');
@@ -19,57 +52,59 @@ async function initProfile() {
 
     let initialized = false;
 
-    // Utility to set overlay to "ready"
+    // Ready State Transition
     function setReady() {
         if (initialized) return;
         initialized = true;
-        console.log("Profile Ready.");
+        console.log("Profile state: READY");
         if (overlayText) overlayText.textContent = "CLICK TO ENTER";
-        if (overlayContent) overlayContent.classList.remove('loading');
+        if (overlayContent) {
+            overlayContent.classList.remove('loading');
+            overlayContent.classList.add('ready');
+        }
         if (overlay) {
-            overlay.onclick = enterProfile;
+            overlay.onclick = window.enterProfile;
             overlay.style.cursor = 'pointer';
         }
     }
 
-    // FAILSAFE: If it takes more than 3.5s, just show the button anyway
-    setTimeout(setReady, 3500);
+    // FAILSAFE: If anything takes more than 4 seconds, force the button to show
+    setTimeout(setReady, 4000);
 
-    // 1. Try Cache
+    // 3. Cache Recovery
     const cacheKey = `profile_cache_${username}`;
-    const cachedData = localStorage.getItem(cacheKey);
-    if (cachedData) {
-        try {
-            const data = JSON.parse(cachedData);
-            safeRender(data);
+    let cachedData = null;
+    try {
+        cachedData = localStorage.getItem(cacheKey);
+        if (cachedData) {
+            const parsed = JSON.parse(cachedData);
+            safeRender(parsed);
             setReady();
-        } catch (e) { console.warn("Cache fail", e); }
-    }
+        }
+    } catch (e) { console.warn("Cache access error", e); }
 
+    // 4. Fresh Fetch
     try {
         const res = await fetch(`/api/user/profile?u=${username}`);
         const data = await res.json();
 
-        if (data.error) {
-            if (!cachedData) {
-                document.getElementById('error-container').style.display = 'flex';
-                if (overlay) overlay.style.display = 'none';
-            }
-            return;
-        }
-
-        // Save and re-render fresh
-        localStorage.setItem(cacheKey, JSON.stringify(data));
-        safeRender(data);
-        setReady();
-
-    } catch (e) {
-        console.error("Profile Fetch Failed:", e);
-        if (!cachedData) {
-            document.getElementById('error-container').style.display = 'flex';
+        if (data && !data.error) {
+            try { localStorage.setItem(cacheKey, JSON.stringify(data)); } catch(e){}
+            safeRender(data);
+            setReady();
+        } else if (!cachedData) {
+            // Show 404
+            const err = document.getElementById('error-container');
+            if (err) err.style.display = 'flex';
             if (overlay) overlay.style.display = 'none';
-        } else {
-            setReady(); 
+        }
+    } catch (e) {
+        console.error("Fetch failed:", e);
+        if (cachedData) setReady();
+        else {
+            const err = document.getElementById('error-container');
+            if (err) err.style.display = 'flex';
+            if (overlay) overlay.style.display = 'none';
         }
     }
 }
@@ -78,12 +113,13 @@ function safeRender(data) {
     try {
         renderProfile(data);
     } catch (e) {
-        console.error("Render failed but continuing", e);
+        console.error("Render failure", e);
     }
 }
 
+// 5. Core Rendering Logic
 function renderProfile(user) {
-    // 1. Identity
+    // Identity
     const avatar = document.getElementById('avatar-el');
     const name = document.getElementById('name-el');
     const handle = document.getElementById('handle-el');
@@ -102,166 +138,94 @@ function renderProfile(user) {
         if (user.bio_font_color) bio.style.color = user.bio_font_color;
     }
 
-    // 2. Theme & Styling
-    const container = document.getElementById('profile-container');
+    // Theme Variables
     const accent = user.accent_color || '#FFFFFF';
     document.documentElement.style.setProperty('--accent', accent);
     document.documentElement.style.setProperty('--accent-glow', accent + '33');
-    document.documentElement.style.setProperty('--card-bg-opacity', user.card_opacity !== undefined ? user.card_opacity : 0.7);
     
+    // Card Style
+    const container = document.getElementById('profile-container');
     if (container && user.card_style) {
         let classes = ['profile-card', user.card_style + '-style'];
         if (user.card_border === 'off') classes.push('border-off');
         container.className = classes.join(' ');
     }
 
-    if (avatar) {
-        const frameColor = user.avatar_frame_color || 'rgba(255,255,255,0.1)';
-        avatar.style.borderColor = frameColor;
-        avatar.style.boxShadow = `0 0 20px ${frameColor}`;
-        if (user.glitch_avatar) avatar.classList.add('glitch-fx');
-    }
-
-    // 3. Badges (Achievements / Personal Badges)
+    // Badges Injection
     const badgesEl = document.getElementById('badges-el');
-    if (badgesEl) {
-        let userBadges = [];
-        if (user.badges) {
-            if (typeof user.badges === 'string') {
-                try { userBadges = JSON.parse(user.badges); } catch(e) { userBadges = []; }
-            } else if (Array.isArray(user.badges)) {
-                userBadges = user.badges;
-            }
-        }
-
-        if (userBadges.length > 0) {
-            badgesEl.innerHTML = userBadges.map(b => {
-                let iconContent = '';
-                if (b.icon_url && b.icon_url.startsWith('fa-')) {
-                    iconContent = `<i class="${b.icon_url}" style="font-size: 20px; color: #fff;"></i>`;
-                } else if (b.icon_url) {
-                    iconContent = `<img src="${b.icon_url}" class="badge-icon">`;
-                } else {
-                    iconContent = `<i class="fa-solid fa-award" style="font-size: 20px; color: #fff;"></i>`;
-                }
-
-                return `
-                    <div class="badge-item" data-label="${b.name || 'Badge'}">
-                        ${iconContent}
-                    </div>
-                `;
-            }).join('');
-        } else {
-            badgesEl.innerHTML = '';
+    if (badgesEl && user.badges) {
+        let bList = [];
+        try { bList = (typeof user.badges === 'string') ? JSON.parse(user.badges) : user.badges; } catch(e){}
+        
+        if (Array.isArray(bList)) {
+            badgesEl.innerHTML = bList.map(b => `
+                <div class="badge-item" data-label="${b.name}">
+                    ${b.icon_url && b.icon_url.startsWith('fa-') ? `<i class="${b.icon_url}"></i>` : `<img src="${b.icon_url}" class="badge-icon">`}
+                </div>
+            `).join('');
         }
     }
 
-    // 4. Social & Custom Links
+    // Links Injection
     const linksEl = document.getElementById('links-el');
-    if (linksEl) {
-        let userLinks = [];
-        if (user.links) {
-            if (typeof user.links === 'string') {
-                try { userLinks = JSON.parse(user.links); } catch(e) { userLinks = []; }
-            } else if (Array.isArray(user.links)) {
-                userLinks = user.links;
-            }
-        }
-
-        if (userLinks.length > 0) {
-            linksEl.innerHTML = userLinks.map(l => {
-                const color = l.badgeColor || accent;
-                const isBadge = l.isBadge;
-
-                if (isBadge) {
-                    // Small badge-style link
+    if (linksEl && user.links) {
+        let lList = [];
+        try { lList = (typeof user.links === 'string') ? JSON.parse(user.links) : user.links; } catch(e){}
+        
+        if (Array.isArray(lList)) {
+            linksEl.innerHTML = lList.map(l => {
+                const c = l.badgeColor || accent;
+                if (l.isBadge) {
                     return `
-                        <a href="${l.url}" target="_blank" class="badge-item" data-label="${l.title}" style="background: ${color}15; border: 1px solid ${color}33;">
-                            <i class="${l.icon || 'fa-solid fa-link'}" style="font-size: 18px; color: ${color};"></i>
-                        </a>
-                    `;
+                        <a href="${l.url}" target="_blank" class="badge-item" data-label="${l.title}" style="background:${c}15;border:1px solid ${c}33;">
+                            <i class="${l.icon || 'fa-solid fa-link'}" style="color:${c}"></i>
+                        </a>`;
                 } else {
-                    // Main button-style link
                     return `
-                        <a href="${l.url}" target="_blank" class="profile-link-btn" style="--item-color: ${color}">
-                            <div class="link-btn-glow"></div>
+                        <a href="${l.url}" target="_blank" class="profile-link-btn" style="--item-color:${c}">
                             <div class="link-btn-content">
                                 <i class="${l.icon || 'fa-solid fa-link'}"></i>
                                 <span>${l.title}</span>
                             </div>
                             <i class="fa-solid fa-chevron-right arrow-icon"></i>
-                        </a>
-                    `;
+                        </a>`;
                 }
             }).join('');
-            
             if (window.twemoji) twemoji.parse(linksEl);
-        } else {
-            linksEl.innerHTML = '';
         }
     }
 
-    // 5. Cleanup redundant social section
-    const socialLinksEl = document.getElementById('social-links-el');
-    if (socialLinksEl) socialLinksEl.innerHTML = '';
-
-
-    // 5. 3D Tilt
-    const card = document.getElementById('profile-container');
-    if (card) setup3DTilt(card);
-
-    // 6. Effects
+    // Banner Logic
     const bannerVideo = document.getElementById('banner-video');
     const fullBg = document.getElementById('full-bg');
-    const fullBannerUrl = user.banner_url;
-
-    if (fullBannerUrl) {
-        const isVideo = fullBannerUrl.includes('video/') || fullBannerUrl.endsWith('.mp4') || fullBannerUrl.endsWith('.webm') || fullBannerUrl.startsWith('data:video/');
-
-        if (isVideo && bannerVideo) {
-            bannerVideo.src = fullBannerUrl;
+    if (user.banner_url) {
+        const isVid = user.banner_url.includes('.mp4') || user.banner_url.includes('.webm');
+        if (isVid && bannerVideo) {
+            bannerVideo.src = user.banner_url;
             bannerVideo.style.display = 'block';
-            bannerVideo.play();
-            if (fullBg) fullBg.style.display = 'none';
+            bannerVideo.play().catch(e => console.warn("Video blocked"));
         } else if (fullBg) {
-            fullBg.style.background = `url('${fullBannerUrl}') center/cover no-repeat`;
+            fullBg.style.background = `url('${user.banner_url}') center/cover no-repeat`;
             fullBg.style.display = 'block';
-            if (bannerVideo) bannerVideo.style.display = 'none';
         }
     }
 
-    // 7. Music
-    const musicContainer = document.getElementById('music-embed-container');
-    const directPlayer = document.getElementById('profile-music-player');
-    
-    if (musicContainer) {
-        if (user.music_embed && user.music_embed.includes('spotify')) {
-            musicContainer.style.display = 'block';
-            musicContainer.style.height = '80px';
-            musicContainer.style.marginBottom = '20px';
-            musicContainer.innerHTML = `<iframe style="border-radius:12px" src="https://open.spotify.com/embed${user.music_embed.replace('https://open.spotify.com', '')}" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
-        } else {
-            musicContainer.style.display = 'none';
-        }
+    // Music Logic
+    const musicPlayer = document.getElementById('profile-music-player');
+    if (musicPlayer && user.music_url) {
+        musicPlayer.src = user.music_url;
+        musicPlayer.loop = true;
+        musicPlayer.volume = 0.5;
     }
 
-    if (directPlayer && user.music_url) {
-        directPlayer.src = user.music_url;
-        directPlayer.loop = true;
-        directPlayer.volume = 0.5;
-    }
-
-    // 8. Tab Logic
+    // Tabs Event Bindings
     const tabs = document.querySelectorAll('.p-tab');
     const panels = document.querySelectorAll('.tab-panel');
-
-    tabs.forEach(tab => {
-        tab.onclick = () => {
-            const target = tab.getAttribute('data-tab');
-            
-            tabs.forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-
+    tabs.forEach(t => {
+        t.onclick = () => {
+            const target = t.getAttribute('data-tab');
+            tabs.forEach(x => x.classList.remove('active'));
+            t.classList.add('active');
             panels.forEach(p => {
                 p.classList.remove('active');
                 if (p.id === 'section-' + target) p.classList.add('active');
@@ -269,68 +233,23 @@ function renderProfile(user) {
         };
     });
 
-    // 9. View Count
-    const viewsEl = document.getElementById('views-el');
-    if (viewsEl) {
-        const viewSpan = viewsEl.querySelector('span');
-        if (viewSpan) viewSpan.textContent = (user.views || 0) + ' views';
-    }
+    // 3D Tilt Setup
+    if (container) setup3DTilt(container);
 }
 
+// 6. Tilt Effect Function
 function setup3DTilt(card) {
     if (!card) return;
-
     document.addEventListener('mousemove', (e) => {
         const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-
-        const centerX = rect.width / 2;
-        const centerY = rect.height / 2;
-
-        const rotateX = (y - centerY) / 20;
-        const rotateY = (centerX - x) / 20;
-
-        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        card.style.transform = `perspective(1000px) rotateX(${y * -15}deg) rotateY(${x * 15}deg) scale(1.02)`;
     });
-
     document.addEventListener('mouseleave', () => {
         card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
     });
 }
 
-function enterProfile() {
-    const overlay = document.getElementById('click-enter');
-    const layoutMain = document.querySelector('.profile-layout-main');
-    const musicPlayer = document.getElementById('profile-music-player');
-    
-    if (overlay) {
-        overlay.classList.add('clicked');
-        
-        // Start Music
-        if (musicPlayer && musicPlayer.src) {
-            musicPlayer.play().catch(e => console.log("Autoplay blocked", e));
-        }
-
-        setTimeout(() => {
-            overlay.classList.add('fade-out');
-            document.body.classList.add('profile-entered');
-            
-            // Show main layout
-            if (layoutMain) {
-                layoutMain.style.display = 'flex';
-                setTimeout(() => layoutMain.style.opacity = '1', 50);
-            }
-
-            setTimeout(() => {
-                overlay.style.display = 'none';
-            }, 800);
-        }, 300);
-    }
-}
-
-// Expose to global
-window.enterProfile = enterProfile;
-
-// Auto-init
+// 7. Execution Start
 initProfile();
