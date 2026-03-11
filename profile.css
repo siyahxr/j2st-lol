@@ -597,14 +597,82 @@ body {
     border-radius: 10px;
 }
 
-/* ── BADGES & LINKS LAYOUT ───────────────────────────────────── */
+/* ── LAYOUT ─────────────────────────────────────────────────── */
+.profile-layout-main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    min-height: 100vh;
+}
+
+/* ── SIDE TABS ─────────────────────────────────────────────── */
+.profile-tabs-side {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 10;
+}
+
+.p-tab {
+    width: 100px;
+    height: 40px;
+    background: #fff;
+    color: #000;
+    border: none;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0.5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.p-tab.active {
+    opacity: 1;
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+.p-tab:hover {
+    opacity: 1;
+    transform: translateX(5px);
+}
+
+/* ── TAB CONTENT ───────────────────────────────────────────── */
+.tab-content-container {
+    width: 100%;
+    margin-top: 20px;
+    min-height: 100px;
+}
+
+.tab-panel {
+    display: none;
+    animation: slideIn 0.4s ease forwards;
+}
+
+.tab-panel.active {
+    display: block;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 #badges-el {
     display: flex;
     justify-content: center;
     gap: 12px;
-    margin: 20px 0;
     flex-wrap: wrap;
-    min-height: 40px;
 }
 
 #links-el {
@@ -612,7 +680,6 @@ body {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    margin-top: 20px;
 }
 
 /* Premium Link Button */
@@ -785,6 +852,26 @@ body {
     opacity: 1;
 }
 
+@media (max-width: 768px) {
+    .profile-layout-main {
+        flex-direction: column;
+        gap: 20px;
+        padding-top: 40px;
+    }
+
+    .profile-tabs-side {
+        flex-direction: row;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .p-tab {
+        width: 80px;
+        height: 35px;
+        font-size: 10px;
+    }
+}
+
 @media (max-width: 480px) {
     .profile-card {
         padding: 40px 24px;
@@ -792,12 +879,3 @@ body {
         margin: 20px;
     }
 }
-"    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);"  
-"    text-decoration: none;"  
-"    box-shadow: 0 4px 15px rgba(0,0,0,0.3);"  
-"}"  
-""  
-".social-link-item:hover {"  
-"    transform: translateY(-5px) scale(1.15);"  
-"    box-shadow: 0 8px 25px rgba(0,0,0,0.4);"  
-"}" 

@@ -34,55 +34,70 @@
     </div>
 </div>
 
-<!-- Main Profile Card -->
-<div id="profile-container" class="profile-card">
-    <div class="dynamic-aura"></div>
-
-    <!-- Identity Section -->
-    <div class="avatar-wrapper">
-        <img id="avatar-el" src="/assets/icons/user_dragon.png" alt="Avatar" class="profile-avatar">
-        <div class="status-indicator"></div>
+<div class="profile-layout-main">
+    <!-- Side Tabs -->
+    <div class="profile-tabs-side" id="tab-nav">
+        <button class="p-tab active" data-tab="links">Links</button>
+        <button class="p-tab" data-tab="badges">Badges</button>
+        <button class="p-tab" data-tab="about">About</button>
     </div>
 
-    <h1 class="profile-name" id="name-el">j2st</h1>
-    <p class="profile-handle" id="handle-el">@j2st</p>
+    <!-- Main Profile Card -->
+    <div id="profile-container" class="profile-card">
+        <div class="dynamic-aura"></div>
 
-    <!-- Badges (Achievements / Personal) -->
-    <div id="badges-el">
-        <!-- Badges injected by JS -->
-    </div>
+        <!-- Identity Section -->
+        <div class="avatar-wrapper">
+            <img id="avatar-el" src="/assets/icons/user_dragon.png" alt="Avatar" class="profile-avatar">
+            <div class="status-indicator"></div>
+        </div>
 
-    <!-- Bio -->
-    <p class="profile-bio" id="bio-el"></p>
+        <h1 class="profile-name" id="name-el">j2st</h1>
+        <p class="profile-handle" id="handle-el">@j2st</p>
 
-    <!-- Main Connectivity Links -->
-    <div id="links-el">
-        <!-- Social & Custom links injected by JS -->
-    </div>
-
-    <!-- Discord Status (Optional Integration) -->
-    <div id="discord-status-container" style="display: none;">
-        <div class="discord-card">
-            <div class="discord-avatar-box">
-                <img src="" alt="" class="discord-avatar" id="ds-avatar">
-                <div class="status-indicator" id="ds-status-dot"></div>
+        <!-- Tab Panels (Inside Card) -->
+        <div class="tab-content-container">
+            <div id="section-badges" class="tab-panel">
+                <div id="badges-el">
+                    <!-- Badges injected by JS -->
+                </div>
             </div>
-            <div class="discord-info">
-                <p class="discord-user" id="ds-name">User#0000</p>
-                <p class="discord-activity" id="ds-activity">Loading status...</p>
+
+            <div id="section-about" class="tab-panel">
+                <p class="profile-bio" id="bio-el"></p>
+            </div>
+
+            <div id="section-links" class="tab-panel active">
+                <div id="links-el">
+                    <!-- Social & Custom links injected by JS -->
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Footer -->
-    <div class="footer-info">
-        <div id="music-embed-container" style="display:none; width: 100%; margin-bottom: 0; height:0;"></div>
-        
-        <div class="view-count" id="views-el">
-            <i class="fa-solid fa-eye"></i>
-            <span>0 views</span>
+        <!-- Discord Status (Optional Integration) -->
+        <div id="discord-status-container" style="display: none;">
+            <div class="discord-card">
+                <div class="discord-avatar-box">
+                    <img src="" alt="" class="discord-avatar" id="ds-avatar">
+                    <div class="status-indicator" id="ds-status-dot"></div>
+                </div>
+                <div class="discord-info">
+                    <p class="discord-user" id="ds-name">User#0000</p>
+                    <p class="discord-activity" id="ds-activity">Loading status...</p>
+                </div>
+            </div>
         </div>
-        <a href="/" class="j2st-watermark">Powered by j2st.lol</a>
+
+        <!-- Footer -->
+        <div class="footer-info">
+            <div id="music-embed-container" style="display:none; width: 100%; margin-bottom: 0; height:0;"></div>
+            
+            <div class="view-count" id="views-el">
+                <i class="fa-solid fa-eye"></i>
+                <span>0 views</span>
+            </div>
+            <a href="/" class="j2st-watermark">Powered by j2st.lol</a>
+        </div>
     </div>
 </div>
 

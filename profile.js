@@ -205,7 +205,25 @@ function renderProfile(user) {
         }
     }
 
-    // 8. View Count
+    // 8. Tab Logic
+    const tabs = document.querySelectorAll('.p-tab');
+    const panels = document.querySelectorAll('.tab-panel');
+
+    tabs.forEach(tab => {
+        tab.onclick = () => {
+            const target = tab.getAttribute('data-tab');
+            
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            panels.forEach(p => {
+                p.classList.remove('active');
+                if (p.id === 'section-' + target) p.classList.add('active');
+            });
+        };
+    });
+
+    // 9. View Count
     const viewsEl = document.getElementById('views-el');
     if (viewsEl) {
         const viewSpan = viewsEl.querySelector('span');
