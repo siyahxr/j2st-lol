@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS users (
     avatar_frame_color TEXT DEFAULT 'rgba(0,0,0,1)',
     badge_bg_color TEXT DEFAULT 'rgba(255,255,255,0.05)',
     card_style TEXT DEFAULT 'glass',
+    card_border TEXT DEFAULT 'on',
     bg_effect TEXT DEFAULT 'none',
     entry_anim TEXT DEFAULT 'fadeIn',
     glitch_avatar INTEGER DEFAULT 0,

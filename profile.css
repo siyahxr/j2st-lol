@@ -369,6 +369,42 @@ body {
     overflow: visible;
 }
 
+/* HORIZONTAL STYLE */
+.profile-card.horizontal-style,
+.phone-content.horizontal-style {
+    max-width: 800px;
+    min-height: 480px;
+    flex-direction: row;
+    padding: 60px;
+}
+
+.profile-card.horizontal-style .avatar-wrapper {
+    margin-bottom: 0;
+}
+
+.profile-card.horizontal-style .profile-name,
+.profile-card.horizontal-style .profile-handle,
+.profile-card.horizontal-style .profile-bio,
+.profile-card.horizontal-style #badges-el,
+.profile-card.horizontal-style #links-el {
+    text-align: left;
+    justify-content: flex-start;
+}
+
+.profile-card.horizontal-style #badges-el {
+    margin-top: 20px;
+}
+
+/* BORDER TOGGLE */
+.profile-card.border-off,
+.phone-content.border-off {
+    border: none !important;
+}
+
+.profile-card.border-off {
+    box-shadow: 0 0 100px rgba(0,0,0,0.5); /* Subtle shadow even without border */
+}
+
 /* ── IDENTITY ───────────────────────────────────────────────── */
 .avatar-wrapper {
     position: relative;

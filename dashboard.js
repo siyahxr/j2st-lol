@@ -141,10 +141,7 @@ async function init() {
             // Merge with default state
             userDataState = { ...userDataState, ...data };
 
-            // Sidebar logic: Hide admin if not authorized
-            const isAdmin = userDataState.role === 'admin' || (session.username && session.username.charCodeAt(0) === 36);
-            const adminLink = document.querySelector('.nav-item[href="/admin"]');
-            if (adminLink && !isAdmin) adminLink.style.display = 'none';
+            // Normalize data
 
             // Normalize data
             if (typeof userDataState.links === 'string') userDataState.links = JSON.parse(userDataState.links);
@@ -157,26 +154,18 @@ async function init() {
         syncUI();
         setupEventListeners();
         renderPlatformGrid();
-        renderBadgeGrid();
+        renderBadges(); // Changed from renderBadgeGrid
         loadStats();
     } catch (e) {
         console.error("Dashboard Init Error:", e);
-        // Even if API fails, let's keep going with defaults
         setupEventListeners();
         renderPlatformGrid();
+        renderBadges();
     }
 }
 
 function syncUI() {
     if (!userDataState) return;
-
-    // Admin Access Control
-    const userRole = session?.role || session?.user?.role;
-    const adminLink = document.getElementById('admin-nav-link');
-    if (adminLink) {
-        const isStaff = userRole === 'admin' || session.username.charCodeAt(0) === 36;
-        adminLink.style.display = isStaff ? 'flex' : 'none';
-    }
 
     // Identity
     document.getElementById('profile-display-name').value = userDataState.display_name || "";
@@ -199,7 +188,10 @@ function syncUI() {
     document.getElementById('avatar-frame-opacity').value = frame.opacity;
     document.getElementById('badge-bg-color').value = userDataState.badge_bg_color || "rgba(255,255,255,0.05)";
     document.getElementById('card-style').value = userDataState.card_style || "glass";
-
+    if (document.getElementById('card-border')) {
+        document.getElementById('card-border').value = userDataState.card_border || "on";
+    }
+    
     // Typography
     document.getElementById('name-font').value = userDataState.name_font || "Outfit";
     document.getElementById('name-font-color').value = userDataState.name_font_color || "#FFFFFF";
@@ -386,14 +378,40 @@ const BADGE_PLATFORMS = [
 ];
 
 function renderBadgeGrid() {
-    const grid = document.getElementById('badge-platform-grid');
-    if (!grid) return;
-    grid.innerHTML = BADGE_PLATFORMS.map(p => `
-        <div class="social-platform-item" title="${p.name}" onclick="addBadgeLink('${p.id}')" style="border-color: ${p.color}40;">
-            <i class="${p.icon}" style="color: ${p.color};"></i>
-        </div>
-    `).join('');
+    // This previously rendered the badge platform selector for links.
+    // Removed as requested.
 }
+
+window.createPersonalBadge = () => {
+    const name = document.getElementById('custom-badge-name').value.trim();
+    const icon = document.getElementById('custom-badge-icon').value.trim();
+
+    if (!name || !icon) return showToast("Name and Icon are required", "error");
+
+    if (!userDataState.badges) userDataState.badges = [];
+    if (userDataState.badges.length >= 20) return showToast("Max badges reached", "error");
+
+    userDataState.badges.push({
+        id: 'user_' + Date.now(),
+        name: name,
+        icon_url: icon,
+        is_personal: true
+    });
+
+    document.getElementById('custom-badge-name').value = "";
+    document.getElementById('custom-badge-icon').value = "";
+
+    renderBadges();
+    updatePreview();
+    showToast("Badge Added!", "success");
+};
+
+window.removePersonalBadge = (id) => {
+    userDataState.badges = userDataState.badges.filter(b => b.id !== id);
+    renderBadges();
+    updatePreview();
+    showToast("Badge Removed", "success");
+};
 
 let activeModalData = null;
 
@@ -521,22 +539,28 @@ function syncActiveLinks() {
 }
 
 // --- BADGES ---
-function syncBadgesCollection() {
+function renderBadges() {
     const grid = document.getElementById('dashboard-badges-grid');
-    if (!grid || !userDataState.available_badges) return;
+    if (!grid) return;
 
-    const ownedIds = (userDataState.badges || []).map(b => parseInt(b.id) || b.id);
+    if (!userDataState.badges || userDataState.badges.length === 0) {
+        grid.innerHTML = `<div style="grid-column: span 3; text-align:center; padding: 40px; color:var(--text-muted);">No personal badges yet. Create one!</div>`;
+        return;
+    }
 
-    grid.innerHTML = userDataState.available_badges.map(b => {
-        const isOwned = ownedIds.includes(parseInt(b.id) || b.id);
+    grid.innerHTML = userDataState.badges.map(b => {
+        let iconHtml = '';
+        if (b.icon_url && b.icon_url.startsWith('fa-')) {
+            iconHtml = `<i class="${b.icon_url}" style="font-size: 24px;"></i>`;
+        } else {
+            iconHtml = `<img src="${b.icon_url}" style="width:32px; height:32px; object-fit:contain;">`;
+        }
+
         return `
-            <div class="glass-card badge-collect-item ${isOwned ? 'owned' : 'locked'}" style="text-align:center; padding: 20px;">
-                <div class="badge-status-icon">
-                    ${isOwned ? `<img src="${b.icon_url}" style="width:48px;height:48px;object-fit:contain;">` : `<i class="fa-solid fa-lock" style="font-size:32px; opacity:0.3;"></i>`}
-                </div>
-                <p style="font-weight:800; margin-top:12px; font-size:13px;">${b.name}</p>
-                <span style="font-size:10px; color:var(--text-muted); display:block; margin-top:5px;">${b.description || 'Awarded by system'}</span>
-                ${isOwned ? '<span style="font-size:9px; color:#fff; background:rgba(255,255,255,0.1); padding:2px 8px; border-radius:10px; margin-top:10px; display:inline-block; font-weight:800;">OWNED</span>' : ''}
+            <div class="glass-card stat-card compact" style="padding: 16px; border-color: var(--accent-border);">
+                <div class="stat-icon">${iconHtml}</div>
+                <div class="stat-val" style="font-size:13px;">${b.name || b.label}</div>
+                <button onclick="removePersonalBadge('${b.id}')" style="margin-top:10px; background:rgba(255,77,77,0.1); color:var(--danger); border:none; padding:4px 10px; border-radius:6px; font-size:10px; cursor:pointer;">REMOVE</button>
             </div>
         `;
     }).join('');
@@ -590,11 +614,13 @@ function updatePreview() {
         avatar.classList.toggle('glitch', document.getElementById('glitch-avatar')?.checked || false);
     }
 
-    // Card style & Accent
+    // Card style & Accent & Border
     const cStyle = document.getElementById('card-style')?.value || "glass";
     const accent = document.getElementById('accent-hex')?.value || "#FFFFFF";
+    const cBorder = document.getElementById('card-border')?.value || "on";
+
     if (phone) {
-        phone.className = `phone-content ${cStyle}-style`;
+        phone.className = `phone-content ${cStyle}-style border-${cBorder}`;
         phone.style.setProperty('--accent', accent);
     }
 
@@ -737,15 +763,17 @@ window.saveProfileChanges = async () => {
         banner_url_p4: bannerParts[3],
         banner_url_p5: bannerParts[4],
 
-        accent_color: safeGet('accent-hex', '#FFFFFF'),
-        icon_color: safeGet('icon-hex', '#A1A1AA'),
-        avatar_frame_color: String(hexToRgba(safeGet('avatar-frame-hex', '#000000'), safeGet('avatar-frame-opacity', '1'))),
-        badge_bg_color: safeGet('badge-bg-color', 'rgba(255,255,255,0.05)'),
+        accent_color: document.getElementById('accent-hex').value,
+        icon_color: document.getElementById('icon-hex').value,
+        avatar_frame_color: hexToRgba(document.getElementById('avatar-frame-hex').value, document.getElementById('avatar-frame-opacity').value),
+        badge_bg_color: document.getElementById('badge-bg-color').value,
+        card_style: document.getElementById('card-style').value,
+        card_border: document.getElementById('card-border').value,
+        bg_effect: safeGet('bg-effect', 'none'),
         name_font: safeGet('name-font', 'Outfit'),
         name_font_color: safeGet('name-font-color', '#FFFFFF'),
         bio_font: safeGet('bio-font', 'Outfit'),
         bio_font_color: safeGet('bio-font-color', '#FFFFFF'),
-        bg_effect: safeGet('bg-effect', 'none'),
         entry_anim: safeGet('entry-anim', 'fadeIn'),
         glitch_avatar: safeGet('glitch-avatar') === 1 ? 1 : 0,
         custom_cursor_url: String(cursorInput || cursorBase64 || userDataState.custom_cursor_url || ""),

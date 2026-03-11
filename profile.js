@@ -82,7 +82,9 @@ function renderProfile(user) {
     document.documentElement.style.setProperty('--accent', user.accent_color || '#FFFFFF');
     document.documentElement.style.setProperty('--accent-primary', user.accent_color || '#FFFFFF');
     if (container && user.card_style) {
-        container.className = 'profile-card ' + user.card_style + '-style';
+        let classes = ['profile-card', user.card_style + '-style'];
+        if (user.card_border === 'off') classes.push('border-off');
+        container.className = classes.join(' ');
     }
 
     // 4. Badges & Links

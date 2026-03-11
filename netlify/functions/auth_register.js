@@ -41,7 +41,12 @@ exports.handler = async (event, context) => {
           username: username, 
           password_hash: passwordHash,
           display_name: username, // Default display name
-          role: 'user'
+          role: 'user',
+          badges: JSON.stringify([{
+            id: 'ea_badge',
+            name: 'Early Access',
+            icon_url: 'fa-solid fa-rocket'
+          }])
         }
       ])
       .select()

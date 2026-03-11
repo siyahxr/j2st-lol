@@ -54,14 +54,9 @@
                     <span data-i18n="dash_badges">Badges</span>
                 </a>
 
-                <p class="nav-label">Account</p>
                 <a href="#settings" class="nav-item" onclick="switchTab(this, 'settings')">
                     <i class="fa-solid fa-sliders"></i>
                     <span data-i18n="dash_settings">Settings</span>
-                </a>
-                <a href="/admin" class="nav-item danger" id="admin-nav-link" style="display:none;">
-                    <i class="fa-solid fa-fingerprint"></i>
-                    <span data-i18n="dash_admin">Admin</span>
                 </a>
             </nav>
 
@@ -230,6 +225,14 @@
                                         <option value="solid">Deep Black</option>
                                         <option value="gradient">Noir Gradient</option>
                                         <option value="border">Transparent Border</option>
+                                        <option value="horizontal">Horizontal Rectangle</option>
+                                    </select>
+                                </div>
+                                <div class="form-field">
+                                    <label class="form-label">Card Outline</label>
+                                    <select id="card-border" class="form-input">
+                                        <option value="on">Border Visible</option>
+                                        <option value="off">No Border</option>
                                     </select>
                                 </div>
                             </div>
@@ -405,19 +408,7 @@
                         Max 20 links recommended.</p>
 
                     <h4
-                        style="font-size:12px; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:12px;">
-                        Select Platform</h4>
-                    <div class="social-selector-grid" id="social-platform-grid"></div>
-
-                    <h4
-                        style="font-size:12px; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin: 32px 0 12px;">
-                        Add Badge Link</h4>
-                    <p style="color:var(--text-muted); font-size:11px; margin-bottom:12px;">Add clickable badges that
-                        link to any URL</p>
-                    <div class="social-selector-grid" id="badge-platform-grid" style="opacity:0.9;"></div>
-
-                    <h4
-                        style="font-size:12px; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin: 32px 0 16px;">
+                        style="font-size:12px; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin: 0 0 16px;">
                         Active Connections</h4>
                     <div class="links-list" id="dashboard-links-list"></div>
 
@@ -458,11 +449,26 @@
             <div class="tab-panel" id="tab-badges">
                 <div class="glass-card">
                     <div class="editor-section-header">
-                        <i class="fa-solid fa-shield"></i>
-                        <h3 data-i18n="dash_badges">Trophies</h3>
+                        <i class="fa-solid fa-plus-circle"></i>
+                        <h3 data-i18n="dash_badges">Create Personal Badge</h3>
                     </div>
-                    <p style="color:var(--text-muted); font-size:14px; margin-bottom:32px;">Global achievements and
-                        tokens awarded to your account.</p>
+                    <p style="color:var(--text-muted); font-size:13px; margin-bottom:24px;">Create and manage your own trophies to display on your profile.</p>
+                    
+                    <div class="form-grid" style="margin-bottom: 32px;">
+                        <div class="form-field">
+                            <label class="form-label">Badge Name</label>
+                            <input type="text" id="custom-badge-name" class="form-input" placeholder="e.g. Pro Player">
+                        </div>
+                        <div class="form-field">
+                            <label class="form-label">Icon (URL or FA Class)</label>
+                            <input type="text" id="custom-badge-icon" class="form-input" placeholder="fa-solid fa-star">
+                        </div>
+                        <div class="form-field full">
+                            <button class="save-btn mini" onclick="createPersonalBadge()" style="width:100%; height:45px;">ADD BADGE</button>
+                        </div>
+                    </div>
+
+                    <h4 style="font-size:12px; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:16px;">Your Trophies</h4>
                     <div class="form-grid" id="dashboard-badges-grid"
                         style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));">
                         <!-- Badges injected by JS -->
