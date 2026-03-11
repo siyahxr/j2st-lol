@@ -47,31 +47,20 @@
     <h1 class="profile-name" id="name-el">j2st</h1>
     <p class="profile-handle" id="handle-el">@j2st</p>
 
-    <!-- Bio -->
-    <p class="profile-bio" id="bio-el"></p>
-
-    <!-- Separator -->
-    <div class="separator"></div>
-
-    <!-- Badges (Always Visible - Below Separator) -->
+    <!-- Badges (Achievements / Personal) -->
     <div id="badges-el">
         <!-- Badges injected by JS -->
     </div>
 
-    <!-- Links List -->
-    <div id="links-el"
-        style="display: flex; flex-direction: row; justify-content: center; flex-wrap: wrap; gap: 10px; width: 100%; margin-top: 20px;">
-        <!-- Links injected by JS -->
+    <!-- Bio -->
+    <p class="profile-bio" id="bio-el"></p>
+
+    <!-- Main Connectivity Links -->
+    <div id="links-el">
+        <!-- Social & Custom links injected by JS -->
     </div>
 
-    <!-- Social Media Links Section -->
-    <div class="social-links-section">
-        <div class="social-links-grid" id="social-links-el">
-            <!-- Social links injected by JS -->
-        </div>
-    </div>
-
-    <!-- Discord Status (Optional) -->
+    <!-- Discord Status (Optional Integration) -->
     <div id="discord-status-container" style="display: none;">
         <div class="discord-card">
             <div class="discord-avatar-box">
@@ -87,18 +76,8 @@
 
     <!-- Footer -->
     <div class="footer-info">
-        <div id="music-embed-container" style="display:none; width: 100%; margin-bottom: 12px; height:80px;"></div>
-
-        <div id="music-widget" class="music-player-widget" style="display:none;">
-            <div class="music-info">
-                <i class="fa-solid fa-compact-disc fa-spin"></i>
-                <span id="music-name">Soundtrack</span>
-            </div>
-            <div class="music-controls">
-                <i class="fa-solid fa-volume-high" style="font-size:12px; opacity:0.6;"></i>
-            </div>
-        </div>
-
+        <div id="music-embed-container" style="display:none; width: 100%; margin-bottom: 0; height:0;"></div>
+        
         <div class="view-count" id="views-el">
             <i class="fa-solid fa-eye"></i>
             <span>0 views</span>

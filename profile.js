@@ -52,99 +52,121 @@ function renderProfile(user) {
     const bio = document.getElementById('bio-el');
 
     if (avatar && user.avatar_url) avatar.src = user.avatar_url;
-    if (name) name.textContent = user.display_name || user.username || 'User';
+    if (name) {
+        name.textContent = user.display_name || user.username || 'User';
+        if (user.name_font) name.style.fontFamily = user.name_font;
+        if (user.name_font_color) name.style.color = user.name_font_color;
+    }
     if (handle) handle.textContent = '@' + (user.username || 'user');
-    if (bio) bio.textContent = user.bio || '';
+    if (bio) {
+        bio.textContent = user.bio || '';
+        if (user.bio_font) bio.style.fontFamily = user.bio_font;
+        if (user.bio_font_color) bio.style.color = user.bio_font_color;
+    }
 
-    // 2. Theme
+    // 2. Theme & Styling
     const container = document.getElementById('profile-container');
-    document.documentElement.style.setProperty('--accent', user.accent_color || '#FFFFFF');
-    document.documentElement.style.setProperty('--accent-primary', user.accent_color || '#FFFFFF');
+    const accent = user.accent_color || '#FFFFFF';
+    document.documentElement.style.setProperty('--accent', accent);
+    document.documentElement.style.setProperty('--accent-glow', accent + '33');
     document.documentElement.style.setProperty('--card-bg-opacity', user.card_opacity !== undefined ? user.card_opacity : 0.7);
+    
     if (container && user.card_style) {
         let classes = ['profile-card', user.card_style + '-style'];
         if (user.card_border === 'off') classes.push('border-off');
         container.className = classes.join(' ');
     }
 
-    // 3. Social Media Badges (Main Badge Section)
-    const socialLinksEl = document.getElementById('social-links-el');
-
-    // Default social media platforms
-    const socialPlatforms = [
-        { id: 'discord', label: 'Discord', icon_url: 'fa-brands fa-discord', color: '#5865F2' },
-        { id: 'twitter', label: 'Twitter/X', icon_url: 'fa-brands fa-x-twitter', color: '#000000' },
-        { id: 'instagram', label: 'Instagram', icon_url: 'fa-brands fa-instagram', color: '#E4405F' },
-        { id: 'youtube', label: 'YouTube', icon_url: 'fa-brands fa-youtube', color: '#FF0000' },
-        { id: 'spotify', label: 'Spotify', icon_url: 'fa-brands fa-spotify', color: '#1DB954' },
-        { id: 'twitch', label: 'Twitch', icon_url: 'fa-brands fa-twitch', color: '#9146FF' },
-        { id: 'tiktok', label: 'TikTok', icon_url: 'fa-brands fa-tiktok', color: '#000000' },
-        { id: 'snapchat', label: 'Snapchat', icon_url: 'fa-brands fa-snapchat', color: '#FFFC00' },
-        { id: 'github', label: 'GitHub', icon_url: 'fa-brands fa-github', color: '#333333' },
-        { id: 'steam', label: 'Steam', icon_url: 'fa-brands fa-steam', color: '#171a21' },
-        { id: 'soundcloud', label: 'SoundCloud', icon_url: 'fa-brands fa-soundcloud', color: '#FF5500' },
-        { id: 'linkedin', label: 'LinkedIn', icon_url: 'fa-brands fa-linkedin', color: '#0A66C2' }
-    ];
-
-    // Get user's social links from database
-    let userSocialLinks = [];
-    if (user.social_links && Array.isArray(user.social_links)) {
-        userSocialLinks = user.social_links;
-    } else if (typeof user.social_links === 'string') {
-        try { userSocialLinks = JSON.parse(user.social_links); } catch (e) { userSocialLinks = []; }
+    if (avatar) {
+        const frameColor = user.avatar_frame_color || 'rgba(255,255,255,0.1)';
+        avatar.style.borderColor = frameColor;
+        avatar.style.boxShadow = `0 0 20px ${frameColor}`;
+        if (user.glitch_avatar) avatar.classList.add('glitch-fx');
     }
 
-    if (socialLinksEl) {
-        // Merge default platforms with user's social links
-        const allSocialBadges = socialPlatforms.map(platform => {
-            const userLink = userSocialLinks.find(s => s.id === platform.id);
-            return {
-                ...platform,
-                url: userLink && userLink.url ? userLink.url : '',
-                name: userLink && userLink.name ? userLink.name : platform.label
-            };
-        });
+    // 3. Badges (Achievements / Personal Badges)
+    const badgesEl = document.getElementById('badges-el');
+    if (badgesEl) {
+        let userBadges = [];
+        if (user.badges) {
+            if (typeof user.badges === 'string') {
+                try { userBadges = JSON.parse(user.badges); } catch(e) { userBadges = []; }
+            } else if (Array.isArray(user.badges)) {
+                userBadges = user.badges;
+            }
+        }
 
-        // Only show badges that have URLs
-        const filledBadges = allSocialBadges.filter(b => b.url && b.url.trim() !== '');
+        if (userBadges.length > 0) {
+            badgesEl.innerHTML = userBadges.map(b => {
+                let iconContent = '';
+                if (b.icon_url && b.icon_url.startsWith('fa-')) {
+                    iconContent = `<i class="${b.icon_url}" style="font-size: 20px; color: #fff;"></i>`;
+                } else if (b.icon_url) {
+                    iconContent = `<img src="${b.icon_url}" class="badge-icon">`;
+                } else {
+                    iconContent = `<i class="fa-solid fa-award" style="font-size: 20px; color: #fff;"></i>`;
+                }
 
-        if (filledBadges.length > 0) {
-            socialLinksEl.innerHTML = filledBadges.map(b => {
-                return `<a href="${b.url}" target="_blank" class="social-link-item" style="background: ${b.color};">
-                    <i class="${b.icon_url}"></i>
-                </a>`;
+                return `
+                    <div class="badge-item" data-label="${b.name || 'Badge'}">
+                        ${iconContent}
+                    </div>
+                `;
             }).join('');
         } else {
-            socialLinksEl.innerHTML = '';
+            badgesEl.innerHTML = '';
         }
     }
 
-    // 4. Custom Links (Legacy)
+    // 4. Social & Custom Links
     const linksEl = document.getElementById('links-el');
-    if (linksEl && user.links) {
-        let lList = user.links;
-        if (typeof lList === 'string') try { lList = JSON.parse(lList); } catch (e) { lList = []; }
+    if (linksEl) {
+        let userLinks = [];
+        if (user.links) {
+            if (typeof user.links === 'string') {
+                try { userLinks = JSON.parse(user.links); } catch(e) { userLinks = []; }
+            } else if (Array.isArray(user.links)) {
+                userLinks = user.links;
+            }
+        }
 
-        if (Array.isArray(lList)) {
-            linksEl.style.display = 'flex';
-            linksEl.style.flexDirection = 'row';
-            linksEl.style.justifyContent = 'center';
-            linksEl.style.gap = '10px';
-            linksEl.style.flexWrap = 'wrap';
+        if (userLinks.length > 0) {
+            linksEl.innerHTML = userLinks.map(l => {
+                const color = l.badgeColor || accent;
+                const isBadge = l.isBadge;
 
-            linksEl.innerHTML = lList.map(l => {
-                if (l.isBadge) {
-                    return `<a href="${l.url}" target="_blank" class="badge-item" data-label="${l.title}" style="width:38px;height:38px;">
-                        <i class="${l.icon}" style="font-size:18px; color:${l.badgeColor || '#fff'};"></i>
-                    </a>`;
+                if (isBadge) {
+                    // Small badge-style link
+                    return `
+                        <a href="${l.url}" target="_blank" class="badge-item" data-label="${l.title}" style="background: ${color}15; border: 1px solid ${color}33;">
+                            <i class="${l.icon || 'fa-solid fa-link'}" style="font-size: 18px; color: ${color};"></i>
+                        </a>
+                    `;
+                } else {
+                    // Main button-style link
+                    return `
+                        <a href="${l.url}" target="_blank" class="profile-link-btn" style="--item-color: ${color}">
+                            <div class="link-btn-glow"></div>
+                            <div class="link-btn-content">
+                                <i class="${l.icon || 'fa-solid fa-link'}"></i>
+                                <span>${l.title}</span>
+                            </div>
+                            <i class="fa-solid fa-chevron-right arrow-icon"></i>
+                        </a>
+                    `;
                 }
-                return `<a href="${l.url}" target="_blank" class="badge-item" data-label="${l.title}">
-                    <i class="${l.icon}" style="font-size:20px;"></i>
-                </a>`;
             }).join('');
+            
             if (window.twemoji) twemoji.parse(linksEl);
+        } else {
+            linksEl.innerHTML = '';
         }
     }
+
+    // 5. Cleanup redundant social section
+    const socialLinksEl = document.getElementById('social-links-el');
+    if (socialLinksEl) socialLinksEl.innerHTML = '';
+
 
     // 5. 3D Tilt
     const card = document.getElementById('profile-container');
@@ -171,18 +193,15 @@ function renderProfile(user) {
     }
 
     // 7. Music
-    if (user.music_embed && user.music_embed.includes('spotify')) {
-        const musicContainer = document.getElementById('music-embed-container');
-        if (musicContainer) {
+    const musicContainer = document.getElementById('music-embed-container');
+    if (musicContainer) {
+        if (user.music_embed && user.music_embed.includes('spotify')) {
             musicContainer.style.display = 'block';
+            musicContainer.style.height = '80px';
+            musicContainer.style.marginBottom = '20px';
             musicContainer.innerHTML = `<iframe style="border-radius:12px" src="https://open.spotify.com/embed${user.music_embed.replace('https://open.spotify.com', '')}" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
-        }
-    } else if (user.music_widget) {
-        const musicWidget = document.getElementById('music-widget');
-        const musicName = document.getElementById('music-name');
-        if (musicWidget) {
-            musicWidget.style.display = 'flex';
-            if (musicName) musicName.textContent = user.music_widget;
+        } else {
+            musicContainer.style.display = 'none';
         }
     }
 
