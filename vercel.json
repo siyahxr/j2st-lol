@@ -24,63 +24,63 @@
     },
     {
       "source": "/api/auth/login",
-      "destination": "/system/api/auth_login"
+      "destination": "/system/api/auth_login.js"
     },
     {
       "source": "/api/auth/register",
-      "destination": "/system/api/auth_register"
+      "destination": "/system/api/auth_register.js"
     },
     {
       "source": "/api/admin/users",
-      "destination": "/system/api/admin_users"
+      "destination": "/system/api/admin_users.js"
     },
     {
       "source": "/api/admin/create_badge",
-      "destination": "/system/api/admin_create_badge"
+      "destination": "/system/api/admin_create_badge.js"
     },
     {
       "source": "/api/admin/delete_user",
-      "destination": "/system/api/admin_delete_user"
+      "destination": "/system/api/admin_delete_user.js"
     },
     {
       "source": "/api/admin/get_badges",
-      "destination": "/system/api/admin_get_badges"
+      "destination": "/system/api/admin_get_badges.js"
     },
     {
       "source": "/api/admin/set_badges",
-      "destination": "/system/api/admin_set_badges"
+      "destination": "/system/api/admin_set_badges.js"
     },
     {
       "source": "/api/admin/delete_badge",
-      "destination": "/system/api/admin_delete_badge"
+      "destination": "/system/api/admin_delete_badge.js"
     },
     {
       "source": "/api/admin/set_role",
-      "destination": "/system/api/admin_set_role"
+      "destination": "/system/api/admin_set_role.js"
     },
     {
       "source": "/api/admin/migrate",
-      "destination": "/system/api/admin_migrate"
+      "destination": "/system/api/admin_migrate.js"
     },
     {
       "source": "/api/user/profile",
-      "destination": "/system/api/user_profile"
+      "destination": "/system/api/user_profile.js"
     },
     {
       "source": "/api/user/change-username",
-      "destination": "/system/api/user_change_username"
+      "destination": "/system/api/user_change_username.js"
     },
     {
       "source": "/api/user/change-password",
-      "destination": "/system/api/user_change_password"
+      "destination": "/system/api/user_change_password.js"
     },
     {
       "source": "/api/profile/update",
-      "destination": "/system/api/profile_update"
+      "destination": "/system/api/profile_update.js"
     },
     {
       "source": "/api/force_admin",
-      "destination": "/system/api/temp_promote"
+      "destination": "/system/api/temp_promote.js"
     },
     {
       "source": "/((?!api|assets|css|js|system|p|favicon\\.ico|robots\\.txt|.*\\.html|.*\\.js|.*\\.css).*)$",
