@@ -9,25 +9,39 @@ async function initProfile() {
     if (!username) {
         username = window.location.pathname.split('/').filter(Boolean).pop() || 'j2st';
     }
-    const container = document.getElementById('profile-container');
-    const layoutMain = document.querySelector('.profile-layout-main');
+    
+    // Safety check for weird paths
+    if (username === '$' || username === 'profile.html') username = 'j2st';
+
     const overlay = document.getElementById('click-enter');
     const overlayText = document.getElementById('overlay-text');
     const overlayContent = document.getElementById('overlay-content');
 
+    let initialized = false;
+
     // Utility to set overlay to "ready"
     function setReady() {
+        if (initialized) return;
+        initialized = true;
+        console.log("Profile Ready.");
         if (overlayText) overlayText.textContent = "CLICK TO ENTER";
         if (overlayContent) overlayContent.classList.remove('loading');
-        if (overlay) overlay.onclick = enterProfile;
+        if (overlay) {
+            overlay.onclick = enterProfile;
+            overlay.style.cursor = 'pointer';
+        }
     }
+
+    // FAILSAFE: If it takes more than 3.5s, just show the button anyway
+    setTimeout(setReady, 3500);
 
     // 1. Try Cache
     const cacheKey = `profile_cache_${username}`;
     const cachedData = localStorage.getItem(cacheKey);
     if (cachedData) {
         try {
-            renderProfile(JSON.parse(cachedData));
+            const data = JSON.parse(cachedData);
+            safeRender(data);
             setReady();
         } catch (e) { console.warn("Cache fail", e); }
     }
@@ -46,9 +60,7 @@ async function initProfile() {
 
         // Save and re-render fresh
         localStorage.setItem(cacheKey, JSON.stringify(data));
-        renderProfile(data);
-        
-        // Finalize Ready State
+        safeRender(data);
         setReady();
 
     } catch (e) {
@@ -57,8 +69,16 @@ async function initProfile() {
             document.getElementById('error-container').style.display = 'flex';
             if (overlay) overlay.style.display = 'none';
         } else {
-            setReady(); // Keep using cache if fetch fails
+            setReady(); 
         }
+    }
+}
+
+function safeRender(data) {
+    try {
+        renderProfile(data);
+    } catch (e) {
+        console.error("Render failed but continuing", e);
     }
 }
 
