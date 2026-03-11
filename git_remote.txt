@@ -1,0 +1,2 @@
+origin	git@github.com:siyahxr/j2st-lol.git (fetch)
+origin	git@github.com:siyahxr/j2st-lol.git (push)

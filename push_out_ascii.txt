@@ -1,0 +1,12 @@
+git : git@github.com: Permission denied (publickey).
+At line:1 char:1
++ git push -u origin main > push_out.txt 2>&1
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (git@github.com:...ed (publickey).:String 
+   ) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
