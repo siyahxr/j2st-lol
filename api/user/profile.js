@@ -71,7 +71,8 @@ module.exports = async (req, res) => {
       ...user,
       views: updatedViews,
       badges: resolvedBadges,
-      available_badges: globalList
+      available_badges: globalList,
+      social_links: user.social_links || []
     };
 
     // Remove sensitive data
