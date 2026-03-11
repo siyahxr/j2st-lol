@@ -20,25 +20,17 @@
 <div id="full-bg"></div>
 <div class="profile-bg-vignette"></div>
 
-<!-- Loading State -->
-<div id="loading" class="full-screen-center">
-    <div class="premium-loader">
-        <div class="loader-ring"></div>
-        <div class="loader-eye"></div>
-    </div>
-</div>
-
-<!-- Premium Click-to-Enter Overlay -->
-<div id="click-enter" class="enter-overlay" onclick="enterProfile()">
-    <div class="enter-btn">
+<!-- Unified Overlay (Loading -> Ready) -->
+<div id="click-enter" class="enter-overlay">
+    <div id="overlay-content" class="enter-btn loading">
         <div class="enter-icon-wrapper">
             <i class="fa-solid fa-dragon"></i>
         </div>
-        <span>CLICK TO ENTER</span>
+        <span id="overlay-text">SYNCHRONIZING ESSENCE...</span>
     </div>
 </div>
 
-<div class="profile-layout-main">
+<div class="profile-layout-main" style="display: none; opacity: 0; transition: opacity 1s ease;">
     <!-- Side Tabs -->
     <div class="profile-tabs-side" id="tab-nav">
         <button class="p-tab active" data-tab="links">Links</button>

@@ -10,21 +10,26 @@ async function initProfile() {
         username = window.location.pathname.split('/').filter(Boolean).pop() || 'j2st';
     }
     const container = document.getElementById('profile-container');
-    const loadingEl = document.getElementById('loading');
+    const layoutMain = document.querySelector('.profile-layout-main');
     const overlay = document.getElementById('click-enter');
+    const overlayText = document.getElementById('overlay-text');
+    const overlayContent = document.getElementById('overlay-content');
 
-    // 1. Try to load from cache first for instant feel
+    // Utility to set overlay to "ready"
+    function setReady() {
+        if (overlayText) overlayText.textContent = "CLICK TO ENTER";
+        if (overlayContent) overlayContent.classList.remove('loading');
+        if (overlay) overlay.onclick = enterProfile;
+    }
+
+    // 1. Try Cache
     const cacheKey = `profile_cache_${username}`;
     const cachedData = localStorage.getItem(cacheKey);
     if (cachedData) {
         try {
-            const data = JSON.parse(cachedData);
-            renderProfile(data);
-            if (container) container.style.display = 'flex';
-            if (loadingEl) loadingEl.style.display = 'none'; // Hide loader instantly if cached
-        } catch (e) {
-            console.warn("Cache parse failed", e);
-        }
+            renderProfile(JSON.parse(cachedData));
+            setReady();
+        } catch (e) { console.warn("Cache fail", e); }
     }
 
     try {
@@ -34,30 +39,25 @@ async function initProfile() {
         if (data.error) {
             if (!cachedData) {
                 document.getElementById('error-container').style.display = 'flex';
-                if (loadingEl) loadingEl.style.display = 'none';
+                if (overlay) overlay.style.display = 'none';
             }
             return;
         }
 
-        // Save to cache
+        // Save and re-render fresh
         localStorage.setItem(cacheKey, JSON.stringify(data));
-
-        // Render fresh data
         renderProfile(data);
         
-        // Finalize loading
-        if (container) container.style.display = 'flex';
-        
-        if (loadingEl) {
-            loadingEl.style.opacity = "0";
-            setTimeout(() => { loadingEl.style.display = 'none'; }, 500);
-        }
+        // Finalize Ready State
+        setReady();
 
     } catch (e) {
         console.error("Profile Fetch Failed:", e);
         if (!cachedData) {
-            if (loadingEl) loadingEl.style.display = 'none';
             document.getElementById('error-container').style.display = 'flex';
+            if (overlay) overlay.style.display = 'none';
+        } else {
+            setReady(); // Keep using cache if fetch fails
         }
     }
 }
@@ -212,6 +212,8 @@ function renderProfile(user) {
 
     // 7. Music
     const musicContainer = document.getElementById('music-embed-container');
+    const directPlayer = document.getElementById('profile-music-player');
+    
     if (musicContainer) {
         if (user.music_embed && user.music_embed.includes('spotify')) {
             musicContainer.style.display = 'block';
@@ -221,6 +223,12 @@ function renderProfile(user) {
         } else {
             musicContainer.style.display = 'none';
         }
+    }
+
+    if (directPlayer && user.music_url) {
+        directPlayer.src = user.music_url;
+        directPlayer.loop = true;
+        directPlayer.volume = 0.5;
     }
 
     // 8. Tab Logic
@@ -273,14 +281,30 @@ function setup3DTilt(card) {
 
 function enterProfile() {
     const overlay = document.getElementById('click-enter');
+    const layoutMain = document.querySelector('.profile-layout-main');
+    const musicPlayer = document.getElementById('profile-music-player');
+    
     if (overlay) {
         overlay.classList.add('clicked');
+        
+        // Start Music
+        if (musicPlayer && musicPlayer.src) {
+            musicPlayer.play().catch(e => console.log("Autoplay blocked", e));
+        }
+
         setTimeout(() => {
             overlay.classList.add('fade-out');
             document.body.classList.add('profile-entered');
+            
+            // Show main layout
+            if (layoutMain) {
+                layoutMain.style.display = 'flex';
+                setTimeout(() => layoutMain.style.opacity = '1', 50);
+            }
+
             setTimeout(() => {
                 overlay.style.display = 'none';
-            }, 500);
+            }, 800);
         }, 300);
     }
 }
