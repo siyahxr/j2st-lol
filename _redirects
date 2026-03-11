@@ -1,7 +1,0 @@
-# J2ST.LOL - ASSET ROUTING
-# API and Username/SPA routes are handled by Cloudflare Functions / _middleware.js
-
-/css/*          /css/:splat              200
-/js/*           /js/:splat               200
-/assets/*       /assets/:splat           200
-/system/*       /system/:splat           200
