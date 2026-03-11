@@ -4,6 +4,54 @@
    Click Enter Effect Enhanced
    ============================================================ */
 
+#loading {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 1000000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.5s ease;
+}
+
+.premium-loader {
+    position: relative;
+    width: 100px;
+    height: 100px;
+}
+
+.loader-ring {
+    position: absolute;
+    inset: 0;
+    border: 2px solid rgba(255, 255, 255, 0.05);
+    border-top: 2px solid #fff;
+    border-radius: 50%;
+    animation: loader-spin 1s linear infinite;
+}
+
+.loader-eye {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+    animation: loader-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes loader-spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes loader-pulse {
+    0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(0.9); }
+    50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+}
+
 .enter-overlay {
     position: fixed;
     inset: 0;

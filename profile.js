@@ -11,36 +11,54 @@ async function initProfile() {
     }
     const container = document.getElementById('profile-container');
     const loadingEl = document.getElementById('loading');
+    const overlay = document.getElementById('click-enter');
+
+    // 1. Try to load from cache first for instant feel
+    const cacheKey = `profile_cache_${username}`;
+    const cachedData = localStorage.getItem(cacheKey);
+    if (cachedData) {
+        try {
+            const data = JSON.parse(cachedData);
+            renderProfile(data);
+            if (container) container.style.display = 'flex';
+            if (loadingEl) loadingEl.style.display = 'none'; // Hide loader instantly if cached
+        } catch (e) {
+            console.warn("Cache parse failed", e);
+        }
+    }
 
     try {
         const res = await fetch(`/api/user/profile?u=${username}`);
         const data = await res.json();
 
         if (data.error) {
-            document.getElementById('error-container').style.display = 'flex';
-            loadingEl.style.display = 'none';
+            if (!cachedData) {
+                document.getElementById('error-container').style.display = 'flex';
+                if (loadingEl) loadingEl.style.display = 'none';
+            }
             return;
         }
 
-        // Show profile first, then render
-        if (container) container.style.display = '';
+        // Save to cache
+        localStorage.setItem(cacheKey, JSON.stringify(data));
 
-        // Remove enter overlay immediately and show profile
-        const overlay = document.getElementById('click-enter');
-        if (overlay) {
-            overlay.style.display = 'none';
-        }
-        document.body.classList.add('profile-entered');
-
-        renderProfile(data, true);
+        // Render fresh data
+        renderProfile(data);
+        
+        // Finalize loading
+        if (container) container.style.display = 'flex';
+        
         if (loadingEl) {
             loadingEl.style.opacity = "0";
-            loadingEl.style.transition = "opacity 0.5s ease";
             setTimeout(() => { loadingEl.style.display = 'none'; }, 500);
         }
 
     } catch (e) {
-        console.error("Profile Failed:", e);
+        console.error("Profile Fetch Failed:", e);
+        if (!cachedData) {
+            if (loadingEl) loadingEl.style.display = 'none';
+            document.getElementById('error-container').style.display = 'flex';
+        }
     }
 }
 
