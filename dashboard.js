@@ -411,7 +411,7 @@ window.addLink = (platId) => {
     openLinkModal(p, false);
 };
 
-function openLinkModal(p, isBadge) {
+window.openLinkModal = (p, isBadge) => {
     activeModalData = { ...p, isBadge };
     const modal = document.getElementById('link-modal');
     const platName = document.getElementById('modal-platform-name');
@@ -425,7 +425,7 @@ function openLinkModal(p, isBadge) {
     urlInput.value = "";
     modal.classList.add('active');
     urlInput.focus();
-}
+};
 
 window.closeLinkModal = () => {
     const modal = document.getElementById('link-modal');

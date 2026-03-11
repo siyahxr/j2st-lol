@@ -539,6 +539,32 @@
         </aside>
     </div>
 
+    <!-- LINK MODAL -->
+    <div id="link-modal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <i class="fa-solid fa-plus-circle"></i>
+                <h3 data-i18n="modal_add_link">Add Connection</h3>
+            </div>
+            <p id="modal-platform-name" style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px;">Platform</p>
+            
+            <div class="form-field" style="margin-bottom: 16px;">
+                <label class="form-label" style="display:block; margin-bottom: 8px;">Display Name</label>
+                <input type="text" id="modal-link-title" class="form-input" placeholder="e.g. My Profil" style="width:100%">
+            </div>
+            
+            <div class="form-field" style="margin-bottom: 24px;">
+                <label class="form-label" style="display:block; margin-bottom: 8px;">Destination URL</label>
+                <input type="text" id="modal-link-url" class="form-input" placeholder="https://..." style="width:100%">
+            </div>
+            
+            <div class="modal-actions" style="display: flex; gap: 12px; justify-content: flex-end;">
+                <button class="ta-btn" onclick="closeLinkModal()">CANCEL</button>
+                <button class="save-btn mini" onclick="confirmAddLink()" style="background: #fff; color: #000; border: none; padding: 10px 20px;">CONFIRM</button>
+            </div>
+        </div>
+    </div>
+
     <!-- TOAST -->
     <div id="toast" class="toast-notif">
         <i class="fa-solid fa-circle-check"></i>
