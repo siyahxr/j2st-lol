@@ -540,8 +540,11 @@ body {
 #links-el {
     width: 100%;
     display: flex;
-    flex-direction: column;
-    gap: 14px;
+    flex-direction: row; /* Horizontal */
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 20px;
 }
 
 .music-player-widget,

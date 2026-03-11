@@ -89,14 +89,25 @@ function renderProfile(user) {
     const badgesEl = document.getElementById('badges-el');
     if (badgesEl && user.badges && Array.isArray(user.badges)) {
         badgesEl.innerHTML = user.badges.map(b => {
-            const badgeUrl = b.url || '';
-            if (badgeUrl) {
-                return `<a href="${badgeUrl}" target="_blank" class="badge-item" data-label="${b.label || ''}">
-                    <img src="${b.icon_url}" alt="${b.label}" class="badge-icon">
+            const badgeLabel = b.label || b.name || '';
+            let iconHtml = '';
+            
+            // Special case for Founder
+            if (badgeLabel.toLowerCase() === 'founder') {
+                iconHtml = `<img src="/assets/icons/user_dragon.png" alt="Founder" class="badge-icon">`;
+            } else if (b.icon_url && b.icon_url.startsWith('fa-')) {
+                iconHtml = `<i class="${b.icon_url}" style="font-size: 20px;"></i>`;
+            } else {
+                iconHtml = `<img src="${b.icon_url}" alt="${badgeLabel}" class="badge-icon">`;
+            }
+
+            if (b.url) {
+                return `<a href="${b.url}" target="_blank" class="badge-item" data-label="${badgeLabel}">
+                    ${iconHtml}
                 </a>`;
             }
-            return `<div class="badge-item" data-label="${b.label || ''}">
-                <img src="${b.icon_url}" alt="${b.label}" class="badge-icon">
+            return `<div class="badge-item" data-label="${badgeLabel}">
+                ${iconHtml}
             </div>`;
         }).join('');
         if (window.twemoji) twemoji.parse(badgesEl);
@@ -109,6 +120,7 @@ function renderProfile(user) {
 
         if (Array.isArray(lList)) {
             linksEl.style.display = 'flex';
+            linksEl.style.flexDirection = 'row';
             linksEl.style.justifyContent = 'center';
             linksEl.style.gap = '10px';
             linksEl.style.flexWrap = 'wrap';

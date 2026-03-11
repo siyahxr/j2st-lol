@@ -602,16 +602,33 @@ function updatePreview() {
     const badgeBg = document.getElementById('badge-bg-color')?.value || "rgba(255,255,255,0.05)";
     const badgesPreview = document.getElementById('preview-badges');
     if (badgesPreview) {
-        badgesPreview.innerHTML = (d.badges || []).map(b => `
-            <div class="badge-item" data-label="${b.name}" style="background: ${badgeBg}; border-radius: 4px;">
-                <img src="${b.icon_url}" class="badge-icon">
-            </div>
-        `).join('');
+        badgesPreview.innerHTML = (d.badges || []).map(b => {
+            const badgeLabel = b.name || '';
+            let iconHtml = '';
+            
+            if (badgeLabel.toLowerCase() === 'founder') {
+                iconHtml = `<img src="/assets/icons/user_dragon.png" class="badge-icon">`;
+            } else if (b.icon_url && b.icon_url.startsWith('fa-')) {
+                iconHtml = `<i class="${b.icon_url}" style="font-size: 14px; color: #fff;"></i>`;
+            } else {
+                iconHtml = `<img src="${b.icon_url}" class="badge-icon">`;
+            }
+
+            return `<div class="badge-item" data-label="${badgeLabel}" style="background: ${badgeBg}; border-radius: 4px;">
+                ${iconHtml}
+            </div>`;
+        }).join('');
     }
 
     // Links Preview
     const linksPreview = document.getElementById('preview-links');
     if (linksPreview) {
+        linksPreview.style.display = 'flex';
+        linksPreview.style.flexDirection = 'row';
+        linksPreview.style.justifyContent = 'center';
+        linksPreview.style.flexWrap = 'wrap';
+        linksPreview.style.gap = '10px';
+        
         linksPreview.innerHTML = (d.links || []).map(l => {
             if (l.isBadge) {
                 return `<a href="${l.url}" target="_blank" class="badge-item" data-label="${l.title}" style="width:38px;height:38px;text-decoration:none;">
