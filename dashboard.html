@@ -230,10 +230,17 @@
                                 </div>
                                 <div class="form-field">
                                     <label class="form-label">Card Outline</label>
-                                    <select id="card-border" class="form-input">
+                                    <select id="card-border" class="form-input" onchange="updatePreview()">
                                         <option value="on">Border Visible</option>
                                         <option value="off">No Border</option>
                                     </select>
+                                </div>
+                                <div class="form-field">
+                                    <label class="form-label">Card Background Opacity</label>
+                                    <div style="display:flex; align-items:center; gap:10px;">
+                                        <input type="range" id="card-opacity" min="0" max="1" step="0.01" value="0.7" style="flex:1" oninput="updatePreview()">
+                                        <span id="opacity-val" style="font-size:11px; color:var(--text-muted); width:30px;">70%</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>

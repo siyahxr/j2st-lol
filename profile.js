@@ -81,6 +81,7 @@ function renderProfile(user) {
     const container = document.getElementById('profile-container');
     document.documentElement.style.setProperty('--accent', user.accent_color || '#FFFFFF');
     document.documentElement.style.setProperty('--accent-primary', user.accent_color || '#FFFFFF');
+    document.documentElement.style.setProperty('--card-bg-opacity', user.card_opacity !== undefined ? user.card_opacity : 0.7);
     if (container && user.card_style) {
         let classes = ['profile-card', user.card_style + '-style'];
         if (user.card_border === 'off') classes.push('border-off');

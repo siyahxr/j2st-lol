@@ -227,7 +227,8 @@ body.profile-entered #profile-container {
     --accent: #ffffff;
     --accent-glow: rgba(255, 255, 255, 0.1);
     --bg-dark: #020202;
-    --glass-bg: rgba(8, 8, 8, 0.6);
+    --card-bg-opacity: 1; /* Dynamic */
+    --glass-bg: rgba(8, 8, 8, var(--card-bg-opacity));
     --glass-border: rgba(255, 255, 255, 0.06);
     --text-primary: #ffffff;
     --text-secondary: rgba(255, 255, 255, 0.5);
@@ -348,7 +349,7 @@ body {
 
 .profile-card.solid-style,
 .phone-content.solid-style {
-    background: #000;
+    background: rgba(0, 0, 0, var(--card-bg-opacity));
     border: 1px solid #111;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
     overflow: visible;
@@ -356,14 +357,14 @@ body {
 
 .profile-card.gradient-style,
 .phone-content.gradient-style {
-    background: linear-gradient(165deg, #0a0a0a 0%, #000000 100%);
+    background: linear-gradient(165deg, rgba(10,10,10, var(--card-bg-opacity)) 0%, rgba(0,0,0, var(--card-bg-opacity)) 100%);
     border: 1px solid rgba(255, 255, 255, 0.04);
     overflow: visible;
 }
 
 .profile-card.border-style,
 .phone-content.border-style {
-    background: transparent;
+    background: rgba(0, 0, 0, var(--card-bg-opacity));
     border: 2px solid var(--accent);
     backdrop-filter: blur(10px);
     overflow: visible;
@@ -373,26 +374,50 @@ body {
 .profile-card.horizontal-style,
 .phone-content.horizontal-style {
     max-width: 800px;
-    min-height: 480px;
-    flex-direction: row;
-    padding: 60px;
-}
-
-.profile-card.horizontal-style .avatar-wrapper {
-    margin-bottom: 0;
-}
-
-.profile-card.horizontal-style .profile-name,
-.profile-card.horizontal-style .profile-handle,
-.profile-card.horizontal-style .profile-bio,
-.profile-card.horizontal-style #badges-el,
-.profile-card.horizontal-style #links-el {
+    min-height: auto;
+    flex-direction: column; /* Stacked internally, but we'll use grids for the big layout */
+    padding: 40px;
+    align-items: flex-start;
     text-align: left;
-    justify-content: flex-start;
 }
 
-.profile-card.horizontal-style #badges-el {
-    margin-top: 20px;
+.profile-card.horizontal-style {
+    display: grid !important;
+    grid-template-columns: 140px 1fr;
+    grid-template-areas: 
+        "avatar name"
+        "avatar bio"
+        "badges badges"
+        "links links";
+    gap: 20px 40px;
+    align-items: center;
+}
+
+.profile-card.horizontal-style .avatar-wrapper { 
+    grid-area: avatar; 
+    margin-bottom: 0; 
+    align-self: start;
+}
+
+.profile-card.horizontal-style .profile-name { grid-area: name; text-align: left; }
+.profile-card.horizontal-style .profile-bio { grid-area: bio; text-align: left; max-width: 100%; margin-bottom: 0; }
+.profile-card.horizontal-style #badges-el { grid-area: badges; justify-content: flex-start; margin: 0; }
+.profile-card.horizontal-style #links-el { grid-area: links; justify-content: flex-start; margin-top: 10px; }
+
+@media (max-width: 768px) {
+    .profile-card.horizontal-style {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+    }
+    .profile-card.horizontal-style .profile-name,
+    .profile-card.horizontal-style .profile-bio,
+    .profile-card.horizontal-style #badges-el,
+    .profile-card.horizontal-style #links-el {
+        text-align: center;
+        justify-content: center;
+    }
 }
 
 /* BORDER TOGGLE */

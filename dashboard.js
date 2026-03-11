@@ -191,6 +191,9 @@ function syncUI() {
     if (document.getElementById('card-border')) {
         document.getElementById('card-border').value = userDataState.card_border || "on";
     }
+    if (document.getElementById('card-opacity')) {
+        document.getElementById('card-opacity').value = userDataState.card_opacity || 0.7;
+    }
     
     // Typography
     document.getElementById('name-font').value = userDataState.name_font || "Outfit";
@@ -614,15 +617,21 @@ function updatePreview() {
         avatar.classList.toggle('glitch', document.getElementById('glitch-avatar')?.checked || false);
     }
 
-    // Card style & Accent & Border
+    // Card style & Accent & Border & Opacity
     const cStyle = document.getElementById('card-style')?.value || "glass";
     const accent = document.getElementById('accent-hex')?.value || "#FFFFFF";
     const cBorder = document.getElementById('card-border')?.value || "on";
+    const cOpacity = document.getElementById('card-opacity')?.value || "0.7";
 
     if (phone) {
         phone.className = `phone-content ${cStyle}-style border-${cBorder}`;
         phone.style.setProperty('--accent', accent);
+        phone.style.setProperty('--card-bg-opacity', cOpacity);
     }
+    
+    // Update opacity label
+    const opVal = document.getElementById('opacity-val');
+    if (opVal) opVal.textContent = Math.round(cOpacity * 100) + '%';
 
     // Backends might need to know about the badge bg
     const badgeBg = document.getElementById('badge-bg-color')?.value || "rgba(255,255,255,0.05)";
@@ -769,6 +778,7 @@ window.saveProfileChanges = async () => {
         badge_bg_color: document.getElementById('badge-bg-color').value,
         card_style: document.getElementById('card-style').value,
         card_border: document.getElementById('card-border').value,
+        card_opacity: parseFloat(document.getElementById('card-opacity').value),
         bg_effect: safeGet('bg-effect', 'none'),
         name_font: safeGet('name-font', 'Outfit'),
         name_font_color: safeGet('name-font-color', '#FFFFFF'),

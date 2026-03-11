@@ -25,7 +25,7 @@ exports.handler = async (event, context) => {
       "profile_music_url", "profile_music_url_p2", "profile_music_url_p3", "profile_music_url_p4", "profile_music_url_p5",
       "banner_url", "banner_url_p2", "banner_url_p3", "banner_url_p4", "banner_url_p5",
       "bg_effect", "entry_anim", "tilt_3d", "custom_cursor_url",
-      "links"
+      "card_border", "card_opacity", "links", "badges"
     ];
 
     const updateData = {};
