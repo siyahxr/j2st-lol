@@ -1,6 +1,17 @@
 {
   "version": 2,
   "cleanUrls": true,
+  "functions": {
+    "system/api/auth_login.js": {
+      "runtime": "nodejs18.x"
+    },
+    "system/api/auth_register.js": {
+      "runtime": "nodejs18.x"
+    },
+    "system/api/*.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
   "rewrites": [
     {
       "source": "/admin",

@@ -1,4 +1,4 @@
-// Cloudflare D1 Backend for auth.js
+// Vercel Backend for auth.js
 
 // Immediate session check
 (function checkExistingSession() {
@@ -51,22 +51,17 @@ function setLoading(id, on) {
     btn.textContent = on ? "Bekle..." : (id === "btn-login" ? "Sign In →" : "Create Account →");
 }
 
-function isTurnstileOk() {
-    try { return window.turnstile ? !!window.turnstile.getResponse() : true; }
-    catch { return true; }
-}
-
 // LOGIN
 window.handleLogin = async function (e) {
     e.preventDefault();
     setErr("login-error", ""); setOk("login-info", "");
 
-    if (!isTurnstileOk()) {
-        setErr("login-error", "✗ Cloudflare doğrulamasını tamamla."); return;
-    }
-
-    const emailOrUser = document.getElementById("login-email").value.trim(); // Username shouldn't be lowercased by default
+    const emailOrUser = document.getElementById("login-email").value.trim();
     const password = document.getElementById("login-pass").value;
+
+    if (!emailOrUser || !password) {
+        setErr("login-error", "✗ Lütfen tüm alanları doldurun."); return;
+    }
 
     setLoading("btn-login", true);
 
@@ -84,7 +79,7 @@ window.handleLogin = async function (e) {
             data = await res.json();
         } else {
             const text = await res.text();
-            throw new Error(`Sunucu hatası (${res.status}): Beklenmedik yanıt formatı. Yanıt: ${text.substring(0, 100)}`);
+            throw new Error(`Sunucu hatası (${res.status}): ${text.substring(0, 100)}`);
         }
 
         if (!res.ok) throw new Error(data.error || "Giriş başarısız.");
@@ -96,7 +91,6 @@ window.handleLogin = async function (e) {
     } catch (err) {
         console.error("Login hatası:", err);
         setErr("login-error", "✗ Hata: " + err.message);
-        if (window.turnstile) window.turnstile.reset();
     } finally {
         setLoading("btn-login", false);
     }
@@ -107,17 +101,21 @@ window.handleRegister = async function (e) {
     e.preventDefault();
     setErr("reg-error", ""); setOk("reg-success", "");
 
-    if (!isTurnstileOk()) {
-        setErr("reg-error", "✗ Cloudflare doğrulamasını tamamla."); return;
-    }
-
     const username = document.getElementById("reg-user").value.trim();
     const email = document.getElementById("reg-email").value.trim().toLowerCase();
     const password = document.getElementById("reg-pass").value;
     const confirm = document.getElementById("reg-pass2").value;
 
+    if (!username || !email || !password) {
+        setErr("reg-error", "✗ Lütfen tüm alanları doldurun."); return;
+    }
+
     if (password !== confirm) {
         setErr("reg-error", "✗ Şifreler eşleşmiyor."); return;
+    }
+
+    if (password.length < 8) {
+        setErr("reg-error", "✗ Şifre en az 8 karakter olmalı."); return;
     }
 
     setLoading("btn-register", true);
@@ -136,7 +134,7 @@ window.handleRegister = async function (e) {
             data = await res.json();
         } else {
             const text = await res.text();
-            throw new Error(`Sunucu hatası (${res.status}): Beklenmedik yanıt formatı. Yanıt: ${text.substring(0, 100)}`);
+            throw new Error(`Sunucu hatası (${res.status}): ${text.substring(0, 100)}`);
         }
 
         if (!res.ok) throw new Error(data.error || "Kayıt başarısız.");
@@ -147,7 +145,6 @@ window.handleRegister = async function (e) {
     } catch (err) {
         console.error("Register hatası:", err);
         setErr("reg-error", "✗ Hata: " + err.message);
-        if (window.turnstile) window.turnstile.reset();
     } finally {
         setLoading("btn-register", false);
     }
@@ -180,4 +177,3 @@ document.addEventListener("DOMContentLoaded", () => {
         window.showTab("login");
     }
 });
-

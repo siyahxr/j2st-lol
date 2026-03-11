@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,9 +8,8 @@
     <link rel="stylesheet" href="/index.css">
     <link rel="stylesheet" href="/auth.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
-    <!-- Cloudflare Turnstile -->
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
+
 <body>
     <div class="animated-bg">
         <div class="blob"></div>
@@ -29,26 +29,24 @@
 
             <div class="field-group">
                 <label class="field-label" data-i18n="auth_user">Username</label>
-                <input id="login-email" class="field-input" type="text" placeholder="Enter username or email" data-i18n="auth_user_ph" required autocomplete="username">
+                <input id="login-email" class="field-input" type="text" placeholder="Enter username or email"
+                    data-i18n="auth_user_ph" required autocomplete="username">
             </div>
             <div class="field-group">
                 <label class="field-label" data-i18n="auth_pass">Password</label>
                 <div class="field-pw-wrap">
-                    <input id="login-pass" class="field-input" type="password" placeholder="Enter your password" data-i18n="auth_pass_ph" required autocomplete="current-password">
+                    <input id="login-pass" class="field-input" type="password" placeholder="Enter your password"
+                        data-i18n="auth_pass_ph" required autocomplete="current-password">
                     <button type="button" class="pw-toggle" onclick="togglePw('login-pass',this)">👁</button>
                 </div>
-            </div>
-
-            <!-- Cloudflare Turnstile widget -->
-            <div class="turnstile-wrap">
-                <div class="cf-turnstile" id="ts-login" data-theme="dark"></div>
             </div>
 
             <div id="login-error" class="form-error"></div>
             <div id="login-info" class="form-info"></div>
 
             <button type="submit" class="auth-submit" id="btn-login" data-i18n="auth_signin_btn">Sign In →</button>
-            <p class="form-hint"><span data-i18n="auth_no_account">No account?</span> <a href="/register" data-i18n="auth_create">Create one</a></p>
+            <p class="form-hint"><span data-i18n="auth_no_account">No account?</span> <a href="/register"
+                    data-i18n="auth_create">Create one</a></p>
         </form>
 
         <p class="auth-back"><a href="/" data-i18n="auth_back">← Back to home</a></p>
@@ -57,4 +55,5 @@
     <script src="/system/i18n.js"></script>
     <script type="module" src="/auth.js"></script>
 </body>
+
 </html>
