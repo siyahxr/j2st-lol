@@ -1,8 +1,4 @@
 name = "j2st-lol"
 compatibility_date = "2024-03-11"
+compatibility_flags = [ "nodejs_compat" ]
 pages_build_output_dir = "."
-
-[vars]
-# These will be set in Cloudflare Dashboard, but we'll list them here as well
-# SUPABASE_URL = "..."
-# SUPABASE_KEY = "..."

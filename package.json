@@ -1,11 +1,11 @@
 {
   "name": "j2st-lol",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Premium Bio Platform",
   "main": "index.html",
   "scripts": {
-    "build": "echo 'No build step required'",
-    "dev": "vercel dev"
+    "build": "true",
+    "dev": "npx wrangler pages dev"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.7"
