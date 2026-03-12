@@ -162,7 +162,7 @@ function syncUI() {
     document.getElementById('footer-username').textContent = userDataState.display_name || session.username;
     document.getElementById('footer-handle').textContent = "@" + session.username;
     if (document.getElementById('welcome-msg')) document.getElementById('welcome-msg').textContent = `Tekrar hoş geldin, ${session.username}`;
-    if (document.getElementById('profile-url-display')) document.getElementById('profile-url-display').textContent = `csbl.lol/${session.username}`;
+    if (document.getElementById('profile-url-display')) document.getElementById('profile-url-display').textContent = `j2st.lol/${session.username}`;
 
     // Appearance & Advanced
     const frameData = parseRgba(userDataState.avatar_frame_color);
@@ -321,7 +321,7 @@ window.setCardStyle = (style) => {
 };
 
 window.copyProfileLink = () => {
-    const url = `csbl.lol/${session.username}`;
+    const url = `j2st.lol/${session.username}`;
     navigator.clipboard.writeText(url).then(() => {
         showToast("Link panoya kopyalandı!");
     });
