@@ -1,242 +1,201 @@
+/* 
+   J2ST.LOL — CHAOS DRAGON DESIGN SYSTEM (v3.0)
+   Theme: Obsidian Chaos & Nebula Purple
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
 :root {
-    --bg-dark: #000000;          /* Pure Black */
-    --bg-surface: #0a0a0a;       /* Very dark gray */
+    /* Chaos Palette */
+    --chaos-black: #050505;
+    --chaos-deep: #0a0a0f;
+    --chaos-purple: #a855f7;
+    --chaos-purple-glow: rgba(168, 85, 247, 0.4);
+    --chaos-rose: #f43f5e;
+    --chaos-teal: #2dd4bf;
+    
+    /* Global Accents */
+    --accent: var(--chaos-purple);
+    --accent-glow: var(--chaos-purple-glow);
+    
+    /* Text */
+    --text-white: #ffffff;
+    --text-dim: #94a3b8;
+    --text-dark: #475569;
+    
+    /* Surfaces */
     --glass-bg: rgba(255, 255, 255, 0.02);
-    --glass-border: rgba(255, 255, 255, 0.08);
-    --accent-primary: #ffffff;    /* White as accent */
-    --accent-secondary: #a1a1aa;  /* Light Gray */
-    --text-main: #f4f4f5;
-    --text-dim: #71717a;
-    --iridescent-gradient: linear-gradient(135deg, #ffffff 0%, #a1a1aa 50%, #3f3f46 100%);
+    --glass-border: rgba(255, 255, 255, 0.05);
+    --glass-blur: blur(20px);
+    
+    /* Transitions & Shadows */
+    --chaos-transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    --chaos-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
 }
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Outfit', 'Inter', -apple-system, sans-serif;
-}
-
-/* Twemoji SVG sizing */
-img.emoji {
-    height: 1em;
-    width: 1em;
-    margin: 0 0.05em 0 0.1em;
-    vertical-align: -0.1em;
-    display: inline-block;
+    -webkit-font-smoothing: antialiased;
 }
 
 body {
-    background-color: var(--bg-dark);
-    color: var(--text-main);
-    min-height: 100vh;
+    background: var(--chaos-black);
+    color: var(--text-white);
+    font-family: 'Space Grotesk', sans-serif;
     overflow-x: hidden;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
 }
 
-.glass-card {
-    background: rgba(10, 10, 10, 0.7);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+h1, h2, h3, h4, .dragon-font {
+    font-family: 'Outfit', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* --- CLOUDFLARE PAGES ANIMATED BACKGROUND --- */
+.chaos-bg-wrapper {
+    position: fixed;
+    inset: 0;
+    z-index: -10;
+    background: url('/assets/theme/chaos_bg.png') center/cover no-repeat;
+    filter: brightness(0.4) contrast(1.1);
+}
+
+.chaos-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: -9;
+    background: radial-gradient(circle at center, transparent 0%, var(--chaos-black) 100%);
+}
+
+.glitch-aura {
+    position: fixed;
+    width: 800px;
+    height: 800px;
+    background: var(--chaos-purple);
+    filter: blur(180px);
+    opacity: 0.1;
+    pointer-events: none;
+    z-index: -8;
+    animation: aura-move 20s infinite alternate linear;
+}
+
+@keyframes aura-move {
+    0% { transform: translate(-20%, -20%) scale(1); }
+    100% { transform: translate(20%, 20%) scale(1.2); }
+}
+
+/* --- COMPONENTS --- */
+.chaos-glass {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
     border: 1px solid var(--glass-border);
     border-radius: 20px;
-    box-shadow: 0 8px 40px rgba(0, 0, 0, 1);
+    box-shadow: var(--chaos-shadow);
 }
 
-.glow-text {
-    text-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+.chaos-btn {
+    padding: 16px 32px;
+    background: #fff;
+    color: #000;
+    border: none;
+    border-radius: 12px;
+    font-weight: 800;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    transition: var(--chaos-transition);
+    cursor: pointer;
 }
 
-.iridescent-text {
-    background: var(--iridescent-gradient);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+.chaos-btn:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 10px 30px var(--chaos-purple-glow);
+    background: var(--chaos-purple);
+    color: #fff;
 }
 
-/* Animations */
-@keyframes pulse-glow {
-    0%, 100% { opacity: 0.3; }
-    50% { opacity: 0.7; }
+.chaos-btn-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
 }
 
-/* ===== BACKGROUND — Black & Gray ===== */
-.animated-bg {
-    position: fixed;
+.chaos-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--chaos-purple);
+}
+
+/* --- INPUTS --- */
+.chaos-input-group {
+    margin-bottom: 24px;
+}
+
+.chaos-input-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+    letter-spacing: 0.1em;
+}
+
+.chaos-input {
+    width: 100%;
+    padding: 16px 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: #fff;
+    font-family: inherit;
+    transition: var(--chaos-transition);
+}
+
+.chaos-input:focus {
+    outline: none;
+    border-color: var(--chaos-purple);
+    background: rgba(168, 85, 247, 0.05);
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.1);
+}
+
+/* --- GLITCH TEXT --- */
+.glitch-text {
+    position: relative;
+    color: white;
+}
+
+.glitch-text::before, .glitch-text::after {
+    content: attr(data-text);
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: -1;
-    background: #000000;
+    opacity: 0.8;
 }
 
-/* Noise/Texture instead of blue blobs */
-.animated-bg::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image: url("https://www.transparenttextures.com/patterns/carbon-fibre.png");
-    opacity: 0.05;
-    pointer-events: none;
+.glitch-text::before {
+    left: 2px;
+    text-shadow: -2px 0 var(--chaos-rose);
+    clip: rect(44px, 450px, 56px, 0);
+    animation: glitch-anim 5s infinite linear alternate-reverse;
 }
 
-.blob {
-    position: absolute;
-    width: 800px;
-    height: 800px;
-    background: #18181b;
-    filter: blur(200px);
-    border-radius: 50%;
-    opacity: 0.1;
-    animation: move 30s infinite alternate ease-in-out;
-    top: -10%;
-    left: -10%;
+.glitch-text::after {
+    left: -2px;
+    text-shadow: -2px 0 var(--chaos-purple);
+    clip: rect(44px, 450px, 56px, 0);
+    animation: glitch-anim2 5s infinite linear alternate-reverse;
 }
 
-.blob-2 {
-    position: absolute;
-    width: 600px;
-    height: 600px;
-    background: #27272a;
-    filter: blur(200px);
-    border-radius: 50%;
-    opacity: 0.08;
-    animation: move2 40s infinite alternate ease-in-out;
-    bottom: -10%;
-    right: -10%;
+@keyframes glitch-anim {
+    0% { clip: rect(10px, 9999px, 20px, 0); }
+    100% { clip: rect(80px, 9999px, 90px, 0); }
 }
 
-@keyframes move {
-    from { transform: translate(0, 0) scale(1); }
-    to { transform: translate(100px, 100px) scale(1.1); }
-}
-
-@keyframes move2 {
-    from { transform: translate(0, 0) scale(1); }
-    to { transform: translate(-100px, -100px) scale(1.1); }
-}
-
-/* ===== PROFILE PAGE (Fallback) ===== */
-.profile-container {
-    width: 100%;
-    max-width: 500px;
-    padding: 60px 20px;
-    z-index: 1;
-}
-
-.profile-card {
-    text-align: center;
-    padding: 40px 30px;
-    margin-bottom: 24px;
-}
-
-.avatar-wrapper {
-    position: relative;
-    width: 120px;
-    height: 120px;
-    margin: 0 auto 20px;
-}
-
-.avatar {
-    width: 100%;
-    height: 100%;
-    border-radius: 20px;
-    border: 1px solid var(--glass-border);
-    object-fit: cover;
-    background: #000;
-}
-
-.badges {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 15px;
-}
-
-.badge {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--glass-border);
-    padding: 5px 12px;
-    border-radius: 8px;
-    font-size: 10px;
-    font-weight: 800;
-    color: #fff;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.link-btn {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 18px 25px;
-    text-decoration: none;
-    color: var(--text-main);
-    font-weight: 600;
-    background: rgba(255, 255, 255, 0.02);
-    border-radius: 12px;
-    border: 1px solid var(--glass-border);
-    transition: 0.3s ease;
-}
-
-.link-btn:hover {
-    background: rgba(255, 255, 255, 0.05);
-    transform: translateY(-2px);
-    border-color: #fff;
-}
-
-/* ===== Floating Profile Button ===== */
-.floating-profile-btn {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    background: rgba(10, 10, 10, 0.8);
-    border: 1px solid var(--glass-border);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-radius: 20px;
-    padding: 12px 24px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    text-decoration: none;
-    color: #fff;
-    font-weight: 700;
-    font-size: 14px;
-    z-index: 1000;
-    transition: 0.3s;
-}
-
-.floating-profile-btn img {
-    width: 20px;
-    height: 20px;
-    filter: grayscale(1);
-}
-
-.floating-profile-btn:hover {
-    transform: translateY(-5px);
-    background: #fff;
-    color: #000;
-    border-color: #fff;
-}
-
-.floating-profile-btn:hover img {
-    filter: invert(1);
-}
-
-/* Icon grayscale filter */
-.nav-item img,
-.feat-icon img,
-.brand-logo,
-.fc-icon,
-.fc-icon-sm,
-.asb-logo,
-.hero-dragon,
-.fc-avatar,
-.cta-dragon {
-    filter: grayscale(100%) brightness(0.8);
+@keyframes glitch-anim2 {
+    0% { clip: rect(50px, 9999px, 60px, 0); }
+    100% { clip: rect(20px, 9999px, 30px, 0); }
 }

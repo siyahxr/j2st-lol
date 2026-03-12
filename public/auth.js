@@ -53,7 +53,7 @@ function setLoading(id, on) {
     const btn = document.getElementById(id);
     if (!btn) return;
     btn.disabled = on;
-    btn.textContent = on ? "Bekle..." : (id === "btn-login" ? "Giriş Yap →" : "Hesap Oluştur →");
+    btn.textContent = on ? "Bekle..." : (id === "btn-login" ? "GIRIŞ YAP" : "HESABI UYANDIR");
 }
 
 // LOGIN

@@ -1,121 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile | j2st.lol</title>
+    <title>Profile | J2ST.LOL</title>
+    
     <!-- CSS -->
-    <link rel="stylesheet" href="/index.css?v=202603110006">
-    <link rel="stylesheet" href="/profile.css?v=202603110006">
-    <!-- FONTS -->
-    <link
-        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
-    <!-- ICONS -->
+    <link rel="stylesheet" href="/profile.css">
+    
+    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
+<body>
+    
+    <!-- Background System -->
+    <div id="full-bg"></div>
+    <div class="bg-overlay"></div>
+    <div class="dynamic-aura" id="aura"></div>
 
-<video id="banner-video" class="banner-video-bg" muted loop playsinline style="display:none;"></video>
-<div id="full-bg"></div>
-<div class="profile-bg-vignette"></div>
-
-<!-- Unified Overlay (Loading -> Ready) -->
-<div id="click-enter" class="enter-overlay">
-    <div id="overlay-content" class="enter-btn loading">
-        <div class="enter-icon-wrapper">
-            <i class="fa-solid fa-dragon"></i>
+    <!-- Entrance Experience (Overlay) -->
+    <div id="click-enter" style="position: fixed; inset: 0; z-index: 1000; background: #000; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 1s ease;">
+        <div style="text-align: center;">
+            <div style="width: 80px; height: 80px; border: 2px solid var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; box-shadow: 0 0 30px var(--accent-glow);">
+                <i class="fa-solid fa-dragon" style="font-size: 32px; color: var(--accent);"></i>
+            </div>
+            <p style="font-size: 14px; font-weight: 800; letter-spacing: 0.2em; color: var(--accent);">GİRİŞ YAP</p>
         </div>
-        <span id="overlay-text">RUH EŞİTLENİYOR...</span>
     </div>
-</div>
-
-<div class="profile-layout-main" style="display: none; opacity: 0; transition: opacity 1s ease;">
 
     <!-- Main Profile Card -->
-    <div id="profile-container" class="profile-card">
-        <div class="dynamic-aura"></div>
-
-        <!-- Identity Section -->
+    <div id="profile-card" class="profile-card" style="opacity: 0; transform: scale(0.9); pointer-events: none; transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);">
+        <!-- Avatar Area -->
         <div class="avatar-wrapper">
             <img id="avatar-el" src="/assets/icons/user_dragon.png" alt="Avatar" class="profile-avatar">
-            <div class="status-indicator"></div>
+            <div class="status-dot"></div>
         </div>
 
-        <h1 class="profile-name" id="name-el">j2st</h1>
-        <p class="profile-handle" id="handle-el">@j2st</p>
+        <!-- Identity -->
+        <h1 id="name-el" class="profile-name">j2st</h1>
+        <p id="bio-el" class="profile-bio">Nebula Void'e hoş geldin.</p>
 
-        <!-- Unified Sections -->
-        <div class="profile-sections-container">
-            <div id="section-about" class="profile-section">
-                <p class="profile-bio" id="bio-el"></p>
-            </div>
-
-            <div id="section-badges" class="profile-section">
-                <div id="badges-el">
-                    <!-- Badges injected by JS -->
-                </div>
-            </div>
-
-            <div id="section-links" class="profile-section">
-                <div id="links-el">
-                    <!-- Social & Custom links injected by JS -->
-                </div>
-            </div>
+        <!-- Badges -->
+        <div id="badges-el" class="badges-list">
+            <!-- Badges injected by JS -->
         </div>
 
-        <!-- Discord Status (Optional Integration) -->
-        <div id="discord-status-container" style="display: none;">
-            <div class="discord-card">
-                <div class="discord-avatar-box">
-                    <img src="" alt="" class="discord-avatar" id="ds-avatar">
-                    <div class="status-indicator" id="ds-status-dot"></div>
-                </div>
-                <div class="discord-info">
-                    <p class="discord-user" id="ds-name">User#0000</p>
-                    <p class="discord-activity" id="ds-activity">Durum yükleniyor...</p>
-                </div>
-            </div>
+        <!-- Links -->
+        <div id="links-el" class="links-container">
+            <!-- Links injected by JS -->
         </div>
 
         <!-- Footer -->
-        <div class="footer-info">
-            <div id="music-embed-container" style="display:none; width: 100%; margin-bottom: 0; height:0;"></div>
-            
-            <div class="view-count" id="views-el">
-                <i class="fa-solid fa-eye"></i>
-                <span>0 görüntülenme</span>
+        <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05);">
+            <div style="font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.1em; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <i class="fa-solid fa-eye"></i> <span id="views-el">0</span> GÖRÜNTÜLENME
             </div>
-            <a href="/" class="j2st-watermark">j2st.lol tarafından desteklenmektedir</a>
+            <a href="/" style="display: block; margin-top: 15px; font-size: 10px; color: rgba(255,255,255,0.2); text-decoration: none; font-weight: 800; letter-spacing: 0.1em;">J2ST.LOL TARAFINDAN DESTEKLENMEKTEDİR</a>
         </div>
     </div>
-</div>
 
-<!-- Error State -->
-<div id="error-container" class="full-screen-center" style="display:none;">
-    <h1 class="hero-h1">404</h1>
-    <p class="hero-p" style="margin-bottom: 24px;">Kullanıcı bulunamadı</p>
-    <a href="/" class="btn-primary">Ana Sayfaya Dön</a>
-</div>
+    <!-- Hidden Audio -->
+    <audio id="profile-music-player" loop></audio>
 
-<!-- Profile Music Player (Hidden) -->
-<audio id="profile-music-player" style="display:none;"></audio>
-
-<script src="https://cdn.jsdelivr.net/npm/@twemoji/api@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
-<script src="/system/i18n.js?v=202603110006"></script>
-<script src="/profile.js?v=202603110006"></script>
-<script>
-    // Failsafe: Ensure overlay is clickable even if JS has minor issues
-    setTimeout(() => {
-        const overlay = document.getElementById('click-enter');
-        if (overlay && !overlay.onclick) {
-            console.log("Failsafe activation");
-            const text = document.getElementById('overlay-text');
-            if (text) text.textContent = "CLICK TO ENTER";
-            overlay.onclick = () => window.enterProfile ? window.enterProfile() : location.reload();
-        }
-    }, 4000);
-</script>
+    <!-- JS -->
+    <script src="/profile.js"></script>
 </body>
-
 </html>

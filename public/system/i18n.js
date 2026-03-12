@@ -25,6 +25,20 @@ const i18n_dict = {
         cta_title: `Start now. <span class="iridescent-text">It's free.</span>`,
         cta_p: "Join the j2st.lol community and own your digital identity.",
         cta_btn: "Get Started →",
+        demo_sub: "Gamer & Developer",
+        demo_badge_name: "Early Access",
+        demo_badge_sub: "Badge unlocked",
+        demo_link_info: "3 Active Links",
+        marq_prof: "Profile",
+        marq_sound: "Sound",
+        marq_badges: "Badges",
+        marq_links: "Links",
+        marq_dash: "Panel",
+        marq_admin: "Admin",
+        marq_anal: "Analytics",
+        footer_copy: "© 2026 j2st · All rights reserved",
+        nav_title: "j2st.lol",
+        nav_dash: "Dashboard",
         // Login / Register
         auth_welcome: "Welcome back",
         auth_signin_sub: "Sign in to your j2st.lol account",
@@ -141,6 +155,20 @@ const i18n_dict = {
         cta_title: `Hemen başla. <span class="iridescent-text">Ücretsizdir.</span>`,
         cta_p: "j2st.lol topluluğuna katılın ve dijital kimliğinize sahip olun.",
         cta_btn: "Başlayın →",
+        demo_sub: "Oyuncu & Geliştirici",
+        demo_badge_name: "Erken Erişim",
+        demo_badge_sub: "Rozet açıldı",
+        demo_link_info: "3 Aktif Bağlantı",
+        marq_prof: "Profil",
+        marq_sound: "Ses",
+        marq_badges: "Rozetler",
+        marq_links: "Bağlantılar",
+        marq_dash: "Panel",
+        marq_admin: "Admin",
+        marq_anal: "Analiz",
+        footer_copy: "© 2026 j2st · Tüm hakları saklıdır",
+        nav_title: "j2st.lol",
+        nav_dash: "Panel",
         // Login / Register
         auth_welcome: "Tekrar Hoşgeldin",
         auth_signin_sub: "j2st.lol hesabına giriş yap",
@@ -509,7 +537,7 @@ function applyLanguage(langCode) {
         targetLang = pathParts[1];
     }
 
-    if (!targetLang || !i18n_dict[targetLang]) targetLang = 'en';
+    if (!targetLang || !i18n_dict[targetLang]) targetLang = 'tr';
     
     window.addEventListener('DOMContentLoaded', () => {
         applyLanguage(targetLang);

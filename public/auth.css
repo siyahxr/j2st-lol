@@ -1,42 +1,59 @@
-/* ==============================
-   AUTH.CSS — Black & Gray Premium
-   ============================== */
+/* ============================================================
+   AUTH.CSS — MIDNIGHT ONYX / CRYSTAL GLASS (v4.0)
+   Designed for j2st.lol — High Performance Auth Interface
+   ============================================================ */
 
 :root {
-    --bg-dark: #000000;
-    --bg-surface: #0a0a0a;
-    --glass-border: rgba(255, 255, 255, 0.08);
-    --accent-primary: #ffffff;
-    --accent-secondary: #a1a1aa;
-    --text-main: #f4f4f5;
-    --text-dim: #71717a;
+    --bg-deep: #050508;
+    --bg-onyx: #0a0a0f;
+    --crystal-glass: rgba(15, 15, 25, 0.7);
+    --crystal-border: rgba(255, 255, 255, 0.08);
+    --accent: #ffffff;
+    --accent-glow: rgba(255, 255, 255, 0.1);
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --text-muted: #475569;
+    --danger: #ef4444;
+    --success: #10b981;
+    --transition-standard: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.grid-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    background-image:
-        linear-gradient(rgba(255,255,255,0.01) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.01) 1px, transparent 1px);
-    background-size: 50px 50px;
-    pointer-events: none;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 body {
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    font-family: 'Outfit', sans-serif;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
     padding: 40px 20px;
-    background-color: #000;
-    margin: 0;
+    overflow-x: hidden;
+}
+
+/* Background Atmosphere */
+body::before {
+    content: "";
+    position: fixed;
+    top: -10%;
+    right: -10%;
+    width: 50%;
+    height: 50%;
+    background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+    z-index: -1;
+    pointer-events: none;
 }
 
 .auth-container {
     width: 100%;
-    max-width: 420px;
-    z-index: 1;
+    max-width: 440px;
+    position: relative;
+    z-index: 10;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -46,102 +63,92 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 32px;
+    margin-bottom: 40px;
+    text-decoration: none;
 }
 
 .auth-logo {
     width: 44px;
     height: 44px;
-    filter: grayscale(1) brightness(1.2) drop-shadow(0 0 10px rgba(255,255,255,0.2)) !important;
+    filter: drop-shadow(0 0 15px rgba(255,255,255,0.2));
 }
 
 .auth-title {
-    font-size: 28px;
+    font-size: 32px;
     font-weight: 900;
     letter-spacing: -2px;
+    background: linear-gradient(to bottom, #fff, #94a3b8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
-/* Tabs */
-.auth-tabs {
-    display: flex;
-    width: 100%;
-    background: rgba(255,255,255,0.02);
-    border: 1px solid var(--glass-border);
-    border-radius: 14px 14px 0 0;
-    overflow: hidden;
-}
-
-.auth-tab {
-    flex: 1;
-    padding: 12px;
-    background: transparent;
-    border: none;
-    color: var(--text-dim);
-    font-size: 14px;
-    font-weight: 600;
-    font-family: 'Outfit', sans-serif;
-    cursor: pointer;
-    transition: all 0.2s;
-    border-bottom: 2px solid transparent;
-}
-
-.auth-tab.active {
-    color: #fff;
-    border-bottom-color: #fff;
-    background: rgba(255,255,255,0.05);
-}
-
-/* Form */
+/* Form Panel */
 .auth-form {
     width: 100%;
-    padding: 32px;
-    border-radius: 0 0 20px 20px;
-    border-top: none;
+    padding: 40px;
+    background: var(--crystal-glass);
+    backdrop-filter: blur(40px) saturate(180%);
+    border: 1px solid var(--crystal-border);
+    border-radius: 32px;
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
+    transition: var(--transition-standard);
+}
+
+.auth-form:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 50px 120px rgba(0, 0, 0, 0.8);
 }
 
 .form-title {
-    font-size: 22px;
+    font-size: 26px;
     font-weight: 800;
-    margin-bottom: 4px;
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
 }
 
 .form-sub {
-    color: var(--text-dim);
-    font-size: 13px;
-    margin-bottom: 28px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-bottom: 32px;
+    font-weight: 500;
 }
 
+/* Fields */
 .field-group {
-    margin-bottom: 18px;
+    margin-bottom: 22px;
     width: 100%;
 }
 
 .field-label {
     display: block;
     font-size: 11px;
-    font-weight: 700;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.8px;
-    color: var(--text-dim);
-    margin-bottom: 7px;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    padding-left: 2px;
 }
 
 .field-input {
     width: 100%;
-    background: rgba(255,255,255,0.02);
-    border: 1px solid var(--glass-border);
-    border-radius: 10px;
-    padding: 11px 14px;
-    color: var(--text-main);
-    font-size: 14px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--crystal-border);
+    border-radius: 14px;
+    padding: 14px 18px;
+    color: #fff;
+    font-size: 15px;
     font-family: 'Outfit', sans-serif;
+    font-weight: 600;
     outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition: var(--transition-standard);
 }
 
 .field-input:focus {
-    border-color: #fff;
-    box-shadow: 0 0 0 3px rgba(255,255,255,0.05);
+    border-color: var(--accent);
+    background: rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0 0 4px var(--accent-glow);
 }
 
 .field-pw-wrap {
@@ -151,53 +158,124 @@ body {
 
 .pw-toggle {
     position: absolute;
-    right: 12px;
+    right: 14px;
     top: 50%;
     transform: translateY(-50%);
     background: transparent;
     border: none;
     cursor: pointer;
-    font-size: 16px;
-    color: var(--text-dim);
+    font-size: 18px;
+    color: var(--text-muted);
+    transition: 0.2s;
+}
+
+.pw-toggle:hover {
+    color: #fff;
+}
+
+/* Alerts */
+.form-error {
+    color: var(--danger);
+    background: rgba(239, 68, 68, 0.1);
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    display: none;
+}
+
+.form-info, .form-success {
+    color: var(--success);
+    background: rgba(16, 185, 129, 0.1);
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    display: none;
 }
 
 /* Submit */
 .auth-submit {
     width: 100%;
     background: #fff;
+    padding: 16px;
     border: none;
-    border-radius: 11px;
-    padding: 13px;
+    border-radius: 16px;
     color: #000;
-    font-weight: 900;
-    font-size: 15px;
+    font-weight: 800;
+    font-size: 16px;
     font-family: 'Outfit', sans-serif;
     cursor: pointer;
-    transition: opacity 0.2s, transform 0.2s;
-    margin-top: 4px;
-    margin-bottom: 16px;
+    transition: var(--transition-standard);
+    margin-top: 10px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
 
-.auth-submit:hover { background: #e4e4e7; transform: translateY(-1px); }
+.auth-submit:hover {
+    background: #e2e8f0;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(255, 255, 255, 0.1);
+}
 
 .form-hint {
     text-align: center;
-    font-size: 13px;
-    color: var(--text-dim);
+    font-size: 14px;
+    color: var(--text-secondary);
 }
 
 .form-hint a {
     color: #fff;
     text-decoration: none;
-    font-weight: 600;
+    font-weight: 700;
+}
+
+.form-hint a:hover {
+    text-decoration: underline;
 }
 
 .auth-back {
-    margin-top: 20px;
-    font-size: 13px;
+    margin-top: 30px;
 }
 
 .auth-back a {
-    color: var(--text-dim);
+    color: var(--text-muted);
     text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: color 0.3s;
+}
+
+.auth-back a:hover {
+    color: #fff;
+}
+
+/* Password Strength */
+.pw-strength {
+    height: 4px;
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border-radius: 2px;
+    margin-top: 8px;
+    overflow: hidden;
+    display: none;
+}
+
+.pw-strength-bar {
+    height: 100%;
+    width: 0;
+    transition: 0.4s;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .auth-form {
+        padding: 30px 24px;
+        border-radius: 24px;
+    }
 }

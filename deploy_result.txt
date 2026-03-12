@@ -1,0 +1,20 @@
+
+> j2st-lol@1.0.1 deploy
+> npx wrangler pages deploy public
+
+
+ ⛅️ wrangler 4.71.0 (update available 4.72.0)
+─────────────────────────────────────────────
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mWarning: Your working directory is a git repo and has uncommitted changes[0m
+
+  To silence this warning, pass in --commit-dirty=true
+
+
+✨ Compiled Worker successfully
+Uploading... (52/52)
+✨ Success! Uploaded 0 files (52 already uploaded) (0.18 sec)
+
+✨ Uploading _redirects
+✨ Uploading Functions bundle
+🌎 Deploying...
+✨ Deployment complete! Take a peek over at https://8262f84d.j2stbaba.pages.dev

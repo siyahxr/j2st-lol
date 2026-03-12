@@ -1,58 +1,70 @@
 <!DOCTYPE html>
-<html lang="tr">
-
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>j2st.lol | Login</title>
+    <title>Giriş Yap | J2ST.LOL</title>
+    
+    <!-- CSS -->
     <link rel="stylesheet" href="/index.css">
-    <link rel="stylesheet" href="/auth.css">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
-
-<body>
-    <div class="animated-bg">
-        <div class="blob"></div>
-        <div class="blob-2"></div>
-    </div>
-    <div class="grid-overlay"></div>
-
-    <div class="auth-container">
-        <div class="auth-brand">
-            <img src="/assets/icons/user_dragon.png" alt="j2st" class="auth-logo">
-            <span class="auth-title iridescent-text">j2st.lol</span>
+<body class="auth-container" style="position: relative; overflow: hidden; background: var(--chaos-deep);">
+    <!-- Theme Background -->
+    <div class="chaos-bg-wrapper"></div>
+    <div class="chaos-overlay"></div>
+    
+    <div class="auth-card chaos-glass animate-fade-in" style="z-index: 10; border: 1px solid rgba(168, 85, 247, 0.2);">
+        <div style="text-align: center; margin-bottom: 40px;">
+            <a href="/" class="dragon-font" style="font-size: 32px; font-weight: 900; text-decoration: none; color: #fff; display: block; margin-bottom: 12px;">
+                J2ST<span style="color: var(--chaos-purple);">.LOL</span>
+            </a>
+            <p style="color: var(--text-dim); font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;">KAOSA GERİ DÖN.</p>
         </div>
 
-        <form class="auth-form glass-card" id="form-login" onsubmit="handleLogin(event)">
-            <h2 class="form-title">Tekrar Hoş Geldin</h2>
-            <p class="form-sub">j2st.lol hesabına giriş yap</p>
-
-            <div class="field-group">
-                <label class="field-label">Kullanıcı Adı</label>
-                <input id="login-email" class="field-input" type="text" placeholder="Kullanıcı adı veya e-posta girin"
-                    required autocomplete="username">
+        <form id="form-login" onsubmit="handleLogin(event)">
+            <div class="chaos-input-group">
+                <label>KULLANICI ADI VEYA E-POSTA</label>
+                <input type="text" id="login-email" class="chaos-input" placeholder="Kimliğini gir..." required>
             </div>
-            <div class="field-group">
-                <label class="field-label">Şifre</label>
-                <div class="field-pw-wrap">
-                    <input id="login-pass" class="field-input" type="password" placeholder="Şifrenizi girin"
-                        required autocomplete="current-password">
-                    <button type="button" class="pw-toggle" onclick="togglePw('login-pass',this)">👁</button>
+            
+            <div class="chaos-input-group">
+                <label>GİZLİ ŞİFRE</label>
+                <div style="position: relative;">
+                    <input type="password" id="login-pass" class="chaos-input" placeholder="••••••••" required>
+                    <button type="button" onclick="togglePw('login-pass', this)" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-dark); cursor: pointer; font-size: 18px;">
+                        <i class="fa-regular fa-eye"></i>
+                    </button>
                 </div>
             </div>
 
-            <div id="login-error" class="form-error"></div>
-            <div id="login-info" class="form-info"></div>
+            <div id="login-error" style="color: var(--chaos-rose); font-size: 13px; font-weight: 800; margin-bottom: 20px; text-align: center; display: none;"></div>
+            <div id="login-info" style="color: var(--chaos-teal); font-size: 13px; font-weight: 800; margin-bottom: 20px; text-align: center; display: none;"></div>
 
-            <button type="submit" class="auth-submit" id="btn-login">Giriş Yap →</button>
-            <p class="form-hint">Hesabın yok mu? <a href="/register">Bir tane oluştur</a></p>
+            <button type="submit" id="btn-login" class="chaos-btn" style="width: 100%; margin-bottom: 24px; justify-content: center;">GİRİŞ YAP <i class="fa-solid fa-bolt-lightning"></i></button>
         </form>
 
-        <p class="auth-back"><a href="/">← Ana sayfaya dön</a></p>
+        <div style="text-align: center; color: var(--text-dim); font-size: 14px; font-weight: 600;">
+            Henüz uyanmadın mı? <a href="/register" style="color: var(--chaos-purple); text-decoration: none; font-weight: 800; border-bottom: 1px solid var(--chaos-purple);">Kayıt Ol →</a>
+        </div>
     </div>
 
-    <script src="/system/i18n.js"></script>
-    <script type="module" src="/auth.js"></script>
+    <!-- JS -->
+    <script src="/auth.js"></script>
+    <script>
+        function togglePw(id, btn) {
+            const el = document.getElementById(id);
+            const icon = btn.querySelector('i');
+            if (el.type === 'password') {
+                el.type = 'text';
+                icon.className = 'fa-regular fa-eye-slash';
+            } else {
+                el.type = 'password';
+                icon.className = 'fa-regular fa-eye';
+            }
+        }
+    </script>
 </body>
-
 </html>

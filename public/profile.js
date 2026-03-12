@@ -1,273 +1,175 @@
 /**
- * J2ST.ICU — VOID PROFILE RENDERER (v5.3)
+ * J2ST.LOL — PROFILE RENDERER (v5.0)
  */
-console.log("J2ST Profile Script v5.3 Loaded.");
 
-// 1. Global Entry Function (Defensive)
-window.enterProfile = function() {
-    const overlay = document.getElementById('click-enter');
-    const layoutMain = document.querySelector('.profile-layout-main');
-    const musicPlayer = document.getElementById('profile-music-player');
-    
-    if (overlay) {
-        overlay.classList.add('clicked');
-        
-        // Music Start (Try-catch for browser blocks)
-        if (musicPlayer && musicPlayer.src) {
-            musicPlayer.play().catch(e => console.log("Autoplay blocked", e));
-        }
+console.log("J2ST Profile v5.0 Loaded.");
 
-        setTimeout(() => {
-            overlay.classList.add('fade-out');
-            document.body.classList.add('profile-entered');
-            
-            // Show main layout with fade
-            if (layoutMain) {
-                layoutMain.style.display = 'flex';
-                setTimeout(() => layoutMain.style.opacity = '1', 50);
-            }
+let isPreview = new URLSearchParams(window.location.search).get('preview') === 'true';
 
-            setTimeout(() => {
-                overlay.style.display = 'none';
-            }, 800);
-        }, 300);
-    }
-};
-
-// 2. Profile Initialization
+// 1. Initialization
 async function initProfile() {
-    const urlParams = new URLSearchParams(window.location.search);
-    let username = urlParams.get('u');
-    const path = window.location.pathname.toLowerCase();
-    
-    // Static routes that should NOT be treated as user profiles
-    const reserved = ['/', '/login', '/register', '/dashboard', '/admin', '/index.html', '/login.html', '/register.html', '/dashboard.html', '/admin.html', '/home', '/404'];
-    
-    // Check if the current path is a reserved route
-    const isReserved = reserved.some(r => path === r || path.startsWith(r + '/'));
-
-    if (isReserved && !username) {
-        console.log("On a static/reserved page, skipping profile initialization.");
+    if (isPreview) {
+        // Handle postMessage for live updates
+        window.addEventListener('message', (event) => {
+            if (event.data.type === 'UPDATE_PREVIEW') {
+                renderProfileSpec(event.data.data);
+                // Reveal card immediately in preview
+                const card = document.getElementById('profile-card');
+                if (card) {
+                    card.style.opacity = '1';
+                    card.style.transform = 'scale(1)';
+                    card.style.pointerEvents = 'auto';
+                }
+                const overlay = document.getElementById('click-enter');
+                if (overlay) overlay.style.display = 'none';
+            }
+        });
         return;
     }
 
-    if (!username) {
-        username = window.location.pathname.split('/').filter(Boolean).pop();
-    }
-    
-    // Final fallback logic
-    if (!username || username === 'profile.html' || username === 'profile' || username === 'j2st.lol') {
-        console.log("No valid username found in path.");
-        return;
-    }
+    const path = window.location.pathname;
+    const segments = path.split('/').filter(Boolean);
+    const username = segments[segments.length - 1];
 
-    console.log("Initializing profile for:", username);
+    if (!username || ['login', 'register', 'dashboard', 'admin'].includes(username)) return;
 
-    const overlay = document.getElementById('click-enter');
-    const overlayText = document.getElementById('overlay-text');
-    const overlayContent = document.getElementById('overlay-content');
-
-    let initialized = false;
-
-    // Ready State Transition
-    function setReady() {
-        if (initialized) return;
-        initialized = true;
-        console.log("Profile state: READY");
-        if (overlayText) overlayText.textContent = "CLICK TO ENTER";
-        if (overlayContent) {
-            overlayContent.classList.remove('loading');
-            overlayContent.classList.add('ready');
-        }
-        if (overlay) {
-            overlay.onclick = window.enterProfile;
-            overlay.style.cursor = 'pointer';
-        }
-    }
-
-    // FAILSAFE: If anything takes more than 4 seconds, force the button to show
-    setTimeout(setReady, 4000);
-
-    // 3. Cache Recovery
-    const cacheKey = `profile_cache_${username}`;
-    let cachedData = null;
-    try {
-        cachedData = localStorage.getItem(cacheKey);
-        if (cachedData) {
-            const parsed = JSON.parse(cachedData);
-            safeRender(parsed);
-            setReady();
-        }
-    } catch (e) { console.warn("Cache access error", e); }
-
-    // 4. Fresh Fetch
     try {
         const res = await fetch(`/api/user/profile?u=${username}&t=${Date.now()}`);
         const data = await res.json();
 
         if (data && !data.error) {
-            try { localStorage.setItem(cacheKey, JSON.stringify(data)); } catch(e){}
-            safeRender(data);
-            setReady();
-        } else if (!cachedData) {
-            // Show 404
-            const err = document.getElementById('error-container');
-            if (err) err.style.display = 'flex';
-            if (overlay) overlay.style.display = 'none';
+            renderProfileSpec(data);
+            setupEntrance();
+        } else {
+            document.body.innerHTML = `<div style="height:100vh; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:20px;">
+                <h1 style="font-size:80px; font-weight:900; opacity:0.1;">404</h1>
+                <p style="color:rgba(255,255,255,0.4);">Bu ruh henüz uyanmamış.</p>
+                <a href="/" style="color:#fff; text-decoration:none; font-weight:700; border:1px solid rgba(255,255,255,0.1); padding:10px 20px; border-radius:10px;">Geri Dön</a>
+            </div>`;
         }
     } catch (e) {
-        console.error("Fetch failed:", e);
-        if (cachedData) setReady();
-        else {
-            const err = document.getElementById('error-container');
-            if (err) err.style.display = 'flex';
-            if (overlay) overlay.style.display = 'none';
-        }
+        console.error("Profile Load Error:", e);
     }
 }
 
-function safeRender(data) {
-    try {
-        renderProfile(data);
-    } catch (e) {
-        console.error("Render failure", e);
-    }
-}
-
-// 5. Core Rendering Logic
-function renderProfile(user) {
+// 2. Rendering Spec
+function renderProfileSpec(user) {
     // Identity
     const avatar = document.getElementById('avatar-el');
     const name = document.getElementById('name-el');
-    const handle = document.getElementById('handle-el');
     const bio = document.getElementById('bio-el');
+    const views = document.getElementById('views-el');
 
-    if (avatar && user.avatar_url) avatar.src = user.avatar_url;
-    if (name) {
-        name.textContent = user.display_name || user.username || 'User';
-        if (user.name_font) name.style.fontFamily = user.name_font;
-        if (user.name_font_color) name.style.color = user.name_font_color;
-    }
-    if (handle) handle.textContent = '@' + (user.username || 'user');
-    if (bio) {
-        bio.textContent = user.bio || '';
-        if (user.bio_font) bio.style.fontFamily = user.bio_font;
-        if (user.bio_font_color) bio.style.color = user.bio_font_color;
-    }
+    if (avatar) avatar.src = user.avatar_url || '/assets/icons/user_dragon.png';
+    if (name) name.textContent = user.display_name || user.username || 'User';
+    if (bio) bio.textContent = user.bio || '';
+    if (views) views.textContent = user.views || 0;
 
-    // Theme Variables
-    const accent = user.accent_color || '#FFFFFF';
-    document.documentElement.style.setProperty('--accent', accent);
-    document.documentElement.style.setProperty('--accent-glow', accent + '33');
-
-    // Assemble Chunks
-    const fullBanner = (user.banner_url || "") + (user.banner_url_p2 || "") + (user.banner_url_p3 || "") + (user.banner_url_p4 || "") + (user.banner_url_p5 || "");
-    const fullMusic = (user.profile_music_url || "") + (user.profile_music_url_p2 || "") + (user.profile_music_url_p3 || "") + (user.profile_music_url_p4 || "") + (user.profile_music_url_p5 || "");
-    
-    // Card Style
-    const container = document.getElementById('profile-container');
-    if (container && user.card_style) {
-        // Clear old style classes but keep profile-card
-        container.className = 'profile-card';
-        // Add style class
-        container.classList.add(user.card_style + '-style');
-        if (user.card_border === 'off') container.classList.add('border-off');
+    // Background
+    const fullBg = document.getElementById('full-bg');
+    if (fullBg && user.banner_url) {
+        fullBg.style.backgroundImage = `url('${user.banner_url}')`;
     }
 
-    // Badges Injection
-    const badgesEl = document.getElementById('badges-el');
-    if (badgesEl) {
-        let bList = [];
-        try { 
-            bList = (typeof user.badges === 'string') ? JSON.parse(user.badges) : user.badges;
-            if (!Array.isArray(bList)) bList = [];
-        } catch(e){ bList = []; }
-        
-        badgesEl.innerHTML = bList.map(b => {
-            if (!b) return '';
-            const bName = b.name || b.label || '';
-            const bIcon = b.icon_url || '';
-            const isFa = bIcon.startsWith('fa-');
-            return `
-                <div class="badge-item" data-label="${bName}">
-                    ${isFa ? `<i class="${bIcon}"></i>` : `<img src="${bIcon}" class="badge-icon">`}
-                </div>
-            `;
-        }).join('');
-    }
-
-    // Links Injection
+    // Links
     const linksEl = document.getElementById('links-el');
-    if (linksEl && user.links) {
-        let lList = [];
-        try { lList = (typeof user.links === 'string') ? JSON.parse(user.links) : user.links; } catch(e){}
+    if (linksEl) {
+        let lList = user.links;
+        if (typeof lList === 'string') {
+            try { lList = JSON.parse(lList); } catch(e) { lList = []; }
+        }
         
         if (Array.isArray(lList)) {
-            linksEl.innerHTML = lList.map(l => {
-                const c = l.badgeColor || accent;
-                if (l.isBadge) {
-                    return `
-                        <a href="${l.url}" target="_blank" class="badge-item" data-label="${l.title}" style="background:${c}15;border:1px solid ${c}33;">
-                            <i class="${l.icon || 'fa-solid fa-link'}" style="color:${c}"></i>
-                        </a>`;
-                } else {
-                    return `
-                        <a href="${l.url}" target="_blank" class="profile-link-btn" style="--item-color:${c}">
-                            <div class="link-btn-content">
-                                <i class="${l.icon || 'fa-solid fa-link'}"></i>
-                                <span>${l.title}</span>
-                            </div>
-                            <i class="fa-solid fa-chevron-right arrow-icon"></i>
-                        </a>`;
-                }
-            }).join('');
-            if (window.twemoji) twemoji.parse(linksEl);
+            linksEl.innerHTML = lList.map(l => `
+                <a href="${l.url}" target="_blank" class="link-btn">
+                    <span style="display:flex; align-items:center; gap:15px;">
+                        <i class="${l.icon || 'fa-solid fa-link'} link-icon"></i>
+                        ${l.title}
+                    </span>
+                    <i class="fa-solid fa-chevron-right" style="font-size:12px; opacity:0.3;"></i>
+                </a>
+            `).join('');
         }
     }
 
-    const bannerVideo = document.getElementById('banner-video');
-    const fullBg = document.getElementById('full-bg');
-    if (fullBanner) {
-        const isVid = fullBanner.includes('.mp4') || fullBanner.includes('.webm') || fullBanner.startsWith('data:video/');
-        if (isVid && bannerVideo) {
-            bannerVideo.src = fullBanner;
-            bannerVideo.style.display = 'block';
-            bannerVideo.play().catch(e => console.warn("Video blocked"));
-        } else if (fullBg) {
-            fullBg.style.background = `url('${fullBanner}') center/cover no-repeat`;
-            fullBg.style.display = 'block';
+    // Badges
+    const badgesEl = document.getElementById('badges-el');
+    if (badgesEl) {
+        let bList = user.badges;
+        if (typeof bList === 'string') {
+            try { bList = JSON.parse(bList); } catch(e) { bList = []; }
+        }
+        if (Array.isArray(bList) && bList.length > 0) {
+            badgesEl.innerHTML = bList.map(b => `
+                <div class="badge-item" title="${b.label || b.name}">
+                    <i class="${b.icon_url || 'fa-solid fa-star'}" style="color:var(--accent);"></i>
+                </div>
+            `).join('');
+        } else {
+            badgesEl.innerHTML = '';
         }
     }
 
-    // Music Logic
-    const musicPlayer = document.getElementById('profile-music-player');
-    if (musicPlayer && fullMusic) {
-        musicPlayer.src = fullMusic;
-        musicPlayer.loop = true;
-        musicPlayer.volume = 0.5;
+    // Theme Update
+    if (user.accent_color) {
+        document.documentElement.style.setProperty('--accent', user.accent_color);
+        document.documentElement.style.setProperty('--accent-glow', user.accent_color + '4D');
     }
 
-    // 3D Tilt Setup
-    if (container && user.tilt_3d) {
-        setup3DTilt(container);
-    } else if (container) {
-        container.style.transform = 'none';
+    // Interactive Effects
+    setupInteractiveEffects();
+}
+
+// 3. Systems
+function setupEntrance() {
+    const overlay = document.getElementById('click-enter');
+    const card = document.getElementById('profile-card');
+    const audio = document.getElementById('profile-music-player');
+
+    if (overlay) {
+        overlay.onclick = () => {
+            overlay.style.opacity = '0';
+            overlay.style.pointerEvents = 'none';
+            setTimeout(() => overlay.style.display = 'none', 1000);
+            
+            if (card) {
+                card.style.opacity = '1';
+                card.style.transform = 'scale(1)';
+                card.style.pointerEvents = 'auto';
+            }
+
+            if (audio && audio.src) {
+                audio.play().catch(e => console.log("Music blocked"));
+            }
+        };
     }
 }
 
-// 6. Tilt Effect Function
-function setup3DTilt(card) {
+function setupInteractiveEffects() {
+    const card = document.getElementById('profile-card');
+    const aura = document.getElementById('aura');
+
     if (!card) return;
+
     document.addEventListener('mousemove', (e) => {
+        // 3D Tilt
         const rect = card.getBoundingClientRect();
         const x = (e.clientX - rect.left) / rect.width - 0.5;
         const y = (e.clientY - rect.top) / rect.height - 0.5;
+        
         card.style.transform = `perspective(1000px) rotateX(${y * -15}deg) rotateY(${x * 15}deg) scale(1.02)`;
+
+        // Liquid Aura
+        if (aura) {
+            aura.style.left = `${e.clientX - 300}px`;
+            aura.style.top = `${e.clientY - 300}px`;
+        }
     });
+
     document.addEventListener('mouseleave', () => {
         card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
     });
 }
 
-// 7. Execution Start
+// Initialize
 initProfile();

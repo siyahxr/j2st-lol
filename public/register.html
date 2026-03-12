@@ -1,70 +1,110 @@
 <!DOCTYPE html>
-<html lang="tr">
-
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>j2st.lol | Register</title>
+    <title>Kaydol | J2ST.LOL</title>
+    
+    <!-- CSS -->
     <link rel="stylesheet" href="/index.css">
-    <link rel="stylesheet" href="/auth.css">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
-
-<body>
-    <div class="animated-bg">
-        <div class="blob"></div>
-        <div class="blob-2"></div>
-    </div>
-    <div class="grid-overlay"></div>
-
-    <div class="auth-container">
-        <div class="auth-brand">
-            <img src="/assets/icons/user_dragon.png" alt="j2st" class="auth-logo">
-            <span class="auth-title iridescent-text">j2st.lol</span>
+<body class="auth-container" style="position: relative; overflow: hidden; background: var(--chaos-deep);">
+    <!-- Theme Background -->
+    <div class="chaos-bg-wrapper"></div>
+    <div class="chaos-overlay"></div>
+    
+    <div class="auth-card chaos-glass animate-fade-in" style="z-index: 10; border: 1px solid rgba(168, 85, 247, 0.2);">
+        <div style="text-align: center; margin-bottom: 40px;">
+            <a href="/" class="dragon-font" style="font-size: 32px; font-weight: 900; text-decoration: none; color: #fff; display: block; margin-bottom: 12px;">
+                J2ST<span style="color: var(--chaos-purple);">.LOL</span>
+            </a>
+            <p style="color: var(--text-dim); font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;">KAOSA KATIL.</p>
         </div>
 
-        <form class="auth-form glass-card" id="form-register" onsubmit="handleRegister(event)">
-            <h2 class="form-title">j2st.lol'a Katıl</h2>
-            <p class="form-sub">Bugün premium biyografi sayfanı oluştur</p>
+        <form id="form-register" onsubmit="handleRegister(event)">
+            <div class="chaos-input-group">
+                <label>KULLANICI ADI</label>
+                <input type="text" id="reg-user" class="chaos-input" placeholder="Kimliğini belirle..." required>
+            </div>
 
-            <div class="field-group">
-                <label class="field-label">Kullanıcı Adı</label>
-                <input id="reg-user" class="field-input" type="text" placeholder="Bir kullanıcı adı seçin (min 3 kar.)"
-                    minlength="3" maxlength="20" required autocomplete="username">
-                <span class="field-hint">Sadece harf, rakam ve alt çizgi</span>
+            <div class="chaos-input-group">
+                <label>E-POSTA ADRESİ</label>
+                <input type="email" id="reg-email" class="chaos-input" placeholder="example@gmail.com" required>
             </div>
-            <div class="field-group">
-                <label class="field-label">E-posta</label>
-                <input id="reg-email" class="field-input" type="email" placeholder="ornek@eposta.com"
-                    required autocomplete="email">
-            </div>
-            <div class="field-group">
-                <label class="field-label">Şifre</label>
-                <div class="field-pw-wrap">
-                    <input id="reg-pass" class="field-input" type="password" placeholder="En az 8 karakter"
-                        minlength="8" required autocomplete="new-password">
-                    <button type="button" class="pw-toggle" onclick="togglePw('reg-pass',this)">👁</button>
+            
+            <div class="chaos-input-group">
+                <label>GÜÇLÜ BİR ŞİFRE</label>
+                <div style="position: relative;">
+                    <input type="password" id="reg-pass" class="chaos-input" placeholder="••••••••" required>
+                    <button type="button" onclick="togglePw('reg-pass', this)" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-dark); cursor: pointer; font-size: 18px;">
+                        <i class="fa-regular fa-eye"></i>
+                    </button>
                 </div>
-                <div class="pw-strength" id="pw-strength"></div>
-            </div>
-            <div class="field-group">
-                <label class="field-label">Şifreyi Onayla</label>
-                <input id="reg-pass2" class="field-input" type="password" placeholder="Şifreyi tekrar girin"
-                    required>
+                <!-- Strength Meter -->
+                <div style="height: 4px; background: rgba(255,255,255,0.05); border-radius: 4px; margin-top: 10px; overflow: hidden;">
+                    <div id="pw-strength-bar" style="height: 100%; width: 0%; transition: var(--chaos-transition);"></div>
+                </div>
+                <div id="pw-strength" style="font-size: 11px; margin-top: 6px; font-weight: 700;"></div>
             </div>
 
-            <div id="reg-error" class="form-error"></div>
-            <div id="reg-success" class="form-success"></div>
+            <div class="chaos-input-group">
+                <label>ŞİFREYİ ONAYLA</label>
+                <input type="password" id="reg-pass2" class="chaos-input" placeholder="Tekrarla..." required>
+            </div>
 
-            <button type="submit" class="auth-submit" id="btn-register">Hesap Oluştur →</button>
-            <p class="form-hint">Zaten bir hesabın var mı? <a href="/login">Giriş yap</a></p>
+            <div id="reg-error" style="color: var(--chaos-rose); font-size: 13px; font-weight: 800; margin-bottom: 20px; text-align: center; display: none;"></div>
+            <div id="reg-success" style="color: var(--chaos-teal); font-size: 13px; font-weight: 800; margin-bottom: 20px; text-align: center; display: none;"></div>
+
+            <button type="submit" id="btn-register" class="chaos-btn" style="width: 100%; margin-bottom: 24px; justify-content: center;">HESABI UYANDIR <i class="fa-solid fa-dragon"></i></button>
         </form>
 
-        <p class="auth-back"><a href="/">← Ana sayfaya dön</a></p>
+        <div style="text-align: center; color: var(--text-dim); font-size: 14px; font-weight: 600;">
+            Zaten bir ruhun var mı? <a href="/login" style="color: var(--chaos-purple); text-decoration: none; font-weight: 800; border-bottom: 1px solid var(--chaos-purple);">Giriş Yap →</a>
+        </div>
     </div>
 
-    <script src="/system/i18n.js"></script>
-    <script type="module" src="/auth.js"></script>
-</body>
+    <!-- JS -->
+    <script src="/auth.js"></script>
+    <script>
+        function togglePw(id, btn) {
+            const el = document.getElementById(id);
+            const icon = btn.querySelector('i');
+            if (el.type === 'password') {
+                el.type = 'text';
+                icon.className = 'fa-regular fa-eye-slash';
+            } else {
+                el.type = 'password';
+                icon.className = 'fa-regular fa-eye';
+            }
+        }
 
+        const passInput = document.getElementById("reg-pass");
+        if (passInput) {
+            passInput.addEventListener("input", () => {
+                const v = passInput.value;
+                const bar = document.getElementById("pw-strength-bar");
+                const text = document.getElementById("pw-strength");
+                if (!bar || !text) return;
+                
+                let s = 0;
+                if (v.length >= 8) s++;
+                if (/[A-Z]/.test(v)) s++;
+                if (/[0-9]/.test(v)) s++;
+                if (/[^a-zA-Z0-9]/.test(v)) s++;
+                
+                const labels = ["", "ZAYIF", "ORTA", "İYİ", "GÜÇLÜ"];
+                const colors = ["", "#f43f5e", "#f59e0b", "#10b981", "#3b82f6"];
+                const widths = ["", "25%", "50%", "75%", "100%"];
+                
+                text.textContent = labels[s];
+                text.style.color = colors[s];
+                bar.style.width = widths[s];
+                bar.style.backgroundColor = colors[s];
+            });
+        }
+    </script>
+</body>
 </html>

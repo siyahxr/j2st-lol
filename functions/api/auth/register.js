@@ -44,7 +44,7 @@ export async function onRequestPost(context) {
         }
 
         // 2. Insert new user
-        const { error: insertError } = await supabase
+        const { data: newUser, error: insertError } = await supabase
             .from('users')
             .insert([
                 {
@@ -55,13 +55,16 @@ export async function onRequestPost(context) {
                     role: 'user',
                     badges: [ 'ea_badge' ] // Store as array
                 }
-            ]);
+            ])
+            .select('id, username, email, role')
+            .single();
 
         if (insertError) throw insertError;
 
         return new Response(JSON.stringify({
             success: true,
-            message: "Hesap başarıyla oluşturuldu!"
+            message: "Hesap başarıyla oluşturuldu!",
+            user: newUser
         }), { status: 200, headers: corsHeaders });
 
     } catch (err) {

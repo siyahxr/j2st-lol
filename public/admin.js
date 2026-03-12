@@ -244,7 +244,7 @@ window.setRole = async function (userId, newRole) {
 
         const data = await res.json();
         if (data.success) {
-            loadUsers();
+            fetchData();
         } else {
             alert("Failed: " + data.error);
         }
@@ -268,7 +268,7 @@ window.deleteUser = async function (userId) {
 
         const data = await res.json();
         if (data.success) {
-            loadUsers();
+            fetchData();
         } else {
             alert("Failed: " + data.error);
         }
@@ -288,8 +288,7 @@ window.deleteBadge = async function(badgeId) {
         });
         const data = await res.json();
         if (data.success) {
-            loadGlobalBadges();
-            loadUsers(); // Refresh icons
+            fetchData();
         } else {
             alert("Delete failed: " + data.error);
         }
@@ -347,7 +346,7 @@ window.deployBadge = async function() {
             document.getElementById('new-badge-name').value = "";
             badgeBase64 = null;
             document.getElementById('badge-upload-status').textContent = "Click to upload PNG/SVG";
-            loadGlobalBadges();
+            fetchData();
         } else {
             alert("Deploy failed: " + data.error);
         }

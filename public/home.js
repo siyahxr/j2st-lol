@@ -28,13 +28,20 @@ document.addEventListener('DOMContentLoaded', () => {
 // Navbar scroll effect
 const navbar = document.getElementById('navbar');
 window.addEventListener('scroll', () => {
-    if (window.scrollY > 30) {
-        navbar.style.background = 'rgba(2,6,9,0.92)';
-        navbar.style.top = '10px';
+    if (window.scrollY > 50) {
+        navbar.classList.add('scrolled');
     } else {
-        navbar.style.background = '';
-        navbar.style.top = '16px';
+        navbar.classList.remove('scrolled');
     }
+});
+
+// Parallax Hero
+document.addEventListener('mousemove', (e) => {
+    const dragon = document.querySelector('.hero-dragon');
+    if (!dragon) return;
+    const moveX = (e.clientX - window.innerWidth / 2) * 0.01;
+    const moveY = (e.clientY - window.innerHeight / 2) * 0.01;
+    dragon.style.transform = `translate(${moveX}px, ${moveY}px) rotate(${-2 + moveX * 0.1}deg)`;
 });
 
 // Animated Number Counters
@@ -95,13 +102,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     userDashBtn.textContent = session.username;
                 }
                 const featProfileLink = document.getElementById('feat-profile-link');
-                                const openProfileBtn = document.querySelector('a.btn-primary.large[href="/"]');
-                                if (featProfileLink) {
-                                    featProfileLink.href = `/${session.username}`;
-                                }
-                                if (openProfileBtn && openProfileBtn.textContent.includes('Open Profile')) {
-                                    openProfileBtn.href = `/${session.username}`;
-                                }
+                const openProfileBtn = document.querySelector('a[data-i18n="hero_get_started"]');
+                if (featProfileLink) {
+                    featProfileLink.href = `/${session.username}`;
+                }
+                if (openProfileBtn) {
+                    openProfileBtn.href = `/${session.username}`;
+                }
             }
         }
     } catch (e) {

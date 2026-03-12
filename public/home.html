@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>j2st.lol | Premium Bio Platform</title>
     <meta name="description" content="j2st.lol — Premium gamer bio link platform.">
+    <!-- CSS -->
     <link rel="stylesheet" href="/index.css">
-        <link rel="stylesheet" href="/home.css">
+    <link rel="stylesheet" href="/home.css">
+    <!-- FONTS -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -14,7 +16,6 @@
     <div class="animated-bg">
         <div class="blob"></div>
         <div class="blob-2"></div>
-        <div class="blob-3"></div>
     </div>
 
     <!-- Grid overlay -->
@@ -25,13 +26,13 @@
         <div class="nav-inner">
             <div class="nav-brand">
                 <img src="/assets/icons/user_dragon.png" alt="j2st logo" class="nav-logo">
-                <span class="nav-title iridescent-text">j2st.lol</span>
+                <span class="nav-title iridescent-text" data-i18n="nav_title">j2st.lol</span>
             </div>
             <div class="nav-actions">
-                <a href="#features" class="nav-pill">Features</a>
-                <a href="/login" class="nav-pill">Login</a>
-                <a href="/register" class="btn-ghost" id="nav-auth-btn">Register</a>
-                <a href="/dashboard" class="btn-primary">Dashboard</a>
+                <a href="#features" class="nav-pill" data-i18n="nav_features">Özellikler</a>
+                <a href="/login" class="nav-pill" id="nav-login" data-i18n="nav_login">Giriş Yap</a>
+                <a href="/register" class="btn-ghost" id="nav-register" data-i18n="nav_register">Kayıt Ol</a>
+                <a href="/dashboard" class="btn-primary" id="nav-user-dash" style="display:none;" data-i18n="nav_dash">Panel</a>
             </div>
         </div>
     </nav>
@@ -42,35 +43,36 @@
         <div class="hero-text">
             <div class="hero-tag">
                 <span class="live-dot"></span>
-                <span>j2st.lol — Live Platform</span>
+                <span data-i18n="hero_tag">j2st.lol — Canlı Platform</span>
             </div>
-            <h1 class="hero-h1">
-                Your <span class="iridescent-text">Digital</span><br>
-                Identity, Perfected.
+            <h1 class="hero-h1" data-i18n="hero_h1">
+                <span class="iridescent-text">Dijital</span> Kimliğiniz,<br>
+                Kusursuzlaştırıldı.
             </h1>
-            <p class="hero-p">
-                One sleek page to showcase everything — your links, sound, badges, and personality. Built for gamers who want to stand out.
+            <p class="hero-p" data-i18n="hero_p">
+                Her şeyi sergilemek için tek bir şık sayfa — bağlantılarınız, sesiniz, rozetleriniz ve kişiliğiniz. 
+                Öne çıkmak isteyen oyuncular için tasarlandı.
             </p>
             <div class="hero-btns">
-                <a href="/" class="btn-primary large">Open Profile</a>
-                                <a href="/dashboard" class="btn-ghost large">Customize</a>
+                <a href="/" class="btn-primary large" data-i18n="hero_get_started">Profil Aç</a>
+                <a href="/dashboard" class="btn-ghost large" data-i18n="hero_customize">Özelleştir</a>
             </div>
 
             <!-- Mini stats -->
             <div class="hero-counters">
                 <div class="counter-item">
-                    <span class="counter-val" data-target="1240">0</span>
-                    <span class="counter-label">Profiles</span>
+                    <span class="counter-val" data-target="1240">1,240</span>
+                    <span class="counter-label" data-i18n="stat_profiles">Profil</span>
                 </div>
                 <div class="counter-sep"></div>
                 <div class="counter-item">
-                    <span class="counter-val" data-target="99">0</span><span class="counter-pct">%</span>
-                    <span class="counter-label">Uptime</span>
+                    <span class="counter-val" data-target="99">99</span><span class="counter-pct">%</span>
+                    <span class="counter-label" data-i18n="stat_uptime">Çalışma Süresi</span>
                 </div>
                 <div class="counter-sep"></div>
                 <div class="counter-item">
                     <span class="counter-val">∞</span>
-                    <span class="counter-label">Links</span>
+                    <span class="counter-label" data-i18n="stat_links">Bağlantı</span>
                 </div>
             </div>
         </div>
@@ -86,7 +88,7 @@
                 <img src="/assets/icons/user_dragon.png" alt="" class="fc-avatar">
                 <div>
                     <p class="fc-name iridescent-text">j2st</p>
-                    <p class="fc-sub">Gamer &amp; Developer</p>
+                    <p class="fc-sub" data-i18n="demo_sub">Oyuncu & Geliştirici</p>
                 </div>
             </div>
 
@@ -94,23 +96,23 @@
             <div class="float-card glass-card fc-badge">
                 <img src="/assets/icons/badge.png" alt="badge" class="fc-icon">
                 <div>
-                    <p class="fc-name">Early Access</p>
-                    <p class="fc-sub">Badge unlocked</p>
+                    <p class="fc-name" data-i18n="demo_badge_name">Erken Erişim</p>
+                    <p class="fc-sub" data-i18n="demo_badge_sub">Rozet açıldı</p>
                 </div>
             </div>
 
             <!-- Floating link card -->
             <div class="float-card glass-card fc-link">
                 <img src="/assets/icons/link.png" alt="link" class="fc-icon-sm">
-                <p class="fc-name">3 Links Active</p>
+                <p class="fc-name" data-i18n="demo_link_info">3 Aktif Bağlantı</p>
             </div>
         </div>
     </section>
 
     <!-- ====== FEATURES ====== -->
     <section class="features" id="features">
-        <div class="features-label">WHAT YOU GET</div>
-        <h2 class="features-title">Everything in <span class="iridescent-text">one place</span></h2>
+        <div class="features-label" data-i18n="feat_label">NELER SUNUYORUZ?</div>
+        <h2 class="features-title" data-i18n="feat_title">Her şey <span class="iridescent-text">tek bir yerde</span></h2>
 
         <div class="feat-grid">
             <a href="/" class="feat-card glass-card">
@@ -118,8 +120,8 @@
                     <span class="feat-icon"><img src="/assets/icons/dragon.png" alt="profile"></span>
                     <span class="feat-arrow">↗</span>
                 </div>
-                <h3>Profile Page</h3>
-                <p>Your public face — dragon avatar, bio, links, and badges all in one stunning page.</p>
+                <h3 data-i18n="feat1_title">Profil Sayfası</h3>
+                <p data-i18n="feat1_p">Halka açık yüzünüz — ejderha avatarı, biyografi, bağlantılar ve rozetlerin hepsi tek bir çarpıcı sayfada.</p>
                 <div class="feat-bar"></div>
             </a>
             <a href="/dashboard" class="feat-card glass-card">
@@ -127,8 +129,8 @@
                     <span class="feat-icon"><img src="/assets/icons/gear.png" alt="dashboard"></span>
                     <span class="feat-arrow">↗</span>
                 </div>
-                <h3>Dashboard</h3>
-                <p>Upload PPs, banners, sounds, and manage all your profile content in real-time.</p>
+                <h3 data-i18n="feat2_title">Kontrol Paneli</h3>
+                <p data-i18n="feat2_p">Profil resimleri, bannerlar ve sesler yükleyin; tüm profil içeriğinizi gerçek zamanlı olarak yönetin.</p>
                 <div class="feat-bar"></div>
             </a>
             <a href="/admin" class="feat-card glass-card">
@@ -136,8 +138,8 @@
                     <span class="feat-icon"><img src="/assets/icons/shield.png" alt="admin"></span>
                     <span class="feat-arrow">↗</span>
                 </div>
-                <h3>Admin Panel</h3>
-                <p>Control users, toggle global badges, and manage the platform from one panel.</p>
+                <h3 data-i18n="feat3_title">Yönetim Paneli</h3>
+                <p data-i18n="feat3_p">Kullanıcıları kontrol edin, genel rozetleri açın ve platformu tek bir panelden yönetin.</p>
                 <div class="feat-bar"></div>
             </a>
         </div>
@@ -145,33 +147,34 @@
         <!-- Marquee strip -->
         <div class="marquee-wrap">
             <div class="marquee-track">
-                <span>Profile</span>
+                <span data-i18n="marq_prof">Profil</span>
                 <span class="marquee-dot">·</span>
-                <span>Sound</span>
+                <span data-i18n="marq_sound">Ses</span>
                 <span class="marquee-dot">·</span>
-                <span>Badges</span>
+                <span data-i18n="marq_badges">Rozetler</span>
                 <span class="marquee-dot">·</span>
-                <span>Links</span>
+                <span data-i18n="marq_links">Bağlantılar</span>
                 <span class="marquee-dot">·</span>
-                <span>Dashboard</span>
+                <span data-i18n="marq_dash">Panel</span>
                 <span class="marquee-dot">·</span>
-                <span>Admin</span>
+                <span data-i18n="marq_admin">Admin</span>
                 <span class="marquee-dot">·</span>
-                <span>Analytics</span>
+                <span data-i18n="marq_anal">Analiz</span>
                 <span class="marquee-dot">·</span>
-                <span>Profile</span>
+                <!-- Loop -->
+                <span data-i18n="marq_prof">Profil</span>
                 <span class="marquee-dot">·</span>
-                <span>Sound</span>
+                <span data-i18n="marq_sound">Ses</span>
                 <span class="marquee-dot">·</span>
-                <span>Badges</span>
+                <span data-i18n="marq_badges">Rozetler</span>
                 <span class="marquee-dot">·</span>
-                <span>Links</span>
+                <span data-i18n="marq_links">Bağlantılar</span>
                 <span class="marquee-dot">·</span>
-                <span>Dashboard</span>
+                <span data-i18n="marq_dash">Panel</span>
                 <span class="marquee-dot">·</span>
-                <span>Admin</span>
+                <span data-i18n="marq_admin">Admin</span>
                 <span class="marquee-dot">·</span>
-                <span>Analytics</span>
+                <span data-i18n="marq_anal">Analiz</span>
                 <span class="marquee-dot">·</span>
             </div>
         </div>
@@ -182,21 +185,20 @@
         <div class="cta-inner glass-card">
             <img src="/assets/icons/user_dragon.png" class="cta-dragon" alt="dragon">
             <div class="cta-text">
-                <h2>Start now. <span class="iridescent-text">It's free.</span></h2>
-                <p>Join the j2st.lol community and own your digital identity.</p>
+                <h2 data-i18n="cta_title">Şimdi başlayın. <span class="iridescent-text">Ücretsizdir.</span></h2>
+                <p data-i18n="cta_p">j2st.lol topluluğuna katılın ve dijital kimliğinize sahip olun.</p>
             </div>
-            <a href="/register" class="btn-primary large">Get Started →</a>
+            <a href="/register" class="btn-primary large" data-i18n="cta_btn">Hemen Başla →</a>
         </div>
     </section>
 
     <!-- Footer -->
     <footer class="footer">
         <span class="iridescent-text" style="font-weight:700; font-size:18px;">j2st.lol</span>
-        <span style="color: var(--text-dim); font-size:13px;">© 2026 j2st · All rights reserved</span>
+        <span style="color: var(--text-dim); font-size:13px;" data-i18n="footer_copy">© 2026 j2st · Tüm hakları saklıdır</span>
     </footer>
 
-    <!-- (Floating Profile Button removed per request, now only accessible from dashboard) -->
-
+    <script src="/system/i18n.js"></script>
     <script src="/home.js"></script>
     <!-- Twemoji: high-quality emoji rendering -->
     <script src="https://cdn.jsdelivr.net/npm/@twemoji/api@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>

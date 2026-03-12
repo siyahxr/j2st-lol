@@ -1,690 +1,149 @@
 <!DOCTYPE html>
-<html lang="tr">
-
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>j2st.lol | PANEL</title>
-
-    <!-- STYLES -->
+    <title>Dashboard | J2ST.LOL</title>
+    
+    <!-- CSS -->
     <link rel="stylesheet" href="/index.css">
     <link rel="stylesheet" href="/dashboard.css">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;600;800&family=Space+Grotesk:wght@500;700&display=swap"
-        rel="stylesheet">
+    
+    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
+<body class="dashboard-layout" style="position: relative; overflow: hidden; background: var(--chaos-deep);">
+    <!-- Theme Background -->
+    <div class="chaos-bg-wrapper" style="opacity: 0.2;"></div>
+    <div class="chaos-overlay"></div>
 
-<body>
+    <!-- Sidebar -->
+    <aside class="sidebar chaos-glass" style="margin: 20px; border-radius: 24px; border: 1px solid rgba(168, 85, 247, 0.1);">
+        <div class="dragon-font" style="font-size: 24px; font-weight: 900; margin-bottom: 40px; text-align: center; display: flex; align-items: center; justify-content: center; gap: 10px;">
+            <img src="/assets/theme/dragon_logo.png" style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--chaos-purple);">
+            J2ST<span style="color: var(--chaos-purple);">.LOL</span>
+        </div>
 
-    <div class="dash-container">
+        <nav style="flex: 1;">
+            <a href="#" class="nav-link active" onclick="switchTab('profile')">
+                <i class="fa-solid fa-user-ninja"></i> <span>Profilim</span>
+            </a>
+            <a href="#" class="nav-link" onclick="switchTab('links')">
+                <i class="fa-solid fa-link"></i> <span>Bağlantılar</span>
+            </a>
+            <a href="#" class="nav-link" onclick="switchTab('design')">
+                <i class="fa-solid fa-palette"></i> <span>Tasarım</span>
+            </a>
+            <a href="#" class="nav-link" onclick="switchTab('analytics')">
+                <i class="fa-solid fa-chart-simple"></i> <span>Analiz</span>
+            </a>
+            <div style="margin: 20px 0; height: 1px; background: var(--glass-border);"></div>
+            <a href="#" class="nav-link" onclick="switchTab('settings')">
+                <i class="fa-solid fa-gear"></i> <span>Ayarlar</span>
+            </a>
+        </nav>
 
-        <!-- SIDEBAR -->
-        <aside class="sidebar">
-            <div class="brand-section">
-                <div class="brand-logo">
-                    <i class="fa-solid fa-cube"></i>
-                </div>
-                <div class="brand-info">
-                    <span class="brand-name">j2st.lol</span>
-                    <span class="brand-sub">PANEL</span>
-                </div>
-            </div>
+        <div style="margin-top: auto; padding-top: 20px;">
+            <button onclick="logout()" class="secondary-btn" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                <i class="fa-solid fa-right-from-bracket"></i> <span>Çıkış Yap</span>
+            </button>
+        </div>
+    </aside>
 
-            <nav class="nav-group">
-                <p class="nav-label">HESAP</p>
-                <a href="#overview" class="nav-item active" onclick="switchTab(this, 'overview')">
-                    <i class="fa-solid fa-house"></i>
-                    <span>Genel Bakış</span>
-                </a>
-                <a href="#profile" class="nav-item" onclick="switchTab(this, 'profile')">
-                    <i class="fa-solid fa-user"></i>
-                    <span>Profil</span>
-                </a>
-                <a href="#appearance" class="nav-item" onclick="switchTab(this, 'appearance')">
-                    <i class="fa-solid fa-palette"></i>
-                    <span>Görünüm</span>
-                </a>
-                <a href="#badges" class="nav-item" onclick="switchTab(this, 'badges')">
-                    <i class="fa-solid fa-award"></i>
-                    <span>Rozetler</span>
-                </a>
-                <a href="#links" class="nav-item" onclick="switchTab(this, 'links')">
-                    <i class="fa-solid fa-link"></i>
-                    <span>Bağlantılar</span>
-                </a>
-                <a href="#security" class="nav-item" onclick="switchTab(this, 'security')">
-                    <i class="fa-solid fa-shield-halved"></i>
-                    <span>Güvenlik</span>
-                </a>
-                <a href="#forum" class="nav-item">
-                    <i class="fa-solid fa-comments"></i>
-                    <span>Forum</span>
-                </a>
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="content-header">
+            <h1 id="tab-title">Profilini Yönet</h1>
+            <p id="tab-desc">Kimliğini ve dijital varlığını kişiselleştir.</p>
+        </header>
 
-                <p class="nav-label">İSTATİSTİKLER</p>
-                <a href="#social" class="nav-item" onclick="switchTab(this, 'social')">
-                    <i class="fa-solid fa-share-nodes"></i>
-                    <span>Sosyal Medya</span>
-                </a>
-                <a href="#analytics" class="nav-item" onclick="switchTab(this, 'analytics')">
-                    <i class="fa-solid fa-chart-simple"></i>
-                    <span>Analiz</span>
-                </a>
-                
-                <div id="admin-nav-wrapper" style="display:none; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 12px; padding-top: 12px;">
-                    <p class="nav-label">YÖNETİM</p>
-                    <a href="/admin" class="nav-item" style="color: #3b82f6;">
-                        <i class="fa-solid fa-terminal"></i>
-                        <span>Admin Paneli</span>
-                    </a>
-                </div>
-            </nav>
-
-            <div class="sidebar-footer">
-                <div class="user-footer-card">
-                    <img src="/assets/icons/user_dragon.png" id="footer-avatar" class="user-footer-img">
-                    <div class="user-footer-info">
-                        <span class="user-footer-name" id="footer-username">Kullanıcı</span>
-                        <span class="user-footer-handle" id="footer-handle">@user</span>
+        <!-- Tab: Profile -->
+        <div id="tab-profile" class="tab-panel">
+            <div class="dashboard-card">
+                <h3 class="card-title"><i class="fa-solid fa-circle-user"></i> Temel Bilgiler</h3>
+                <div class="form-row">
+                    <div class="input-group">
+                        <label>Görünen İsim</label>
+                        <input type="text" id="profile-display-name" oninput="updatePreview()" placeholder="Adını yaz...">
                     </div>
-                </div>
-                <a href="#" class="nav-item" onclick="logout()" style="margin-top: 8px; color: var(--danger);">
-                    <i class="fa-solid fa-right-from-bracket"></i>
-                    <span>Çıkış Yap</span>
-                </a>
-            </div>
-        </aside>
-
-        <!-- MAIN CONTENT -->
-        <main class="main-content">
-
-            <!-- 1. GENEL BAKIŞ -->
-            <div class="tab-panel active" id="tab-overview">
-                <div class="overview-header">
-                    <img src="/assets/icons/user_dragon.png" id="header-avatar-img" class="big-avatar">
-                    <div class="welcome-text">
-                        <h2 id="welcome-msg">Tekrar hoş geldin, user</h2>
-                        <p>Profilinde neler olup bittiğine bir göz at</p>
-                    </div>
-                    <button class="view-btn" onclick="viewProfile()">
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i> Profili Görüntüle
-                    </button>
-                </div>
-
-                <div class="url-bar">
-                    <i class="fa-solid fa-link"></i>
-                    <span id="profile-url-display">j2st.lol/user</span>
-                    <button class="ta-btn mini" onclick="copyProfileLink()">Linki Kopyala</button>
-                    <button class="ta-btn mini" onclick="viewProfile()">Aç</button>
-                </div>
-
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <div class="stat-top">
-                            <i class="fa-solid fa-eye"></i>
-                            <span class="stat-label">PROFİL GÖRÜNTÜLEME</span>
-                        </div>
-                        <div class="stat-value" id="stat-views">0</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-top">
-                            <i class="fa-solid fa-link"></i>
-                            <span class="stat-label">LİNKLER</span>
-                        </div>
-                        <div class="stat-value" id="stat-links">0</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-top">
-                            <i class="fa-solid fa-award"></i>
-                            <span class="stat-label">ROZETLER</span>
-                        </div>
-                        <div class="stat-value" id="stat-badges">0</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-top">
-                            <i class="fa-solid fa-message"></i>
-                            <span class="stat-label">FORUM MESAJLARI</span>
-                        </div>
-                        <div class="stat-value">0</div>
-                    </div>
-                </div>
-
-                <div class="progress-card">
-                    <div class="progress-header">
-                        <h3><i class="fa-solid fa-circle-info"></i> Profil Tamamlanma Oranı</h3>
-                        <span class="progress-perc" id="profile-completion-perc">0%</span>
-                    </div>
-                    <div class="p-bar-bg">
-                        <div class="p-bar-fill" id="profile-completion-bar" style="width: 0%;"></div>
-                    </div>
-                    <div class="checklist-grid">
-                        <div class="check-item" id="check-name"><i class="fa-solid fa-circle-check"></i> Görünür İsim</div>
-                        <div class="check-item" id="check-bio"><i class="fa-solid fa-circle-check"></i> Biyografi</div>
-                        <div class="check-item" id="check-media"><i class="fa-solid fa-circle-check"></i> Arka Plan</div>
-                        <div class="check-item" id="check-links"><i class="fa-solid fa-circle-check"></i> Linkler</div>
-                        <div class="check-item" id="check-music"><i class="fa-solid fa-circle-check"></i> Müzik</div>
-                    </div>
-                </div>
-
-                <div class="footer-info-grid">
-                    <div class="info-box">
-                        <div class="info-icon"><i class="fa-solid fa-dragon"></i></div>
-                        <div class="info-data">
-                            <span class="info-label">ÜYELİK</span>
-                            <span class="info-value" id="user-role-display">Ücretsiz</span>
-                        </div>
-                    </div>
-                    <div class="info-box">
-                        <div class="info-icon"><i class="fa-solid fa-calendar-days"></i></div>
-                        <div class="info-data">
-                            <span class="info-label">ÜYELİK TARİHİ</span>
-                            <span class="info-value" id="user-join-date">8 Mart 2026</span>
-                        </div>
+                    <div class="input-group">
+                        <label>Profil Sloganı (Bio)</label>
+                        <input type="text" id="profile-bio" oninput="updatePreview()" placeholder="Kendinden bahset...">
                     </div>
                 </div>
             </div>
 
-            <!-- 2. PROFIL EDITOR -->
-            <div class="tab-panel" id="tab-profile">
-                <div class="section-title">
-                    <i class="fa-solid fa-user-pen"></i>
-                    <div>
-                        <h2>Profili Düzenle</h2>
-                        <p style="font-size: 13px; color: var(--text-secondary); font-weight: normal;">Görünen ismini, biyografini ve genel bilgilerini güncelle</p>
+            <div class="dashboard-card">
+                <h3 class="card-title"><i class="fa-solid fa-image"></i> Görseller</h3>
+                <div class="form-row">
+                    <div class="input-group">
+                        <label>Profil Resmi URL</label>
+                        <input type="text" id="avatar-url-direct" oninput="updatePreview()" placeholder="https://...">
                     </div>
-                </div>
-
-                <div class="glass-card">
-                    <p class="form-label"><i class="fa-solid fa-image"></i> AVATAR</p>
-                    <div class="avatar-edit-box">
-                        <p class="form-label" style="margin:0">ÖZEL AVATAR (YÜKLE)</p>
-                        <div style="display:flex; align-items:center; gap:20px;">
-                            <img src="/assets/icons/user_dragon.png" id="preview-avatar-img" class="edit-avatar-img">
-                            <div style="display:flex; flex-direction:column; gap:10px;">
-                                <div style="display:flex; gap:10px;">
-                                    <button class="btn-primary" onclick="document.getElementById('avatar-upload').click()">Yeni Yükle</button>
-                                    <button class="btn-primary" style="background:#ef4444;" onclick="removeAvatar()"><i class="fa-solid fa-trash"></i></button>
-                                </div>
-                                <input type="text" id="avatar-url-direct" class="form-input" placeholder="URL ile yükle..." style="font-size:11px;">
-                            </div>
-                        </div>
-                        <input type="file" id="avatar-upload" style="display:none" accept="image/*">
-                        <button class="form-input" style="margin-top:10px; opacity:0.6; cursor:not-allowed; border-style:dashed;">
-                            <i class="fa-brands fa-discord"></i> Discord ile Eşitle
-                        </button>
-                    </div>
-                </div>
-
-                <div class="glass-card">
-                    <p class="form-label"><i class="fa-solid fa-id-card"></i> KİŞİSEL BİLGİLER</p>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
-                        <div class="form-field">
-                            <label class="form-label">KULLANICI ADI (HAFTADA BİR KEZ DEĞİŞTİRİLEBİLİR)</label>
-                            <input type="text" id="set-new-username" class="form-input" readonly placeholder="username">
-                            <p style="color:var(--danger); font-size:10px; margin-top:6px;"><i class="fa-solid fa-circle-exclamation"></i> Bir sonraki değişim tarihi: 19 Mar 2026</p>
-                        </div>
-                        <div class="form-field">
-                            <label class="form-label">GÖRÜNEN İSİM</label>
-                            <input type="text" id="profile-display-name" class="form-input" placeholder="Görünen İsim">
-                        </div>
-                    </div>
-                    <div class="form-field">
-                        <label class="form-label">BİYOGRAFİ</label>
-                        <textarea id="profile-bio" class="form-input" style="min-height:100px; resize:vertical;" placeholder="Kendinden bahset..."></textarea>
-                    </div>
-                </div>
-
-                <div style="display:flex; justify-content:flex-end;">
-                    <button class="btn-primary" id="save-profile-btn" onclick="saveProfileChanges()">
-                        <i class="fa-solid fa-floppy-disk"></i> DEĞİŞİKLİKLERİ KAYDET
-                    </button>
-                </div>
-            </div>
-
-            <!-- 3. GÖRÜNÜM (APPEARANCE) -->
-            <div class="tab-panel" id="tab-appearance">
-                <div class="section-title">
-                    <i class="fa-solid fa-palette"></i>
-                    <div>
-                        <h2>Görünüm</h2>
-                        <p style="font-size: 13px; color: var(--text-secondary); font-weight: normal;">Profilinizin ziyaretçilere nasıl görüneceğini özelleştirin</p>
-                    </div>
-                </div>
-
-                <div class="glass-card">
-                    <p class="form-label"><i class="fa-solid fa-user-gear"></i> PROFİL GÖRÜNÜMÜ</p>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
-                        <div class="form-field">
-                            <label class="form-label">AVATAR ÇERÇEVE RENGİ</label>
-                            <input type="text" id="avatar-frame-hex" class="form-input" value="#FFFFFF">
-                        </div>
-                        <div class="form-field">
-                            <label class="form-label">İKON RENGİ</label>
-                            <input type="text" id="icon-hex" class="form-input" value="#FFFFFF">
-                        </div>
-                    </div>
-                    <div class="form-field">
-                        <label class="form-label">ROZET ARKA PLAN RENGİ</label>
-                        <input type="text" id="badge-bg-color" class="form-input" value="rgba(255,255,255,0.04)">
-                    </div>
-                    <div class="form-field">
-                        <label class="form-label">VURGU RENGİ</label>
-                        <div style="display:flex; gap:16px; align-items:flex-start;">
-                            <div id="color-picker-container" style="background:#1a1a24; padding:16px; border-radius:12px; border:1px solid var(--accent-border); flex:1;">
-                                <div style="width:100%; height:120px; background:linear-gradient(to right, white, #1bdeb0); border-radius:8px; margin-bottom:12px;"></div>
-                                <input type="range" id="accent-hue" min="0" max="360" style="width:100%; margin-bottom:12px;">
-                                <div style="display:flex; gap:8px;">
-                                    <input type="text" id="accent-hex" class="form-input" value="#1bdeb0" style="flex:1;">
-                                    <button class="form-input" style="width:40px;"><i class="fa-solid fa-eye-dropper"></i></button>
-                                </div>
-                            </div>
-                            <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px;">
-                                <div class="color-dot" onclick="syncColor('accent', '#3b82f6')" style="background:#3b82f6; width:24px; height:24px; border-radius:4px; cursor:pointer;"></div>
-                                <div class="color-dot" onclick="syncColor('accent', '#22c55e')" style="background:#22c55e; width:24px; height:24px; border-radius:4px; cursor:pointer;"></div>
-                                <div class="color-dot" onclick="syncColor('accent', '#ef4444')" style="background:#ef4444; width:24px; height:24px; border-radius:4px; cursor:pointer;"></div>
-                                <div class="color-dot" onclick="syncColor('accent', '#f59e0b')" style="background:#f59e0b; width:24px; height:24px; border-radius:4px; cursor:pointer;"></div>
-                                <div class="color-dot" onclick="syncColor('accent', '#8b5cf6')" style="background:#8b5cf6; width:24px; height:24px; border-radius:4px; cursor:pointer;"></div>
-                                <div class="color-dot" onclick="syncColor('accent', '#ffffff')" style="background:#ffffff; width:24px; height:24px; border-radius:4px; cursor:pointer;"></div>
-                                <div class="color-dot" onclick="syncColor('accent', '#1a1a1a')" style="background:#1a1a1a; width:24px; height:24px; border-radius:4px; border:1px solid #ffffff44; cursor:pointer;"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="glass-card">
-                    <p class="form-label"><i class="fa-solid fa-font"></i> METİN ÖZELLEŞTİRME</p>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
-                        <div class="form-field">
-                            <label class="form-label">TEMEL METİN YAZI TİPİ</label>
-                            <select id="base-font" class="form-input">
-                                <option value="Space Grotesk">Space Grotesk</option>
-                                <option value="Outfit">Outfit</option>
-                                <option value="Inter">Inter</option>
-                            </select>
-                        </div>
-                        <div class="form-field">
-                            <label class="form-label">TEMEL METİN RENGİ</label>
-                            <input type="text" id="base-font-color" class="form-input" value="#FFFFFF">
-                        </div>
-                        <div class="form-field">
-                            <label class="form-label">GÖRÜNEN İSİM YAZI TİPİ</label>
-                            <select id="name-font" class="form-input">
-                                <option value="Outfit">Outfit</option>
-                                <option value="Space Grotesk">Space Grotesk</option>
-                            </select>
-                        </div>
-                        <div class="form-field">
-                            <label class="form-label">GÖRÜNEN İSİM RENGİ</label>
-                            <input type="text" id="name-font-color" class="form-input" value="#FFFFFF">
-                        </div>
-                    </div>
-                    <div class="form-field">
-                        <label class="form-label">GÖRÜNEN İSİM ÖZEL EFEKTİ</label>
-                        <select id="name-effect" class="form-input">
-                            <option value="none">Yok</option>
-                            <option value="glow">Parlama</option>
-                            <option value="gradient">Gradyan</option>
-                        </select>
-                    </div>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
-                        <div class="form-field">
-                            <label class="form-label">BİYOGRAFİ YAZI TİPİ</label>
-                            <select id="bio-font" class="form-input">
-                                <option value="Outfit">Outfit</option>
-                                <option value="Inter">Inter</option>
-                            </select>
-                        </div>
-                        <div class="form-field">
-                            <label class="form-label">BİYOGRAFİ RENGİ</label>
-                            <input type="text" id="bio-font-color" class="form-input" value="rgba(255,255,255,0.55)">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="glass-card">
-                    <p class="form-label"><i class="fa-solid fa-rectangle-list"></i> CARD & INTERACTION</p>
-                    <div class="form-field">
-                        <label class="form-label">CARD STYLE</label>
-                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                            <button class="form-input style-btn" onclick="setCardStyle('default')"><i class="fa-solid fa-ghost"></i> VARSAYILAN</button>
-                            <button class="form-input style-btn" onclick="setCardStyle('glass')"><i class="fa-solid fa-cube"></i> CAM (GLASS)</button>
-                            <button class="form-input style-btn active" onclick="setCardStyle('solid')"><i class="fa-solid fa-square"></i> KATI (SOLID)</button>
-                            <button class="form-input style-btn" onclick="setCardStyle('gradient')"><i class="fa-solid fa-layer-group"></i> GRADYAN</button>
-                        </div>
-                        <select id="card-style" style="display:none">
-                            <option value="solid">SOLID</option>
-                            <option value="glass">GLASS</option>
-                            <option value="gradient">GRADIENT</option>
-                            <option value="default">DEFAULT</option>
-                        </select>
-                    </div>
-                    <div class="form-field">
-                        <label class="form-label">ÜZERİNE GELME METNİ</label>
-                        <input type="text" id="hover-text" class="form-input" placeholder="Kullanıcı adınızın üzerine gelindiğinde görünen metin">
-                    </div>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
-                        <div class="form-field">
-                            <label class="form-label">LİNK ÜZERİNE GELME ANİMASYONU</label>
-                            <select id="link-hover-anim" class="form-input">
-                                <option value="float">Neon Parlama (Varsayılan)</option>
-                                <option value="zoom">Büyüme</option>
-                                <option value="shake">Sallanma</option>
-                            </select>
-                        </div>
-                        <div class="form-field">
-                            <label class="form-label">GLITCH EFEKTİ (AVATAR)</label>
-                            <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <span style="font-size:10px; color:var(--text-muted); font-weight:700;">Avatarınıza cyberpunk tarzı RGB glitch animasyonu ekler.</span>
-                                <input type="checkbox" id="glitch-avatar">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="glass-card">
-                    <p class="form-label"><i class="fa-solid fa-circle-play"></i> MEDIA & BACKGROUND</p>
-                    <div class="form-field">
-                        <label class="form-label">BACKGROUND IMAGE / VIDEO</label>
-                        <div style="background:rgba(0,0,0,0.2); border:1px solid var(--accent-border); border-radius:12px; height:180px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px;">
-                            <i class="fa-solid fa-images" style="font-size:32px; opacity:0.2;"></i>
-                            <span style="font-size:11px; color:var(--text-muted);">No background set</span>
-                            <button class="btn-primary" onclick="document.getElementById('banner-upload').click()"><i class="fa-solid fa-cloud-arrow-up"></i> CHOOSE FILE (MAX 10MB)</button>
-                            <input type="file" id="banner-upload" style="display:none" accept="image/*,video/mp4">
-                        </div>
-                        <input type="text" id="banner-url-direct" class="form-input" placeholder="URL girin (MP4, GIF, PNG)..." style="margin-top:12px;">
-                    </div>
-                    <div class="form-field">
-                        <label class="form-label">PROFILE MUSIC</label>
-                        <div style="background:rgba(0,0,0,0.2); border:1px solid var(--accent-border); border-radius:12px; padding:24px; display:flex; align-items:center; gap:20px;">
-                            <div style="width:100px; height:60px; background:#1a1a24; border:1px solid var(--accent-border); border-radius:8px; display:flex; align-items:center; justify-content:center;">
-                                <i class="fa-solid fa-music" style="color:var(--accent);"></i>
-                            </div>
-                            <div style="flex:1">
-                                <button class="btn-primary" style="width:100%; border-style:dashed; background:transparent; border:1px solid var(--accent-border);" onclick="document.getElementById('audio-upload-btn').click()">
-                                    <i class="fa-solid fa-file-audio"></i> CHOOSE MP3 FILE
-                                </button>
-                                <input type="file" id="audio-upload-btn" style="display:none" accept="audio/mpeg">
-                                <p id="music-file-info" style="font-size:10px; color:var(--text-muted); margin-top:8px;">Dosya seçilmedi</p>
-                            </div>
-                        </div>
-                        <input type="text" id="music-url-direct" class="form-input" placeholder="MP3 URL girin..." style="margin-top:12px;">
-                    </div>
-                </div>
-
-                <div class="glass-card">
-                    <p class="form-label"><i class="fa-solid fa-wand-magic-sparkles"></i> ADVANCED EFFECTS</p>
-                    <div class="form-field" style="display:flex; justify-content:space-between; align-items:center;">
-                        <div>
-                            <span style="display:block; font-size:12px; font-weight:800; color:#fff;">DISCORD STATUS (CUSTOM BOT)</span>
-                            <span style="display:block; font-size:10px; color:var(--text-muted);">Fetches your real-time Discord activity via our internal bot.</span>
-                        </div>
-                        <input type="checkbox" id="discord-status-toggle">
-                    </div>
-                    <div class="form-field" style="display:flex; justify-content:space-between; align-items:center;">
-                        <div>
-                            <span style="display:block; font-size:12px; font-weight:800; color:#fff;">3D CARD TILT</span>
-                            <span style="display:block; font-size:10px; color:var(--text-muted);">Adds a subtle 3D tilt effect on hover for the profile card.</span>
-                        </div>
-                        <input type="checkbox" id="tilt-3d">
-                    </div>
-                    <div class="form-field">
-                        <label class="form-label">ARKA PLAN EFEKTİ</label>
-                        <select id="bg-effect" class="form-input">
-                            <option value="none">Yok</option>
-                            <option value="particles">Partikül</option>
-                            <option value="aura">Aura</option>
-                        </select>
-                    </div>
-                    <div class="form-field">
-                        <label class="form-label">GİRİŞ ANİMASYONU</label>
-                        <select id="entry-anim" class="form-input">
-                            <option value="fadeIn">Fade In (Default)</option>
-                            <option value="zoomIn">Zoom In</option>
-                        </select>
-                    </div>
-                    <div class="form-field">
-                        <label class="form-label">ÖZEL İMLEÇ</label>
-                        <button class="form-input" style="border-style:dashed; cursor:pointer;" onclick="document.getElementById('cursor-upload').click()">
-                            <i class="fa-solid fa-arrow-pointer"></i> İMLEÇ YÜKLE (.PNG, .CUR, .ICO)
-                        </button>
-                        <input type="file" id="cursor-upload" style="display:none" accept="image/png,.cur,.ico">
-                        <input type="text" id="cursor-url-direct" class="form-input" placeholder="İmleç URL girin..." style="margin-top:12px;">
-                        <p style="font-size:10px; color:var(--text-muted); margin-top:8px;">En iyi uyumluluk için maksimum 32x32 boyut önerilir.</p>
-                    </div>
-                </div>
-
-                <div style="display:flex; justify-content:flex-end; padding-bottom:40px;">
-                    <button class="btn-primary" onclick="saveProfileChanges()">
-                        <i class="fa-solid fa-floppy-disk"></i> DEĞİŞİKLİKLERİ KAYDET
-                    </button>
-                </div>
-            </div>
-
-            <!-- 4. ROZETLER -->
-            <div class="tab-panel" id="tab-badges">
-                <div class="section-title">
-                    <i class="fa-solid fa-award"></i>
-                    <div>
-                        <h2>Rozetler</h2>
-                        <p style="font-size: 13px; color: var(--text-secondary);">Profilinizde sergilemek için rozetler toplayın</p>
-                    </div>
-                </div>
-                
-                <div class="glass-card">
-                    <p class="form-label" style="color: var(--accent);"><i class="fa-solid fa-certificate"></i> KOLEKSİYONUNUZ</p>
-                    <div id="badges-collection-grid" class="badges-mini-grid">
-                        <!-- Badges from DB will be rendered here -->
-                    </div>
-                </div>
-
-                <div class="glass-card" style="margin-top: 20px;">
-                    <p class="form-label"><i class="fa-solid fa-plus-circle"></i> ÖZEL ROZET OLUŞTUR</p>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
-                        <input type="text" id="custom-badge-name" class="form-input" placeholder="Rozet Adı">
-                        <input type="text" id="custom-badge-icon" class="form-input" placeholder="İkon (örn: fa-solid fa-fire)">
-                    </div>
-                    <button class="btn-primary" style="margin-top:16px; width:100%;" onclick="createPersonalBadge()">Oluştur ve Ekle</button>
-                </div>
-            </div>
-
-            <!-- 5. BAĞLANTILAR -->
-            <div class="tab-panel" id="tab-links">
-                <div class="section-title">
-                    <i class="fa-solid fa-link"></i>
-                    <div>
-                        <h2>Links</h2>
-                        <p style="font-size: 13px; color: var(--text-secondary);">Add your social media accounts and custom links</p>
-                    </div>
-                </div>
-                <div class="glass-card" style="margin-bottom:24px;">
-                    <p class="form-label" style="color: var(--accent);"><i class="fa-solid fa-plus-circle"></i> CHOOSE A PLATFORM</p>
-                    <div id="social-platform-grid" class="social-platform-grid">
-                        <!-- Platforms injected by JS -->
-                    </div>
-                </div>
-
-                <div class="glass-card">
-                    <p class="form-label" style="color: var(--accent);"><i class="fa-solid fa-list-ul"></i> SOCIAL MEDIA ( <span id="social-link-count">0</span> )</p>
-                    <div id="dashboard-links-list" class="links-stack">
-                        <!-- Active links injected by JS -->
+                    <div class="input-group">
+                        <label>Banner URL (Video/Resim)</label>
+                        <input type="text" id="banner-url-direct" oninput="updatePreview()" placeholder="https://...">
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- 6. GÜVENLİK -->
-            <div class="tab-panel" id="tab-security">
-                <div class="section-title">
-                    <i class="fa-solid fa-shield-halved"></i>
-                    <div>
-                        <h2>Hesap Ayarları</h2>
-                        <p style="font-size: 13px; color: var(--text-secondary);">Şifrenizi, güvenliğinizi ve hesap verilerinizi yönetin</p>
-                    </div>
+        <!-- Tab: Links -->
+        <div id="tab-links" class="tab-panel" style="display: none;">
+            <div class="dashboard-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <h3 class="card-title" style="margin-bottom: 0;"><i class="fa-solid fa-link"></i> Sosyal Bağlantılar</h3>
+                    <button class="primary-btn" onclick="openAddLinkModal()" style="padding: 8px 16px; font-size: 13px;">+ Link Ekle</button>
                 </div>
-                
-                <div class="glass-card">
-                    <p class="form-label" style="color: var(--accent);"><i class="fa-solid fa-key"></i> GÜVENLİK VE ŞİFRE</p>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-top: 15px;">
-                        <div class="form-field">
-                            <label class="form-label">ŞİFRE</label>
-                            <input type="password" id="set-old-pass" class="form-input" placeholder="Min 6 characters">
-                        </div>
-                        <div class="form-field">
-                            <label class="form-label">ŞİFREYİ ONAYLA</label>
-                            <input type="password" id="set-new-pass" class="form-input" placeholder="Repeat password">
-                        </div>
-                    </div>
-                    <button class="btn-primary" style="width:100%;" onclick="changeUserPassword()">Hesap Şifresi Oluştur</button>
-                </div>
-
-                <div class="glass-card" style="margin-top: 20px;">
-                    <p class="form-label" style="color: var(--accent);"><i class="fa-solid fa-link"></i> BAĞLI HESAPLAR</p>
-                    <div class="connected-accounts">
-                        <div class="account-item">
-                            <div class="account-icon"><i class="fa-brands fa-discord"></i></div>
-                            <div class="account-info">
-                                <span class="account-name">DISCORD</span>
-                                <span class="account-status">Bağlı</span>
-                            </div>
-                        </div>
-                        <div class="account-item">
-                            <div class="account-icon"><i class="fa-brands fa-google"></i></div>
-                            <div class="account-info">
-                                <span class="account-name">GOOGLE</span>
-                                <span class="account-status muted">Bağlı Değil</span>
-                            </div>
-                            <button class="btn-primary small" style="margin-left: auto;">Google Bağla</button>
-                        </div>
-                    </div>
+                <div id="links-list" style="display: flex; flex-direction: column; gap: 12px;">
+                    <!-- Links will be injected here -->
                 </div>
             </div>
+        </div>
 
-            <!-- 7. SOSYAL MEDYA -->
-            <div class="tab-panel" id="tab-social">
-                <div class="section-title">
-                    <i class="fa-solid fa-share-nodes"></i>
-                    <div>
-                        <h2>Sosyal Medya</h2>
-                        <p style="font-size: 13px; color: var(--text-secondary);">En popüler sosyal medya hesaplarınızı hızlıca bağlayın</p>
-                    </div>
-                </div>
-                
-                <div class="glass-card">
-                    <p class="form-label" style="color: var(--accent);"><i class="fa-solid fa-bolt"></i> POPÜLER SOSYALLER</p>
-                    <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 20px;">Ana sosyal medya profillerinizi buraya ekleyin. Bunlar diğer linklerinizin yanında görünecektir.</p>
-                    
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
-                        <div class="form-field">
-                            <label class="form-label"><i class="fa-brands fa-instagram"></i> INSTAGRAM</label>
-                            <input type="text" id="social-instagram" class="form-input" placeholder="https://instagram.com/username">
-                        </div>
-                        <div class="form-field">
-                            <label class="form-label"><i class="fa-brands fa-x-twitter"></i> X / TWITTER</label>
-                            <input type="text" id="social-x" class="form-input" placeholder="https://x.com/username">
-                        </div>
-                        <div class="form-field">
-                            <label class="form-label"><i class="fa-brands fa-tiktok"></i> TIKTOK</label>
-                            <input type="text" id="social-tiktok" class="form-input" placeholder="https://tiktok.com/@username">
-                        </div>
-                        <div class="form-field">
-                            <label class="form-label"><i class="fa-brands fa-youtube"></i> YOUTUBE</label>
-                            <input type="text" id="social-youtube" class="form-input" placeholder="https://youtube.com/@username">
-                        </div>
-                    </div>
-                    
-                    <div style="display:flex; justify-content:flex-end; margin-top: 10px;">
-                        <button class="btn-primary" onclick="syncSocials()">
-                            <i class="fa-solid fa-rotate"></i> Sosyalleri Senkronize Et
-                        </button>
-                    </div>
-                </div>
+        <!-- Action Bar -->
+        <div style="position: fixed; bottom: 40px; left: 320px; right: 440px; display: flex; justify-content: center; pointer-events: none;">
+            <button id="save-btn" onclick="saveProfileChanges()" class="primary-btn" style="pointer-events: auto; padding: 18px 60px; font-size: 18px; box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 30px rgba(124, 58, 237, 0.3); border: 1px solid var(--brand-primary); background: var(--brand-primary); color: #fff;">
+                <i class="fa-solid fa-cloud-arrow-up"></i> Tüm Değişiklikleri Kaydet
+            </button>
+        </div>
+    </main>
+
+    <!-- Preview Sidebar -->
+    <aside class="preview-sidebar">
+        <div style="margin-bottom: 30px; text-align: center;">
+            <div style="font-size: 13px; font-weight: 800; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase;">Canlı Önizleme</div>
+        </div>
+        <div class="preview-container">
+            <iframe id="preview-frame" src="/profile.html?preview=true" style="width: 100%; height: 100%; border: none;"></iframe>
+        </div>
+        <div style="margin-top: 40px; width: 100%;">
+            <a id="view-my-profile" href="#" target="_blank" class="secondary-btn" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                <i class="fa-solid fa-paper-plane"></i> Profilini Görüntüle
+            </a>
+        </div>
+    </aside>
+
+    <!-- Modal: Add Link -->
+    <div id="link-modal" class="auth-container" style="display: none; position: fixed; inset: 0; z-index: 2000; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);">
+        <div class="auth-card glass-panel" style="max-width: 500px;">
+            <h2 style="margin-bottom: 24px;">Yeni Bağlantı Ekle</h2>
+            <div class="input-group">
+                <label>BAŞLIK</label>
+                <input type="text" id="modal-link-title" placeholder="Örn: Instagram">
             </div>
-
-            <!-- 8. ANALİZ -->
-            <div class="tab-panel" id="tab-analytics">
-                <div class="section-title">
-                    <i class="fa-solid fa-chart-line"></i>
-                    <div>
-                        <h2>Analizler</h2>
-                        <p style="font-size: 13px; color: var(--text-secondary);">Profil görüntülemelerinizi ve ziyaretçi istatistiklerinizi takip edin</p>
-                    </div>
-                </div>
-                
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <div class="stat-icon" style="color: #8b5cf6;"><i class="fa-solid fa-eye"></i></div>
-                        <p class="form-label">TOPLAM PROFİL GÖRÜNTÜLEME</p>
-                        <span class="stat-value" id="total-views">0</span>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-icon" style="color: #f59e0b;"><i class="fa-solid fa-file-lines"></i></div>
-                        <p class="form-label">FORUM YAZILARI</p>
-                        <span class="stat-value" id="total-posts">0</span>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-icon" style="color: #3b82f6;"><i class="fa-solid fa-comments"></i></div>
-                        <p class="form-label">FORUM YORUMLARI</p>
-                        <span class="stat-value" id="total-comments">0</span>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-icon" style="color: #22c55e;"><i class="fa-solid fa-calendar-check"></i></div>
-                        <p class="form-label">AKTİF GÜN SAYISI</p>
-                        <span class="stat-value" id="active-days">0</span>
-                    </div>
-                </div>
-
-                <div class="glass-card" style="margin-top: 24px;">
-                    <p class="form-label" style="color: var(--accent);"><i class="fa-solid fa-chart-area"></i> ETKİLEŞİM GENEL BAKIŞ</p>
-                    <div class="chart-container" style="height: 300px; display:flex; align-items:flex-end; gap:5px; padding-top: 20px;">
-                        <!-- Simple mockup of a chart or placeholder -->
-                        <div class="chart-placeholder" style="width:100%; height:200px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px dashed var(--accent-border); display:flex; align-items:center; justify-content:center;">
-                            <img src="https://i.imgur.com/u3C8D0G.png" style="width:100%; height:100%; object-fit:contain; opacity:0.5;">
-                        </div>
-                    </div>
-                </div>
+            <div class="input-group">
+                <label>URL</label>
+                <input type="text" id="modal-link-url" placeholder="https://...">
             </div>
-
-        </main>
-
-        <!-- PREVIEW SIDEBAR (Persistent) -->
-        <aside class="preview-sidebar">
-            <div class="iphone-mockup">
-                <div class="iphone-screen" id="preview-screen">
-                    <div id="profile-preview-root">
-                        <!-- İçerik JS ile doldurulacak -->
-                    </div>
-                </div>
-            </div>
-            <p style="margin-top: 20px; font-size: 11px; color: var(--text-muted); font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Canlı Önizleme</p>
-        </aside>
-    </div>
-
-    <!-- MODALS & TOAST -->
-    <div id="toast" class="toast-notif">
-        <i class="fa-solid fa-circle-check"></i>
-        <span id="toast-msg"></span>
-    </div>
-
-    <div id="link-modal" class="modal-overlay">
-        <div class="modal-card">
-            <h3 id="modal-platform-name">Platform</h3>
-            <div class="form-field">
-                <label class="form-label">BAŞLIK</label>
-                <input type="text" id="modal-link-title" class="form-input">
-            </div>
-            <div class="form-field">
-                <label class="form-label">URL / KULLANICI ADI</label>
-                <input type="text" id="modal-link-url" class="form-input" placeholder="https://...">
-            </div>
-            <div style="display:flex; gap:10px; margin-top:20px;">
-                <button class="btn-primary" style="flex:1" onclick="confirmAddLink()">Ekle</button>
-                <button class="btn-primary" style="flex:1; background:rgba(255,255,255,0.05);" onclick="closeLinkModal()">İptal</button>
+            <div style="display: flex; gap: 12px;">
+                <button class="primary-btn" style="flex: 1;" onclick="addLinkToList()">Ekle</button>
+                <button class="secondary-btn" style="flex: 1;" onclick="closeModal()">İptal</button>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@twemoji/api@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
+    <!-- JS -->
     <script src="/dashboard.js"></script>
 </body>
-
 </html>
