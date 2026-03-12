@@ -24,19 +24,19 @@
         </div>
 
         <form class="auth-form glass-card" id="form-login" onsubmit="handleLogin(event)">
-            <h2 class="form-title" data-i18n="auth_welcome">Welcome back</h2>
-            <p class="form-sub" data-i18n="auth_signin_sub">Sign in to your j2st.lol account</p>
+            <h2 class="form-title">Tekrar Hoş Geldin</h2>
+            <p class="form-sub">j2st.lol hesabına giriş yap</p>
 
             <div class="field-group">
-                <label class="field-label" data-i18n="auth_user">Username</label>
-                <input id="login-email" class="field-input" type="text" placeholder="Enter username or email"
-                    data-i18n="auth_user_ph" required autocomplete="username">
+                <label class="field-label">Kullanıcı Adı</label>
+                <input id="login-email" class="field-input" type="text" placeholder="Kullanıcı adı veya e-posta girin"
+                    required autocomplete="username">
             </div>
             <div class="field-group">
-                <label class="field-label" data-i18n="auth_pass">Password</label>
+                <label class="field-label">Şifre</label>
                 <div class="field-pw-wrap">
-                    <input id="login-pass" class="field-input" type="password" placeholder="Enter your password"
-                        data-i18n="auth_pass_ph" required autocomplete="current-password">
+                    <input id="login-pass" class="field-input" type="password" placeholder="Şifrenizi girin"
+                        required autocomplete="current-password">
                     <button type="button" class="pw-toggle" onclick="togglePw('login-pass',this)">👁</button>
                 </div>
             </div>
@@ -44,12 +44,11 @@
             <div id="login-error" class="form-error"></div>
             <div id="login-info" class="form-info"></div>
 
-            <button type="submit" class="auth-submit" id="btn-login" data-i18n="auth_signin_btn">Sign In →</button>
-            <p class="form-hint"><span data-i18n="auth_no_account">No account?</span> <a href="/register"
-                    data-i18n="auth_create">Create one</a></p>
+            <button type="submit" class="auth-submit" id="btn-login">Giriş Yap →</button>
+            <p class="form-hint">Hesabın yok mu? <a href="/register">Bir tane oluştur</a></p>
         </form>
 
-        <p class="auth-back"><a href="/" data-i18n="auth_back">← Back to home</a></p>
+        <p class="auth-back"><a href="/">← Ana sayfaya dön</a></p>
     </div>
 
     <script src="/system/i18n.js"></script>

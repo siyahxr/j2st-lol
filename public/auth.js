@@ -2,16 +2,21 @@
 
 // Immediate session check
 (function checkExistingSession() {
-    const sessionStr = localStorage.getItem("j2st_session_v2");
-    if (sessionStr) {
-        try {
+    try {
+        const sessionStr = localStorage.getItem("j2st_session_v2");
+        if (sessionStr) {
             const session = JSON.parse(sessionStr);
-            if (session && session.id && session.username) {
+            // Unified session check
+            const isValid = session && (session.id || session.username || (session.user && (session.user.id || session.user.username)));
+            
+            if (isValid) {
+                console.log("Session found, redirecting to dashboard...");
                 window.location.replace("/dashboard");
             }
-        } catch (e) {
-            localStorage.removeItem("j2st_session_v2");
         }
+    } catch (e) {
+        console.error("Session check error:", e);
+        localStorage.removeItem("j2st_session_v2");
     }
 })();
 
@@ -48,7 +53,7 @@ function setLoading(id, on) {
     const btn = document.getElementById(id);
     if (!btn) return;
     btn.disabled = on;
-    btn.textContent = on ? "Bekle..." : (id === "btn-login" ? "Sign In →" : "Create Account →");
+    btn.textContent = on ? "Bekle..." : (id === "btn-login" ? "Giriş Yap →" : "Hesap Oluştur →");
 }
 
 // LOGIN
@@ -82,10 +87,10 @@ window.handleLogin = async function (e) {
             throw new Error(`Sunucu hatası (${res.status}): ${text.substring(0, 100)}`);
         }
 
-        if (!res.ok) throw new Error(data.error || "Giriş başarısız.");
+        if (!res.ok) throw new Error(data.error || "Giriş başarısız. Lütfen bilgilerinizi kontrol edin.");
 
         setOk("login-info", "✓ Giriş başarılı! Yönlendiriliyor...");
-        localStorage.setItem("j2st_session_v2", JSON.stringify(data.user));
+        localStorage.setItem("j2st_session_v2", JSON.stringify(data.user || data));
         setTimeout(() => window.location.href = "/dashboard", 700);
 
     } catch (err) {
@@ -106,12 +111,16 @@ window.handleRegister = async function (e) {
     const password = document.getElementById("reg-pass").value;
     const confirm = document.getElementById("reg-pass2").value;
 
-    if (!username || !email || !password) {
+    if (!username || !email || !password || !confirm) {
         setErr("reg-error", "✗ Lütfen tüm alanları doldurun."); return;
     }
 
     if (password !== confirm) {
         setErr("reg-error", "✗ Şifreler eşleşmiyor."); return;
+    }
+
+    if (username.length < 3) {
+        setErr("reg-error", "✗ Kullanıcı adı en az 3 karakter olmalıdır."); return;
     }
 
     if (password.length < 8) {
@@ -137,14 +146,17 @@ window.handleRegister = async function (e) {
             throw new Error(`Sunucu hatası (${res.status}): ${text.substring(0, 100)}`);
         }
 
-        if (!res.ok) throw new Error(data.error || "Kayıt başarısız.");
+        if (!res.ok) throw new Error(data.error || "Kayıt sırasında bir hata oluştu.");
 
-        setOk("reg-success", "✓ Hesap oluşturuldu! Giriş yapın.");
-        setTimeout(() => window.location.href = "/login", 1500);
+        setOk("reg-success", "✓ Hesap başarıyla oluşturuldu! Giriş yapılıyor...");
+        
+        // Auto Login
+        localStorage.setItem("j2st_session_v2", JSON.stringify(data.user || data));
+        setTimeout(() => window.location.href = "/dashboard", 1200);
 
     } catch (err) {
         console.error("Register hatası:", err);
-        setErr("reg-error", "✗ Hata: " + err.message);
+        setErr("reg-error", "✗ " + err.message);
     } finally {
         setLoading("btn-register", false);
     }

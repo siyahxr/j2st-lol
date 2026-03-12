@@ -36,7 +36,7 @@ export async function onRequestPost(context) {
         const { data: existingUser } = await supabase
             .from('users')
             .select('id')
-            .or(`email.eq.${email},username.eq.${username}`)
+            .or(`email.eq."${email}",username.eq."${username}"`)
             .maybeSingle();
 
         if (existingUser) {

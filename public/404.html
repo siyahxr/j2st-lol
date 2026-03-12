@@ -1,79 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile | j2st.lol</title>
-    <link rel="stylesheet" href="/index.css">
-    <link rel="stylesheet" href="/profile.css">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <!-- CSS -->
+    <link rel="stylesheet" href="/index.css?v=202603110006">
+    <link rel="stylesheet" href="/profile.css?v=202603110006">
+    <!-- FONTS -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- ICONS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
-<body>
-    <!-- Premium Background -->
-    <div class="profile-bg">
-        <div id="full-bg"></div>
-        <div class="aurora aurora-1"></div>
-        <div class="aurora aurora-2"></div>
+
+<video id="banner-video" class="banner-video-bg" muted loop playsinline style="display:none;"></video>
+<div id="full-bg"></div>
+<div class="profile-bg-vignette"></div>
+
+<!-- Unified Overlay (Loading -> Ready) -->
+<div id="click-enter" class="enter-overlay">
+    <div id="overlay-content" class="enter-btn loading">
+        <div class="enter-icon-wrapper">
+            <i class="fa-solid fa-dragon"></i>
+        </div>
+        <span id="overlay-text">SYNCHRONIZING ESSENCE...</span>
+    </div>
+</div>
+
+<div class="profile-layout-main" style="display: none; opacity: 0; transition: opacity 1s ease;">
+    <!-- Side Tabs -->
+    <div class="profile-tabs-side" id="tab-nav">
+        <button class="p-tab active" data-tab="links">Links</button>
+        <button class="p-tab" data-tab="badges">Badges</button>
+        <button class="p-tab" data-tab="about">About</button>
     </div>
 
-    <div id="loading" class="full-screen-center">
-        <div class="dragon-glow-ring"></div>
-    </div>
+    <!-- Main Profile Card -->
+    <div id="profile-container" class="profile-card">
+        <div class="dynamic-aura"></div>
 
-    <div id="profile-container" style="display:none;">
-        <!-- Banner -->
-        <div class="profile-banner" id="banner-el"></div>
+        <!-- Identity Section -->
+        <div class="avatar-wrapper">
+            <img id="avatar-el" src="/assets/icons/user_dragon.png" alt="Avatar" class="profile-avatar">
+            <div class="status-indicator"></div>
+        </div>
 
-        <!-- Profile Identity (always visible) -->
-        <div class="profile-identity">
-            <div class="avatar-wrapper">
-                <img id="avatar-el" src="/assets/icons/user_dragon.png" alt="Avatar" class="profile-avatar">
-                <div class="status-indicator"></div>
+        <h1 class="profile-name" id="name-el">j2st</h1>
+        <p class="profile-handle" id="handle-el">@j2st</p>
+
+        <!-- Tab Panels (Inside Card) -->
+        <div class="tab-content-container">
+            <div id="section-badges" class="tab-panel">
+                <div id="badges-el">
+                    <!-- Badges injected by JS -->
+                </div>
             </div>
-            <h1 class="profile-name" id="name-el">j2st</h1>
-            <p class="profile-role iridescent-text" id="role-el"></p>
+
+            <div id="section-about" class="tab-panel">
+                <p class="profile-bio" id="bio-el"></p>
+            </div>
+
+            <div id="section-links" class="tab-panel active">
+                <div id="links-el">
+                    <!-- Social & Custom links injected by JS -->
+                </div>
+            </div>
         </div>
 
-        <!-- Tab Navigation -->
-        <div class="profile-tabs" role="tablist">
-            <button class="p-tab active" data-tab="links" role="tab" aria-selected="true">Links</button>
-            <button class="p-tab" data-tab="badges" role="tab" aria-selected="false">Badges</button>
-            <button class="p-tab" data-tab="about" role="tab" aria-selected="false">About</button>
+        <!-- Discord Status (Optional Integration) -->
+        <div id="discord-status-container" style="display: none;">
+            <div class="discord-card">
+                <div class="discord-avatar-box">
+                    <img src="" alt="" class="discord-avatar" id="ds-avatar">
+                    <div class="status-indicator" id="ds-status-dot"></div>
+                </div>
+                <div class="discord-info">
+                    <p class="discord-user" id="ds-name">User#0000</p>
+                    <p class="discord-activity" id="ds-activity">Loading status...</p>
+                </div>
+            </div>
         </div>
 
-        <!-- Tab Panels -->
-        <div class="p-tab-panel active" id="ptab-links" role="tabpanel">
-            <div class="links-col" id="links-el"></div>
+        <!-- Footer -->
+        <div class="footer-info">
+            <div id="music-embed-container" style="display:none; width: 100%; margin-bottom: 0; height:0;"></div>
+            
+            <div class="view-count" id="views-el">
+                <i class="fa-solid fa-eye"></i>
+                <span>0 views</span>
+            </div>
+            <a href="/" class="j2st-watermark">Powered by j2st.lol</a>
         </div>
-
-        <div class="p-tab-panel" id="ptab-badges" role="tabpanel">
-            <div class="badges-row" id="badges-el"></div>
-        </div>
-
-        <div class="p-tab-panel" id="ptab-about" role="tabpanel">
-            <p class="profile-bio" id="bio-el" style="display:none;"></p>
-            <p class="profile-location" id="location-el"></p>
-        </div>
-
-        <!-- J2ST Watermark Footer -->
-        <a href="/" class="j2st-watermark">Powered by j2st.lol</a>
     </div>
+</div>
 
-    <!-- Error State -->
-    <div id="error-container" class="full-screen-center" style="display:none;">
-        <h1 class="hero-h1">404</h1>
-        <p class="hero-p" style="margin-bottom: 24px;">User not found on j2st.lol</p>
-        <a href="/" class="btn-primary">Return Home</a>
-    </div>
+<!-- Error State -->
+<div id="error-container" class="full-screen-center" style="display:none;">
+    <h1 class="hero-h1">404</h1>
+    <p class="hero-p" style="margin-bottom: 24px;">User not found on j2st.lol</p>
+    <a href="/" class="btn-primary">Return Home</a>
+</div>
 
-    <script type="module" src="/profile.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@twemoji/api@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
-    <script>
-        window.addEventListener('load', () => {
-            if (typeof twemoji !== 'undefined') {
-                twemoji.parse(document.body, { folder: 'svg', ext: '.svg', base: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@latest/assets/' });
-            }
-        });
-    </script>
+<!-- Profile Music Player (Hidden) -->
+<audio id="profile-music-player" style="display:none;"></audio>
+
+<script src="https://cdn.jsdelivr.net/npm/@twemoji/api@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
+<script src="/system/i18n.js?v=202603110006"></script>
+<script src="/profile.js?v=202603110006"></script>
+<script>
+    // Failsafe: Ensure overlay is clickable even if JS has minor issues
+    setTimeout(() => {
+        const overlay = document.getElementById('click-enter');
+        if (overlay && !overlay.onclick) {
+            console.log("Failsafe activation");
+            const text = document.getElementById('overlay-text');
+            if (text) text.textContent = "CLICK TO ENTER";
+            overlay.onclick = () => window.enterProfile ? window.enterProfile() : location.reload();
+        }
+    }, 4000);
+</script>
 </body>
+
 </html>

@@ -5,11 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel | j2st.lol</title>
-    <script>
-        if (!window.location.hostname.includes('j2st.lol') && !window.location.hostname.includes('localhost')) {
-            window.location.replace('https://j2st.lol' + window.location.pathname + window.location.search);
-        }
-    </script>
     <link rel="stylesheet" href="/admin.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
@@ -28,19 +23,19 @@
 
             <nav class="asb-nav">
                 <div class="asb-item active" onclick="switchSection(this, 'overview')">
-                    <i class="fa-solid fa-house"></i> Overview
+                    <i class="fa-solid fa-house"></i> Genel Bakış
                 </div>
                 <div class="asb-item" onclick="switchSection(this, 'users')">
-                    <i class="fa-solid fa-users"></i> Users
+                    <i class="fa-solid fa-users"></i> Kullanıcılar
                 </div>
                 <div class="asb-item" onclick="switchSection(this, 'badges')">
-                    <i class="fa-solid fa-award"></i> Badges
+                    <i class="fa-solid fa-award"></i> Rozetler
                 </div>
                 <div class="asb-item" onclick="switchSection(this, 'updates')">
-                    <i class="fa-solid fa-bullhorn"></i> Updates
+                    <i class="fa-solid fa-bullhorn"></i> Güncellemeler
                 </div>
                 <a href="/dashboard" class="asb-item">
-                    <i class="fa-solid fa-arrow-left"></i> Exit
+                    <i class="fa-solid fa-arrow-left"></i> Çıkış
                 </a>
             </nav>
         </aside>
@@ -49,36 +44,36 @@
         <main class="admin-main">
 
             <div class="admin-topbar">
-                <h1 class="admin-topbar-title" id="sec-title">Control Center</h1>
+                <h1 class="admin-topbar-title" id="sec-title">Kontrol Merkezi</h1>
             </div>
 
             <!-- ======= OVERVIEW SECTION ======= -->
             <div class="admin-section active" id="sec-overview">
                 <div class="as-stat-row">
                     <div class="as-card">
-                        <span class="as-label">Total Users</span>
+                        <span class="as-label">Toplam Kullanıcı</span>
                         <span class="as-value" id="stat-users">0</span>
                     </div>
                     <div class="as-card">
-                        <span class="as-label">Active Today</span>
+                        <span class="as-label">Bugün Aktif</span>
                         <span class="as-value" id="stat-active">0</span>
                     </div>
                     <div class="as-card">
-                        <span class="as-label">Total Views</span>
+                        <span class="as-label">Toplam Görüntülenme</span>
                         <span class="as-value" id="stat-views">0</span>
                     </div>
                     <div class="as-card">
-                        <span class="as-label">Total Badges</span>
+                        <span class="as-label">Toplam Rozet</span>
                         <span class="as-value" id="stat-badges">0</span>
                     </div>
                 </div>
                 <div class="as-stat-row" style="margin-top:16px;">
                     <div class="as-card">
-                        <span class="as-label">Admin Users</span>
+                        <span class="as-label">Admin Sayısı</span>
                         <span class="as-value" id="stat-admins">0</span>
                     </div>
                     <div class="as-card">
-                        <span class="as-label">Member Users</span>
+                        <span class="as-label">Normal Üye</span>
                         <span class="as-value" id="stat-members">0</span>
                     </div>
                 </div>
@@ -88,18 +83,18 @@
             <div class="admin-section" id="sec-users">
                 <div class="glass-card">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                        <h3 class="panel-title">User Management</h3>
-                        <input type="text" class="badge-input" style="width:250px;" placeholder="Search user..."
+                        <h3 class="panel-title">Kullanıcı Yönetimi</h3>
+                        <input type="text" class="badge-input" style="width:250px;" placeholder="Kullanıcı ara..."
                             oninput="filterUsers(this.value)">
                     </div>
 
                     <table class="fancy-table">
                         <thead>
                             <tr>
-                                <th>Identity</th>
-                                <th>Role</th>
-                                <th>Tokens</th>
-                                <th>Actions</th>
+                                <th>Kimlik</th>
+                                <th>Rol</th>
+                                <th>Rozetler</th>
+                                <th>İşlemler</th>
                             </tr>
                         </thead>
                         <tbody id="users-tbody">
@@ -113,28 +108,29 @@
             <div class="admin-section" id="sec-badges">
                 <div class="badges-admin-container">
                     <div class="glass-card">
-                        <h3 class="panel-title">Deploy New Badge</h3>
+                        <h3 class="panel-title">Yeni Rozet Dağıt</h3>
                         <div class="badge-form-grid">
                             <div class="form-field">
-                                <label class="badge-label">Badge Name</label>
+                                <label class="badge-label">Rozet Adı</label>
                                 <input type="text" id="new-badge-name" class="badge-input"
-                                    placeholder="e.g. EARLY_ACCESS">
+                                    placeholder="Örn: EARLY_ACCESS">
                             </div>
                             <div class="form-field" style="margin-top:20px;">
-                                <label class="badge-label">Icon Asset</label>
+                                <label class="badge-label">İkon Dosyası</label>
                                 <div class="badge-upload-box"
                                     onclick="document.getElementById('badge-icon-file').click()">
-                                    <span id="badge-upload-status">Click to upload PNG/SVG</span>
+                                    <span id="badge-upload-status">PNG/SVG yüklemek için tıkla</span>
                                     <input type="file" id="badge-icon-file" hidden accept="image/*">
                                 </div>
                             </div>
                         </div>
-                        <button class="badge-deploy-btn" onclick="deployBadge()">Deploy Badge</button>
+                        <button class="badge-deploy-btn" onclick="deployBadge()">Rozeti Dağıt</button>
                     </div>
 
-                        <h3 class="panel-title">Badge Registry</h3>
+                    <div style="margin-top:40px;">
+                        <h3 class="panel-title">Rozet Kayıtları</h3>
                         <div class="badge-admin-grid" id="global-badges-list">
-                            <p style="color:var(--text-dim); text-align:center;">Syncing...</p>
+                            <p style="color:var(--text-dim); text-align:center;">Eşitleniyor...</p>
                         </div>
                     </div>
                 </div>
@@ -143,33 +139,33 @@
             <!-- ======= UPDATES SECTION ======= -->
             <div class="admin-section" id="sec-updates">
                 <div class="glass-card">
-                    <h3 class="panel-title">Discord Broadcast Update</h3>
-                    <p style="color:var(--text-dim); font-size:12px; margin-bottom: 20px;">Send a formatted embed to your Discord channel.</p>
+                    <h3 class="panel-title">Discord Güncelleme Yayını</h3>
+                    <p style="color:var(--text-dim); font-size:12px; margin-bottom: 20px;">Discord kanalınıza formatlanmış bir duyuru gönderin.</p>
                     
                     <div class="badge-form-grid">
                         <div class="form-field">
-                            <label class="badge-label">Update Tag (e.g. NEW, UI, ENGINE)</label>
-                            <input type="text" id="discord-update-tag" class="badge-input" placeholder="NEW">
+                            <label class="badge-label">Etiket (Örn: YENİ, UI, MOTOR)</label>
+                            <input type="text" id="discord-update-tag" class="badge-input" placeholder="YENİ">
                         </div>
                         <div class="form-field" style="margin-top:20px;">
-                            <label class="badge-label">Update Color (Hex)</label>
+                            <label class="badge-label">Renk (Hex)</label>
                             <input type="color" id="discord-update-color" value="#00FF00" style="width:100%; height:40px; border-radius:8px; background:none; border:1px solid var(--accent-border);">
                         </div>
                     </div>
                     
                     <div class="form-field" style="margin-top:20px;">
-                        <label class="badge-label">Description / Changes</label>
-                        <textarea id="discord-update-desc" class="badge-input" style="height:100px; padding:12px;" placeholder="Describe what changed..."></textarea>
+                        <label class="badge-label">Açıklama / Değişiklikler</label>
+                        <textarea id="discord-update-desc" class="badge-input" style="height:100px; padding:12px;" placeholder="Nelerin değiştiğini açıklayın..."></textarea>
                     </div>
                     
-                    <button class="badge-deploy-btn" style="margin-top:24px;" onclick="broadcastToDiscord()">Send to Discord</button>
+                    <button class="badge-deploy-btn" style="margin-top:24px;" onclick="broadcastToDiscord()">Discord'a Gönder</button>
                     
                     <hr style="border:none; border-top:1px solid var(--accent-border); margin: 30px 0;">
                     
-                    <h3 class="panel-title">Bot Management</h3>
+                    <h3 class="panel-title">Bot Yönetimi</h3>
                     <div style="display:flex; gap:16px;">
-                        <button class="badge-deploy-btn" style="background:#4b4b4b; flex:1;" onclick="sendHistoricalUpdates()">Broadast Historical (All Old)</button>
-                        <button class="badge-deploy-btn" style="background:#4b4b4b; flex:1;" onclick="checkBotHealth()">Check Bot Status</button>
+                        <button class="badge-deploy-btn" style="background:#4b4b4b; flex:1;" onclick="sendHistoricalUpdates()">Eski Güncellemeleri Yayınla</button>
+                        <button class="badge-deploy-btn" style="background:#4b4b4b; flex:1;" onclick="checkBotHealth()">Bot Durumunu Kontrol Et</button>
                     </div>
                 </div>
             </div>

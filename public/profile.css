@@ -697,63 +697,29 @@ body {
     z-index: 10;
 }
 
-/* ── SIDE TABS ─────────────────────────────────────────────── */
+/* Hidden per request */
 .profile-tabs-side {
+    display: none;
+}
+
+/* ── SECTION CONTENT ───────────────────────────────────────── */
+.profile-sections-container {
+    width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 15px;
 }
 
-.p-tab {
-    width: 100px;
-    height: 38px;
-    background: #fff;
-    color: #000;
-    border: none;
-    border-radius: 4px;
-    font-size: 10px;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    opacity: 0.4;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.p-tab.active {
-    opacity: 1;
-    transform: scale(1.05);
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
-}
-
-.p-tab:hover {
-    opacity: 1;
-    transform: translateX(5px);
-}
-
-/* ── TAB CONTENT ───────────────────────────────────────────── */
-.tab-content-container {
+.profile-section {
     width: 100%;
-    margin-top: 25px;
-    min-height: 120px;
 }
 
-.tab-panel {
-    display: none;
-    opacity: 0;
+#section-about {
+    margin-bottom: 5px;
 }
 
-.tab-panel.active {
-    display: block;
-    animation: slide-up 0.5s ease forwards;
-}
-
-@keyframes slide-up {
-    from { opacity: 0; transform: translateY(15px); }
-    to { opacity: 1; transform: translateY(0); }
+#section-badges {
+    margin-bottom: 15px;
 }
 
 #badges-el {

@@ -26,17 +26,11 @@
         <div class="enter-icon-wrapper">
             <i class="fa-solid fa-dragon"></i>
         </div>
-        <span id="overlay-text">SYNCHRONIZING ESSENCE...</span>
+        <span id="overlay-text">RUH EŞİTLENİYOR...</span>
     </div>
 </div>
 
 <div class="profile-layout-main" style="display: none; opacity: 0; transition: opacity 1s ease;">
-    <!-- Side Tabs -->
-    <div class="profile-tabs-side" id="tab-nav">
-        <button class="p-tab active" data-tab="links">Links</button>
-        <button class="p-tab" data-tab="badges">Badges</button>
-        <button class="p-tab" data-tab="about">About</button>
-    </div>
 
     <!-- Main Profile Card -->
     <div id="profile-container" class="profile-card">
@@ -51,19 +45,19 @@
         <h1 class="profile-name" id="name-el">j2st</h1>
         <p class="profile-handle" id="handle-el">@j2st</p>
 
-        <!-- Tab Panels (Inside Card) -->
-        <div class="tab-content-container">
-            <div id="section-badges" class="tab-panel">
+        <!-- Unified Sections -->
+        <div class="profile-sections-container">
+            <div id="section-about" class="profile-section">
+                <p class="profile-bio" id="bio-el"></p>
+            </div>
+
+            <div id="section-badges" class="profile-section">
                 <div id="badges-el">
                     <!-- Badges injected by JS -->
                 </div>
             </div>
 
-            <div id="section-about" class="tab-panel">
-                <p class="profile-bio" id="bio-el"></p>
-            </div>
-
-            <div id="section-links" class="tab-panel active">
+            <div id="section-links" class="profile-section">
                 <div id="links-el">
                     <!-- Social & Custom links injected by JS -->
                 </div>
@@ -79,7 +73,7 @@
                 </div>
                 <div class="discord-info">
                     <p class="discord-user" id="ds-name">User#0000</p>
-                    <p class="discord-activity" id="ds-activity">Loading status...</p>
+                    <p class="discord-activity" id="ds-activity">Durum yükleniyor...</p>
                 </div>
             </div>
         </div>
@@ -90,9 +84,9 @@
             
             <div class="view-count" id="views-el">
                 <i class="fa-solid fa-eye"></i>
-                <span>0 views</span>
+                <span>0 görüntülenme</span>
             </div>
-            <a href="/" class="j2st-watermark">Powered by j2st.lol</a>
+            <a href="/" class="j2st-watermark">j2st.lol tarafından desteklenmektedir</a>
         </div>
     </div>
 </div>
@@ -100,8 +94,8 @@
 <!-- Error State -->
 <div id="error-container" class="full-screen-center" style="display:none;">
     <h1 class="hero-h1">404</h1>
-    <p class="hero-p" style="margin-bottom: 24px;">User not found on j2st.lol</p>
-    <a href="/" class="btn-primary">Return Home</a>
+    <p class="hero-p" style="margin-bottom: 24px;">Kullanıcı bulunamadı</p>
+    <a href="/" class="btn-primary">Ana Sayfaya Dön</a>
 </div>
 
 <!-- Profile Music Player (Hidden) -->

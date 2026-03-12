@@ -38,11 +38,28 @@ window.enterProfile = function() {
 async function initProfile() {
     const urlParams = new URLSearchParams(window.location.search);
     let username = urlParams.get('u');
+    const path = window.location.pathname.toLowerCase();
+    
+    // Static routes that should NOT be treated as user profiles
+    const reserved = ['/', '/login', '/register', '/dashboard', '/admin', '/index.html', '/login.html', '/register.html', '/dashboard.html', '/admin.html', '/home', '/404'];
+    
+    // Check if the current path is a reserved route
+    const isReserved = reserved.some(r => path === r || path.startsWith(r + '/'));
+
+    if (isReserved && !username) {
+        console.log("On a static/reserved page, skipping profile initialization.");
+        return;
+    }
+
     if (!username) {
         username = window.location.pathname.split('/').filter(Boolean).pop();
     }
-    // Final fallback
-    if (!username || username === 'profile.html' || username === '$') username = 'j2st';
+    
+    // Final fallback logic
+    if (!username || username === 'profile.html' || username === 'profile' || username === 'j2st.lol') {
+        console.log("No valid username found in path.");
+        return;
+    }
 
     console.log("Initializing profile for:", username);
 
@@ -85,7 +102,7 @@ async function initProfile() {
 
     // 4. Fresh Fetch
     try {
-        const res = await fetch(`/api/user/profile?u=${username}`);
+        const res = await fetch(`/api/user/profile?u=${username}&t=${Date.now()}`);
         const data = await res.json();
 
         if (data && !data.error) {
@@ -142,28 +159,41 @@ function renderProfile(user) {
     const accent = user.accent_color || '#FFFFFF';
     document.documentElement.style.setProperty('--accent', accent);
     document.documentElement.style.setProperty('--accent-glow', accent + '33');
+
+    // Assemble Chunks
+    const fullBanner = (user.banner_url || "") + (user.banner_url_p2 || "") + (user.banner_url_p3 || "") + (user.banner_url_p4 || "") + (user.banner_url_p5 || "");
+    const fullMusic = (user.profile_music_url || "") + (user.profile_music_url_p2 || "") + (user.profile_music_url_p3 || "") + (user.profile_music_url_p4 || "") + (user.profile_music_url_p5 || "");
     
     // Card Style
     const container = document.getElementById('profile-container');
     if (container && user.card_style) {
-        let classes = ['profile-card', user.card_style + '-style'];
-        if (user.card_border === 'off') classes.push('border-off');
-        container.className = classes.join(' ');
+        // Clear old style classes but keep profile-card
+        container.className = 'profile-card';
+        // Add style class
+        container.classList.add(user.card_style + '-style');
+        if (user.card_border === 'off') container.classList.add('border-off');
     }
 
     // Badges Injection
     const badgesEl = document.getElementById('badges-el');
-    if (badgesEl && user.badges) {
+    if (badgesEl) {
         let bList = [];
-        try { bList = (typeof user.badges === 'string') ? JSON.parse(user.badges) : user.badges; } catch(e){}
+        try { 
+            bList = (typeof user.badges === 'string') ? JSON.parse(user.badges) : user.badges;
+            if (!Array.isArray(bList)) bList = [];
+        } catch(e){ bList = []; }
         
-        if (Array.isArray(bList)) {
-            badgesEl.innerHTML = bList.map(b => `
-                <div class="badge-item" data-label="${b.name}">
-                    ${b.icon_url && b.icon_url.startsWith('fa-') ? `<i class="${b.icon_url}"></i>` : `<img src="${b.icon_url}" class="badge-icon">`}
+        badgesEl.innerHTML = bList.map(b => {
+            if (!b) return '';
+            const bName = b.name || b.label || '';
+            const bIcon = b.icon_url || '';
+            const isFa = bIcon.startsWith('fa-');
+            return `
+                <div class="badge-item" data-label="${bName}">
+                    ${isFa ? `<i class="${bIcon}"></i>` : `<img src="${bIcon}" class="badge-icon">`}
                 </div>
-            `).join('');
-        }
+            `;
+        }).join('');
     }
 
     // Links Injection
@@ -195,46 +225,34 @@ function renderProfile(user) {
         }
     }
 
-    // Banner Logic
     const bannerVideo = document.getElementById('banner-video');
     const fullBg = document.getElementById('full-bg');
-    if (user.banner_url) {
-        const isVid = user.banner_url.includes('.mp4') || user.banner_url.includes('.webm');
+    if (fullBanner) {
+        const isVid = fullBanner.includes('.mp4') || fullBanner.includes('.webm') || fullBanner.startsWith('data:video/');
         if (isVid && bannerVideo) {
-            bannerVideo.src = user.banner_url;
+            bannerVideo.src = fullBanner;
             bannerVideo.style.display = 'block';
             bannerVideo.play().catch(e => console.warn("Video blocked"));
         } else if (fullBg) {
-            fullBg.style.background = `url('${user.banner_url}') center/cover no-repeat`;
+            fullBg.style.background = `url('${fullBanner}') center/cover no-repeat`;
             fullBg.style.display = 'block';
         }
     }
 
     // Music Logic
     const musicPlayer = document.getElementById('profile-music-player');
-    if (musicPlayer && user.music_url) {
-        musicPlayer.src = user.music_url;
+    if (musicPlayer && fullMusic) {
+        musicPlayer.src = fullMusic;
         musicPlayer.loop = true;
         musicPlayer.volume = 0.5;
     }
 
-    // Tabs Event Bindings
-    const tabs = document.querySelectorAll('.p-tab');
-    const panels = document.querySelectorAll('.tab-panel');
-    tabs.forEach(t => {
-        t.onclick = () => {
-            const target = t.getAttribute('data-tab');
-            tabs.forEach(x => x.classList.remove('active'));
-            t.classList.add('active');
-            panels.forEach(p => {
-                p.classList.remove('active');
-                if (p.id === 'section-' + target) p.classList.add('active');
-            });
-        };
-    });
-
     // 3D Tilt Setup
-    if (container) setup3DTilt(container);
+    if (container && user.tilt_3d) {
+        setup3DTilt(container);
+    } else if (container) {
+        container.style.transform = 'none';
+    }
 }
 
 // 6. Tilt Effect Function

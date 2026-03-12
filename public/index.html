@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
     <link rel="stylesheet" href="/home.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <!-- Animated background -->
     <div class="animated-bg">
@@ -28,24 +30,10 @@
                 <span class="nav-title iridescent-text">j2st.lol</span>
             </div>
             <div class="nav-actions">
-                <a href="#features" class="nav-pill" data-i18n="nav_features">Features</a>
-                <a href="/login" class="nav-pill" id="nav-login" data-i18n="nav_login">Login</a>
-                <a href="/register" class="btn-ghost" id="nav-register" data-i18n="nav_register">Register</a>
-                <a href="/dashboard" class="btn-primary" id="nav-user-dash" style="display:none;"></a>
-
-                <!-- Lang Switcher -->
-                <div class="lang-switcher">
-                    <button class="lang-btn" id="lang-btn">
-                        <span class="lang-flag" id="current-flag">🇺🇸</span>
-                        <span id="current-lang-name">EN</span>
-                    </button>
-                    <div class="lang-dropdown" id="lang-dropdown">
-                        <button class="lang-opt" data-lang="en"><span class="lang-flag">🇺🇸</span> EN</button>
-                        <button class="lang-opt" data-lang="tr"><span class="lang-flag">🇹🇷</span> TR</button>
-                        <button class="lang-opt" data-lang="de"><span class="lang-flag">🇩🇪</span> DE</button>
-                        <button class="lang-opt" data-lang="ru"><span class="lang-flag">🇷🇺</span> RU</button>
-                    </div>
-                </div>
+                <a href="#features" class="nav-pill">Özellikler</a>
+                <a href="/login" class="nav-pill" id="nav-login">Giriş Yap</a>
+                <a href="/register" class="btn-ghost" id="nav-register">Kayıt Ol</a>
+                <a href="/dashboard" class="btn-primary" id="nav-user-dash" style="display:none;">Panel</a>
             </div>
         </div>
     </nav>
@@ -56,35 +44,36 @@
         <div class="hero-text">
             <div class="hero-tag">
                 <span class="live-dot"></span>
-                <span data-i18n="hero_tag">j2st.lol — Live Platform</span>
+                <span>j2st.lol — Canlı Platform</span>
             </div>
-            <h1 class="hero-h1" data-i18n="hero_h1">
-                Your <span class="iridescent-text">Digital</span><br>
-                Identity, Perfected.
+            <h1 class="hero-h1">
+                <span class="iridescent-text">Dijital</span> Kimliğiniz,<br>
+                Kusursuzlaştırıldı.
             </h1>
-            <p class="hero-p" data-i18n="hero_p">
-                One sleek page to showcase everything — your links, sound, badges, and personality. Built for gamers who want to stand out.
+            <p class="hero-p">
+                Her şeyi sergilemek için tek bir şık sayfa — bağlantılarınız, sesiniz, rozetleriniz ve kişiliğiniz. 
+                Öne çıkmak isteyen oyuncular için tasarlandı.
             </p>
             <div class="hero-btns">
-                <a href="/register" class="btn-primary large" data-i18n="hero_get_started">Get Started</a>
-                <a href="/dashboard" class="btn-ghost large" data-i18n="hero_customize">Customize</a>
+                <a href="/" class="btn-primary large">Profil Aç</a>
+                <a href="/dashboard" class="btn-ghost large">Özelleştir</a>
             </div>
 
             <!-- Mini stats -->
             <div class="hero-counters">
                 <div class="counter-item">
                     <span class="counter-val" data-target="1240">0</span>
-                    <span class="counter-label">Profiles</span>
+                    <span class="counter-label">Profil</span>
                 </div>
                 <div class="counter-sep"></div>
                 <div class="counter-item">
                     <span class="counter-val" data-target="99">0</span><span class="counter-pct">%</span>
-                    <span class="counter-label">Uptime</span>
+                    <span class="counter-label">Çalışma Süresi</span>
                 </div>
                 <div class="counter-sep"></div>
                 <div class="counter-item">
                     <span class="counter-val">∞</span>
-                    <span class="counter-label">Links</span>
+                    <span class="counter-label">Bağlantı</span>
                 </div>
             </div>
         </div>
@@ -100,7 +89,7 @@
                 <img src="/assets/icons/user_dragon.png" alt="" class="fc-avatar">
                 <div>
                     <p class="fc-name iridescent-text">j2st</p>
-                    <p class="fc-sub">Gamer &amp; Developer</p>
+                    <p class="fc-sub">Oyuncu & Geliştirici</p>
                 </div>
             </div>
 
@@ -108,32 +97,32 @@
             <div class="float-card glass-card fc-badge">
                 <img src="/assets/icons/badge.png" alt="badge" class="fc-icon">
                 <div>
-                    <p class="fc-name">Early Access</p>
-                    <p class="fc-sub">Badge unlocked</p>
+                    <p class="fc-name">Erken Erişim</p>
+                    <p class="fc-sub">Rozet açıldı</p>
                 </div>
             </div>
 
             <!-- Floating link card -->
             <div class="float-card glass-card fc-link">
                 <img src="/assets/icons/link.png" alt="link" class="fc-icon-sm">
-                <p class="fc-name">3 Links Active</p>
+                <p class="fc-name">3 Aktif Bağlantı</p>
             </div>
         </div>
     </section>
 
     <!-- ====== FEATURES ====== -->
     <section class="features" id="features">
-        <div class="features-label" data-i18n="feat_label">WHAT YOU GET</div>
-        <h2 class="features-title" data-i18n="feat_title">Everything in <span class="iridescent-text">one place</span></h2>
+        <div class="features-label">NELER SUNUYORUZ?</div>
+        <h2 class="features-title">Her şey <span class="iridescent-text">tek bir yerde</span></h2>
 
         <div class="feat-grid">
-            <a href="/" class="feat-card glass-card" id="feat-profile-link">
+            <a href="/" class="feat-card glass-card">
                 <div class="feat-top">
                     <span class="feat-icon"><img src="/assets/icons/dragon.png" alt="profile"></span>
                     <span class="feat-arrow">↗</span>
                 </div>
-                <h3 data-i18n="feat1_title">Profile Page</h3>
-                <p data-i18n="feat1_p">Your public face — dragon avatar, bio, links, and badges all in one stunning page.</p>
+                <h3>Profil Sayfası</h3>
+                <p>Halka açık yüzünüz — ejderha avatarı, biyografi, bağlantılar ve rozetlerin hepsi tek bir çarpıcı sayfada.</p>
                 <div class="feat-bar"></div>
             </a>
             <a href="/dashboard" class="feat-card glass-card">
@@ -141,8 +130,8 @@
                     <span class="feat-icon"><img src="/assets/icons/gear.png" alt="dashboard"></span>
                     <span class="feat-arrow">↗</span>
                 </div>
-                <h3 data-i18n="feat2_title">Dashboard</h3>
-                <p data-i18n="feat2_p">Upload PPs, banners, sounds, and manage all your profile content in real-time.</p>
+                <h3>Kontrol Paneli</h3>
+                <p>Profil resimleri, bannerlar ve sesler yükleyin; tüm profil içeriğinizi gerçek zamanlı olarak yönetin.</p>
                 <div class="feat-bar"></div>
             </a>
             <a href="/admin" class="feat-card glass-card">
@@ -150,8 +139,8 @@
                     <span class="feat-icon"><img src="/assets/icons/shield.png" alt="admin"></span>
                     <span class="feat-arrow">↗</span>
                 </div>
-                <h3 data-i18n="feat3_title">Admin Panel</h3>
-                <p data-i18n="feat3_p">Control users, toggle global badges, and manage the platform from one panel.</p>
+                <h3>Yönetim Paneli</h3>
+                <p>Kullanıcıları kontrol edin, genel rozetleri açın ve platformu tek bir panelden yönetin.</p>
                 <div class="feat-bar"></div>
             </a>
         </div>
@@ -159,20 +148,34 @@
         <!-- Marquee strip -->
         <div class="marquee-wrap">
             <div class="marquee-track">
-                <span>Profile</span><span class="marquee-dot">·</span>
-                <span>Sound</span><span class="marquee-dot">·</span>
-                <span>Badges</span><span class="marquee-dot">·</span>
-                <span>Links</span><span class="marquee-dot">·</span>
-                <span>Dashboard</span><span class="marquee-dot">·</span>
-                <span>Admin</span><span class="marquee-dot">·</span>
-                <span>Analytics</span><span class="marquee-dot">·</span>
-                <span>Profile</span><span class="marquee-dot">·</span>
-                <span>Sound</span><span class="marquee-dot">·</span>
-                <span>Badges</span><span class="marquee-dot">·</span>
-                <span>Links</span><span class="marquee-dot">·</span>
-                <span>Dashboard</span><span class="marquee-dot">·</span>
-                <span>Admin</span><span class="marquee-dot">·</span>
-                <span>Analytics</span><span class="marquee-dot">·</span>
+                <span>Profil</span>
+                <span class="marquee-dot">·</span>
+                <span>Ses</span>
+                <span class="marquee-dot">·</span>
+                <span>Rozetler</span>
+                <span class="marquee-dot">·</span>
+                <span>Bağlantılar</span>
+                <span class="marquee-dot">·</span>
+                <span>Panel</span>
+                <span class="marquee-dot">·</span>
+                <span>Admin</span>
+                <span class="marquee-dot">·</span>
+                <span>Analiz</span>
+                <span class="marquee-dot">·</span>
+                <span>Profil</span>
+                <span class="marquee-dot">·</span>
+                <span>Ses</span>
+                <span class="marquee-dot">·</span>
+                <span>Rozetler</span>
+                <span class="marquee-dot">·</span>
+                <span>Bağlantılar</span>
+                <span class="marquee-dot">·</span>
+                <span>Panel</span>
+                <span class="marquee-dot">·</span>
+                <span>Admin</span>
+                <span class="marquee-dot">·</span>
+                <span>Analiz</span>
+                <span class="marquee-dot">·</span>
             </div>
         </div>
     </section>
@@ -182,25 +185,25 @@
         <div class="cta-inner glass-card">
             <img src="/assets/icons/user_dragon.png" class="cta-dragon" alt="dragon">
             <div class="cta-text">
-                <h2 data-i18n="cta_title">Start now. <span class="iridescent-text">It's free.</span></h2>
-                <p data-i18n="cta_p">Join the j2st.lol community and own your digital identity.</p>
+                <h2>Şimdi başlayın. <span class="iridescent-text">Ücretsizdir.</span></h2>
+                <p>j2st.lol topluluğuna katılın ve dijital kimliğinize sahip olun.</p>
             </div>
-            <a href="/register" class="btn-primary large" data-i18n="cta_btn">Get Started →</a>
+            <a href="/register" class="btn-primary large">Hemen Başla →</a>
         </div>
     </section>
 
     <!-- Footer -->
     <footer class="footer">
         <span class="iridescent-text" style="font-weight:700; font-size:18px;">j2st.lol</span>
-        <span style="color: var(--text-dim); font-size:13px;">© 2026 j2st · All rights reserved</span>
+        <span style="color: var(--text-dim); font-size:13px;">© 2026 j2st · Tüm hakları saklıdır</span>
     </footer>
 
     <!-- (Floating Profile Button removed per request, now only accessible from dashboard) -->
 
-    <script src="/system/i18n.js"></script>
     <script src="/home.js"></script>
     <!-- Twemoji: high-quality emoji rendering -->
     <script src="https://cdn.jsdelivr.net/npm/@twemoji/api@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
     <script>twemoji.parse(document.body, { folder: 'svg', ext: '.svg', base: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@latest/assets/' });</script>
 </body>
+
 </html>

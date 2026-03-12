@@ -24,45 +24,43 @@
         </div>
 
         <form class="auth-form glass-card" id="form-register" onsubmit="handleRegister(event)">
-            <h2 class="form-title" data-i18n="auth_reg_title">Join j2st.lol</h2>
-            <p class="form-sub" data-i18n="auth_reg_sub">Create your premium bio page today</p>
+            <h2 class="form-title">j2st.lol'a Katıl</h2>
+            <p class="form-sub">Bugün premium biyografi sayfanı oluştur</p>
 
             <div class="field-group">
-                <label class="field-label" data-i18n="auth_user">Username</label>
-                <input id="reg-user" class="field-input" type="text" placeholder="Pick a username (min 3 chars)"
-                    data-i18n="auth_user_ph" minlength="3" maxlength="20" required autocomplete="username">
-                <span class="field-hint">Only letters, numbers and underscores</span>
+                <label class="field-label">Kullanıcı Adı</label>
+                <input id="reg-user" class="field-input" type="text" placeholder="Bir kullanıcı adı seçin (min 3 kar.)"
+                    minlength="3" maxlength="20" required autocomplete="username">
+                <span class="field-hint">Sadece harf, rakam ve alt çizgi</span>
             </div>
             <div class="field-group">
-                <label class="field-label" data-i18n="auth_email">Email</label>
-                <input id="reg-email" class="field-input" type="email" placeholder="your@email.com"
-                    data-i18n="auth_email_ph" required autocomplete="email">
+                <label class="field-label">E-posta</label>
+                <input id="reg-email" class="field-input" type="email" placeholder="ornek@eposta.com"
+                    required autocomplete="email">
             </div>
             <div class="field-group">
-                <label class="field-label" data-i18n="auth_pass">Password</label>
+                <label class="field-label">Şifre</label>
                 <div class="field-pw-wrap">
-                    <input id="reg-pass" class="field-input" type="password" placeholder="Min 8 characters"
-                        data-i18n="auth_pass_ph" minlength="8" required autocomplete="new-password">
+                    <input id="reg-pass" class="field-input" type="password" placeholder="En az 8 karakter"
+                        minlength="8" required autocomplete="new-password">
                     <button type="button" class="pw-toggle" onclick="togglePw('reg-pass',this)">👁</button>
                 </div>
                 <div class="pw-strength" id="pw-strength"></div>
             </div>
             <div class="field-group">
-                <label class="field-label" data-i18n="auth_pass_confirm">Confirm Password</label>
-                <input id="reg-pass2" class="field-input" type="password" placeholder="Repeat password"
-                    data-i18n="auth_pass_confirm_ph" required>
+                <label class="field-label">Şifreyi Onayla</label>
+                <input id="reg-pass2" class="field-input" type="password" placeholder="Şifreyi tekrar girin"
+                    required>
             </div>
 
             <div id="reg-error" class="form-error"></div>
             <div id="reg-success" class="form-success"></div>
 
-            <button type="submit" class="auth-submit" id="btn-register" data-i18n="auth_signup_btn">Create Account
-                →</button>
-            <p class="form-hint"><span data-i18n="auth_have_account">Already have an account?</span> <a href="/login"
-                    data-i18n="nav_login">Sign in</a></p>
+            <button type="submit" class="auth-submit" id="btn-register">Hesap Oluştur →</button>
+            <p class="form-hint">Zaten bir hesabın var mı? <a href="/login">Giriş yap</a></p>
         </form>
 
-        <p class="auth-back"><a href="/" data-i18n="auth_back">← Back to home</a></p>
+        <p class="auth-back"><a href="/">← Ana sayfaya dön</a></p>
     </div>
 
     <script src="/system/i18n.js"></script>

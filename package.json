@@ -2,10 +2,10 @@
   "name": "j2st-lol",
   "version": "1.0.1",
   "description": "Premium Bio Platform",
-  "main": "index.html",
   "scripts": {
     "build": "true",
-    "dev": "npx wrangler pages dev"
+    "dev": "npx wrangler pages dev public",
+    "deploy": "npx wrangler pages deploy public"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.7"

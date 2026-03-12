@@ -1,8 +1,13 @@
-/index      /index.html     200
-/home       /index.html     200
-/login      /login.html     200
-/register   /register.html  200
-/dashboard  /dashboard.html 200
-/admin      /admin.html     200
-/j2st       /profile.html?u=j2st 200
-/*          /profile.html?u=:splat 200
+# Static Assets
+/css/*          /css/:splat          200
+/js/*           /js/:splat           200
+/assets/*       /assets/:splat       200
+/system/*       /system/:splat       200
+
+# We don't need explicit rules for /login, /register, etc. 
+# Cloudflare Pages handles them automatically if the .html file exists.
+# Rules here often cause redirect loops with Cloudflare's internal "Clean URLs" logic.
+
+# The only thing we need is a way to handle profiles.
+# Since we have 404.html as a copy of profile.html, we don't even need a wildcard rule.
+# Cloudflare will serve 404.html for any unknown path, and profile.js will handle the rest.

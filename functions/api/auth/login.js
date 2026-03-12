@@ -35,12 +35,13 @@ export async function onRequestPost(context) {
         const { data: user, error } = await supabase
             .from('users')
             .select('*')
-            .or(`email.eq.${emailOrUser},username.eq.${emailOrUser}`)
+            .or(`email.eq."${emailOrUser}",username.eq."${emailOrUser}"`)
             .eq('password_hash', passwordHash)
             .maybeSingle();
 
         if (error || !user) {
-            return new Response(JSON.stringify({ success: false, error: "Invalid credentials." }), { status: 401, headers: corsHeaders });
+            console.error("Login attempt failed:", error || "User not found");
+            return new Response(JSON.stringify({ success: false, error: "E-posta/Kullanıcı adı veya şifre hatalı." }), { status: 401, headers: corsHeaders });
         }
 
         return new Response(JSON.stringify({

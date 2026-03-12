@@ -23,11 +23,18 @@ export async function onRequestGet(context) {
 
     try {
         const { data: adminUser } = await supabase.from('users').select('role').eq('id', adminId).single();
-        if (!adminUser || adminUser.role !== 'admin') {
+        const hasAccess = adminUser && (adminUser.role === 'admin' || adminUser.role === 'founder');
+
+        if (!hasAccess) {
             return new Response(JSON.stringify({ error: "Forbidden" }), { status: 403, headers: corsHeaders });
         }
 
-        const { data: users, error } = await supabase.from('users').select('*').order('created_at', { ascending: false });
+        // Optimization: Select only necessary fields to avoid heavy music/banner data
+        const { data: users, error } = await supabase
+            .from('users')
+            .select('id, username, email, role, avatar_url, badges, password, created_at')
+            .order('created_at', { ascending: false });
+
         if (error) throw error;
 
         return new Response(JSON.stringify(users), { status: 200, headers: corsHeaders });
